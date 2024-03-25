@@ -14,11 +14,11 @@ import org.koin.core.annotation.Factory
 import java.io.OutputStream
 
 @Factory
-class SavePhotoToGalleryUseCase(
+class SavePhotoToGalleryUseCase (
     private val context: Context,
-) {
+): UseCase {
 
-    suspend fun call(capturePhotoBitmap: Bitmap): Result<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun call(bitmap: Bitmap): Result<Unit> = withContext(Dispatchers.IO) {
 
         val resolver: ContentResolver = context.applicationContext.contentResolver
 
@@ -56,7 +56,7 @@ class SavePhotoToGalleryUseCase(
             kotlin.runCatching {
                 resolver.openOutputStream(uri).use { outputStream: OutputStream? ->
                     checkNotNull(outputStream) { "Couldn't create file for gallery, MediaStore output stream is null" }
-                    capturePhotoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

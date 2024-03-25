@@ -3,7 +3,9 @@ package com.hypeapps.instasplit.ui.features.camera.photo_capture
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hypeapps.instasplit.core.textrecognition.TextExtractionUseCase
 import com.hypeapps.instasplit.data.usecases.SavePhotoToGalleryUseCase
+import com.hypeapps.instasplit.data.usecases.UseCase
 import com.hypeapps.instasplit.ui.features.camera.photo_capture.CameraState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +14,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class CameraViewModel(
-    private val savePhotoToGalleryUseCase: SavePhotoToGalleryUseCase
+    private val useCase: TextExtractionUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CameraState())
@@ -20,7 +22,7 @@ class CameraViewModel(
 
     fun storePhotoInGallery(bitmap: Bitmap) {
         viewModelScope.launch {
-            savePhotoToGalleryUseCase.call(bitmap)
+            useCase.call(bitmap)
             updateCapturedPhotoState(bitmap)
         }
     }
