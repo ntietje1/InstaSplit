@@ -12,9 +12,8 @@ import com.google.mlkit.vision.text.TextRecognizerOptionsInterface
 
 
 class TextRecognitionProcessor(
-    private val context: Context,
     textRecognizerOptions: TextRecognizerOptionsInterface
-) : VisionProcessorBase<Text>(context) {
+) : VisionProcessorBase<Text>() {
     private val textRecognizer: TextRecognizer = TextRecognition.getClient(textRecognizerOptions)
 
     override fun stop() {

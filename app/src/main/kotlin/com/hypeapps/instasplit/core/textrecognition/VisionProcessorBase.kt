@@ -3,7 +3,7 @@ import android.graphics.Bitmap
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
 
-abstract class VisionProcessorBase<T>(context: Context) {
+abstract class VisionProcessorBase<T> {
 
     protected abstract fun detectInImage(image: InputImage): Task<T>
 
@@ -19,6 +19,4 @@ abstract class VisionProcessorBase<T>(context: Context) {
             .addOnSuccessListener { results -> onSuccess(results) }
             .addOnFailureListener { e -> onFailure(e) }
     }
-
-
 }
