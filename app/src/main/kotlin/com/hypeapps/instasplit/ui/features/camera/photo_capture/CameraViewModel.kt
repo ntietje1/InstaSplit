@@ -3,10 +3,7 @@ package com.hypeapps.instasplit.ui.features.camera.photo_capture
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hypeapps.instasplit.core.textrecognition.TextExtractionUseCase
-import com.hypeapps.instasplit.data.usecases.SavePhotoToGalleryUseCase
-import com.hypeapps.instasplit.data.usecases.UseCase
-import com.hypeapps.instasplit.ui.features.camera.photo_capture.CameraState
+import com.hypeapps.instasplit.data.usecases.TextExtractionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
