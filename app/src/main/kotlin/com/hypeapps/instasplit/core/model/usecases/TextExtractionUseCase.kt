@@ -1,8 +1,8 @@
-package com.hypeapps.instasplit.data.usecases
+package com.hypeapps.instasplit.core.model.usecases
 
 import android.graphics.Bitmap
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import com.hypeapps.instasplit.core.textrecognition.TextRecognitionProcessor
+import com.hypeapps.instasplit.core.model.textrecognition.TextRecognitionProcessor
 
 
 class TextExtractionUseCase: UseCase {

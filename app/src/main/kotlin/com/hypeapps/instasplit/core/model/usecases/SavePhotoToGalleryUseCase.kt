@@ -1,4 +1,4 @@
-package com.hypeapps.instasplit.data.usecases
+package com.hypeapps.instasplit.core.model.usecases
 
 import android.content.ContentResolver
 import android.content.ContentValues

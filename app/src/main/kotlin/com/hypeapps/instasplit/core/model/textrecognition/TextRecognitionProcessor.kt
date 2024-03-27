@@ -1,7 +1,6 @@
-package com.hypeapps.instasplit.core.textrecognition
+package com.hypeapps.instasplit.core.model.textrecognition
 
 import VisionProcessorBase
-import android.content.Context
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
