@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.hypeapps.instasplit.ui.MainScreen
-import com.hypeapps.instasplit.ui.theme.JetpackComposeCameraXTutorialTheme
+import com.hypeapps.instasplit.ui.theme.InstaSplitTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            JetpackComposeCameraXTutorialTheme {
+            InstaSplitTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
