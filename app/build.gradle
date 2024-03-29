@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.gradle)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.koin.ksp)
 }
 
 android {
@@ -76,13 +75,6 @@ dependencies {
     implementation(libs.text.recognition)
 
     implementation(libs.accompanist.permissions)
-
-    implementation(libs.koin.core)
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
-
-    implementation(libs.koin.annotations)
-    ksp(libs.koin.ksp.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

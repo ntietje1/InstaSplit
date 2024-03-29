@@ -10,10 +10,8 @@ import android.os.Environment
 import android.provider.MediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.koin.core.annotation.Factory
 import java.io.OutputStream
 
-@Factory
 class SavePhotoToGalleryUseCase (
     private val context: Context,
 ): UseCase {

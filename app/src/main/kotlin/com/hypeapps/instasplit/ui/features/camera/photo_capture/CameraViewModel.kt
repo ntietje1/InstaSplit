@@ -7,11 +7,9 @@ import com.hypeapps.instasplit.core.model.usecases.TextExtractionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
-@KoinViewModel
 class CameraViewModel(
-    private val useCase: TextExtractionUseCase
+    private val useCase: TextExtractionUseCase = TextExtractionUseCase()
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CameraState())

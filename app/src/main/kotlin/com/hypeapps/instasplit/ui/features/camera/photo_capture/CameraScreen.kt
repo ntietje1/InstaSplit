@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.BottomStart
@@ -35,22 +36,20 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hypeapps.instasplit.core.utils.rotateBitmap
-import org.koin.androidx.compose.koinViewModel
 import java.util.concurrent.Executor
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @Composable
 fun CameraScreen(
-    viewModel: CameraViewModel = koinViewModel()
+    viewModel: CameraViewModel = viewModel()
 ) {
-    val cameraState: CameraState by viewModel.state.collectAsStateWithLifecycle()
+    val cameraState: CameraState by viewModel.state.collectAsState()
 
     CameraContent(
         onPhotoCaptured = viewModel::storePhotoInGallery,
