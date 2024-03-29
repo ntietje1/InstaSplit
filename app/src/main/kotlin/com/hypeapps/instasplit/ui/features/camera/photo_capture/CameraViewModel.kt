@@ -4,12 +4,13 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hypeapps.instasplit.core.model.usecases.TextExtractionUseCase
+import com.hypeapps.instasplit.core.model.usecases.UseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CameraViewModel(
-    private val useCase: TextExtractionUseCase = TextExtractionUseCase()
+    private val useCase: UseCase = TextExtractionUseCase()
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CameraState())
