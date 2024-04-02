@@ -1,5 +1,4 @@
 package com.hypeapps.instasplit.ui.features.camera.photo_capture
-
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -15,8 +14,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -52,7 +52,7 @@ fun CameraScreen(
     val cameraState: CameraState by viewModel.state.collectAsState()
 
     CameraContent(
-        onPhotoCaptured = viewModel::storePhotoInGallery,
+        onPhotoCaptured = viewModel::performUseCase,
         lastCapturedPhoto = cameraState.capturedImage
     )
 }
@@ -114,10 +114,19 @@ private fun capturePhoto(
     val mainExecutor: Executor = ContextCompat.getMainExecutor(context)
 
     cameraController.takePicture(mainExecutor, object : ImageCapture.OnImageCapturedCallback() {
+        fun fixedRotation(image: ImageProxy): Int {
+            return when (image.imageInfo.rotationDegrees) {
+                0 -> 180
+                90 -> 90
+                180 -> 0
+                270 -> 270
+                else -> 0
+            }
+        }
         override fun onCaptureSuccess(image: ImageProxy) {
             val correctedBitmap: Bitmap = image
                 .toBitmap()
-                .rotateBitmap(image.imageInfo.rotationDegrees)
+                .rotateBitmap(fixedRotation(image))
 
             onPhotoCaptured(correctedBitmap)
             image.close()
@@ -137,9 +146,23 @@ private fun LastPhotoPreview(
 
     val capturedPhoto: ImageBitmap = remember(lastCapturedPhoto.hashCode()) { lastCapturedPhoto.asImageBitmap() }
 
+    val bitmapDimensions = capturedPhoto.width to capturedPhoto.height
+    // smallest of two dimensions should be 128 dp
+    val previewWidth = if (bitmapDimensions.first < bitmapDimensions.second) {
+        128.dp
+    } else {
+        128.dp * (bitmapDimensions.first.toFloat() / bitmapDimensions.second)
+    }
+    val previewHeight = if (bitmapDimensions.first > bitmapDimensions.second) {
+        128.dp
+    } else {
+        128.dp * (bitmapDimensions.second.toFloat() / bitmapDimensions.first)
+    }
+
     Card(
         modifier = modifier
-            .size(128.dp)
+            .width(previewWidth)
+            .height(previewHeight)
             .padding(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = MaterialTheme.shapes.large

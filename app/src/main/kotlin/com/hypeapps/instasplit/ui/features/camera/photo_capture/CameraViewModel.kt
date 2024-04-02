@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CameraViewModel(
-    private val useCase: UseCase = TextExtractionUseCase()
+    private val useCase: UseCase = TextExtractionUseCase() // use dependency injection to provide the use case
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CameraState())
     val state = _state.asStateFlow()
 
-    fun storePhotoInGallery(bitmap: Bitmap) {
+    fun performUseCase(bitmap: Bitmap) {
         viewModelScope.launch {
             useCase.call(bitmap)
             updateCapturedPhotoState(bitmap)
