@@ -1,6 +1,7 @@
 package com.hypeapps.instasplit.core.db
 
 import androidx.room.Database
+import androidx.room.RoomDatabase
 import com.hypeapps.instasplit.core.db.dao.ExpenseDao
 import com.hypeapps.instasplit.core.db.dao.GroupDao
 import com.hypeapps.instasplit.core.db.dao.GroupMemberDao
@@ -21,7 +22,7 @@ import com.hypeapps.instasplit.core.model.entity.UserExpense
         UserExpense::class,
     ], version = 1
 )
-abstract class InstaSplitDatabase {
+abstract class InstaSplitDatabase : RoomDatabase() {
     abstract fun groupDao(): GroupDao
     abstract fun groupMemberDao(): GroupMemberDao
     abstract fun userDao(): UserDao
