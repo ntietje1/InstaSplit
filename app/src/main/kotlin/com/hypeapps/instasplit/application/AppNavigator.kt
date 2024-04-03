@@ -15,20 +15,19 @@ private enum class Screen(val route: String) {
     GroupSingle("group_single"),
     ExpenseEdit("expense_edit"), // also handles expense creation
     Camera("camera"),
-
 }
 
 @Composable
 fun AppNavigator() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.LoginBegin.route) {
-        composable(Screen.LoginBegin.route) {}
-        composable(Screen.LoginExisting.route) {}
-        composable(Screen.LoginRegister.route) {}
-        composable(Screen.GroupList.route) {}
-        composable(Screen.GroupEdit.route) {}
-        composable(Screen.GroupSingle.route) {}
-        composable(Screen.ExpenseEdit.route) {}
+    NavHost(navController = navController, startDestination = Screen.Camera.route) {
+//        composable(Screen.LoginBegin.route) {}
+        composable(Screen.LoginExisting.route) {} //nick
+        composable(Screen.LoginRegister.route) {} //nick
+        composable(Screen.GroupList.route) {} //yen
+        composable(Screen.GroupEdit.route) {} //khoi
+        composable(Screen.GroupSingle.route) {} //yen
+        composable(Screen.ExpenseEdit.route) {} //khoi
         composable(Screen.Camera.route) { CameraMainScreen() }
     }
 }
