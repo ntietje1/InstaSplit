@@ -9,13 +9,13 @@ coreKtx = "1.12.0"
 lifecycleViewmodelKtx = "2.7.0"
 compose-navigation = "2.7.7"
 compose = "1.6.4"
-#compose-plugin = "1.5.11"
+kotlinCompilerExtension = "1.5.11"
 material3 = "1.2.1"
-androidPlugin = "8.3.0"
-kotlinAndroidPlugin = "1.9.22"
+androidPlugin = "8.3.1"
+kotlinAndroidPlugin = "1.9.23"
 textRecognition = "16.0.0"
 room = "2.6.1"
-ksp = "1.9.22-1.0.17"
+ksp = "1.9.23-1.0.19"
 
 
 
