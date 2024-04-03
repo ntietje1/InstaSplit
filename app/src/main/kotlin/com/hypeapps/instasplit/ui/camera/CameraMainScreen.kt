@@ -1,17 +1,16 @@
-package com.hypeapps.instasplit.ui
+package com.hypeapps.instasplit.ui.camera
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.hypeapps.instasplit.ui.features.camera.no_permission.NoPermissionScreen
-import com.hypeapps.instasplit.ui.features.camera.photo_capture.CameraScreen
+import com.hypeapps.instasplit.ui.camera.no_permission.NoPermissionScreen
+import com.hypeapps.instasplit.ui.camera.photo_capture.CameraScreen
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MainScreen() {
+fun CameraMainScreen() {
 
     val cameraPermissionState: PermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 

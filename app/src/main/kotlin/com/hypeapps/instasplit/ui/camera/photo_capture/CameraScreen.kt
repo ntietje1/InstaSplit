@@ -1,4 +1,4 @@
-package com.hypeapps.instasplit.ui.features.camera.photo_capture
+package com.hypeapps.instasplit.ui.camera.photo_capture
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
