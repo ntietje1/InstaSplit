@@ -13,5 +13,5 @@ class InstaSplitRepository(
     private val GroupMemberDao: GroupMemberDao,
     private val UserExpenseDao: UserExpenseDao
 ) {
-
+    // implement methods to interact with the database here (also with network if we implement that
 }
