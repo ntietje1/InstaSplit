@@ -1,11 +1,14 @@
 package com.hypeapps.instasplit.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 
 
 private val LightColors = lightColorScheme(
@@ -83,7 +86,15 @@ fun InstaSplitTheme(
         DarkColors
     }
 
+    val shapes = Shapes(
+        extraSmall = RoundedCornerShape(10.dp),
+        small = RoundedCornerShape(15.dp),
+        medium = RoundedCornerShape(30.dp),
+        large = RoundedCornerShape(45.dp),
+        extraLarge = RoundedCornerShape(60.dp)
+    )
+
     MaterialTheme(
-        colorScheme = colors, typography = typography, content = content
+        colorScheme = colors, typography = typography, shapes = shapes, content = content
     )
 }
