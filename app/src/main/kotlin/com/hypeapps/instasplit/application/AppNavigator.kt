@@ -7,7 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.hypeapps.instasplit.ui.camera.CameraMainScreen
 
 private enum class Screen(val route: String) {
-    LoginBegin("login_begin"),
+    Splash("splash"),
     LoginExisting("login_existing"),
     LoginRegister("login_register"),
     GroupList("group_list"),
@@ -21,7 +21,7 @@ private enum class Screen(val route: String) {
 fun AppNavigator() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Camera.route) {
-//        composable(Screen.LoginBegin.route) {}
+        composable(Screen.Splash.route) {}
         composable(Screen.LoginExisting.route) {} //nick
         composable(Screen.LoginRegister.route) {} //nick
         composable(Screen.GroupList.route) {} //yen
