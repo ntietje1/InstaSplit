@@ -83,8 +83,10 @@ fun InstaSplitTheme(
     val colors = if (!useDarkTheme) {
         LightColors
     } else {
-        DarkColors
+//        DarkColors
+        LightColors
     }
+
 
     val shapes = Shapes(
         extraSmall = RoundedCornerShape(10.dp),

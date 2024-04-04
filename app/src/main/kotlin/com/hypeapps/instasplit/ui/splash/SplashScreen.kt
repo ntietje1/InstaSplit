@@ -25,9 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-@Preview
 @Composable
-fun SplashScreen(goToLogin: () -> Unit = {}) {
+fun SplashScreen(goToLogin: () -> Unit) {
     Surface(color = MaterialTheme.colorScheme.primary) {
         Column(
             modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
@@ -85,4 +84,10 @@ fun SplashScreen(goToLogin: () -> Unit = {}) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun ExampleSplashScreen() {
+    SplashScreen(goToLogin = {})
 }
