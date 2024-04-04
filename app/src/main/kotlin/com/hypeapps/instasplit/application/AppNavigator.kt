@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.hypeapps.instasplit.ui.camera.CameraMainScreen
 import com.hypeapps.instasplit.ui.login.existing.LoginScreen
+import com.hypeapps.instasplit.ui.login.register.RegisterScreen
 import com.hypeapps.instasplit.ui.splash.SplashScreen
 
 private enum class Screen(val route: String) {
@@ -28,8 +29,11 @@ fun AppNavigator() {
             onLogin = { navController.navigate(Screen.GroupList.route) },
             goToRegister  = { navController.navigate(Screen.LoginRegister.route) },
             goToForgotPassword = { /* TODO */ }
-        )} //nick
-        composable(Screen.LoginRegister.route) {} //nick
+        )}
+        composable(Screen.LoginRegister.route) { RegisterScreen(
+            onRegister = { navController.navigate(Screen.GroupList.route) },
+            goToLogin = { navController.navigate(Screen.LoginExisting.route) }
+        )}
         composable(Screen.GroupList.route) {} //yen
         composable(Screen.GroupEdit.route) {} //khoi
         composable(Screen.GroupSingle.route) {} //yen
