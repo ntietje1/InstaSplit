@@ -1,7 +1,9 @@
 package com.hypeapps.instasplit.ui.login.existing
 
+import androidx.compose.ui.text.input.TextFieldValue
+
 data class LoginState(
-    var username: String = "",
-    var password: String = "",
+    val username: TextFieldValue = TextFieldValue(""),
+    val password: TextFieldValue = TextFieldValue(""),
     var rememberMe: Boolean = false
 )
