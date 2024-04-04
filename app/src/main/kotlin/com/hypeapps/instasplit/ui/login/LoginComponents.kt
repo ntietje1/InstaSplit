@@ -76,12 +76,6 @@ private fun ExampleLoginField() {
 
 @Preview
 @Composable
-private fun ExampleLoginFieldSecure() {
-    LoginFieldSecure(fieldValue = TextFieldValue(""), onTextChanged = {}, placeholder = "Password", imageVector = Icons.Default.Lock)
-}
-
-@Preview
-@Composable
 private fun ExampleToggleButton() {
     RememberMeToggle(checked = true, onCheckedChange = {})
 }
