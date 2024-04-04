@@ -44,8 +44,8 @@ fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, goToForgotPasswor
             LoginTitle("Login")
             Spacer(modifier = Modifier.height(24.dp))
             LoginField(
-                fieldValue = loginState.username,
-                onTextChanged = { viewModel.updateUsername(it) },
+                fieldValue = loginState.email,
+                onTextChanged = { viewModel.updateEmail(it) },
                 placeholder = "Email",
                 imageVector = Icons.Default.Email
             )
@@ -78,7 +78,7 @@ fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, goToForgotPasswor
                 Text(
                     text = "Forgot Password?",
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable { goToForgotPassword() }
                 )
                 Spacer(modifier = Modifier.width(24.dp))

@@ -39,7 +39,7 @@ fun RememberMeToggle(checked: Boolean = false, onCheckedChange: (Boolean) -> Uni
 }
 
 @Composable
-fun LoginButton(onLogin: () -> Unit) {
+fun LoginButton(text: String = "Login", onLogin: () -> Unit) {
     Surface(
         color = MaterialTheme.colorScheme.primary,
         shape = MaterialTheme.shapes.extraLarge,
@@ -54,7 +54,7 @@ fun LoginButton(onLogin: () -> Unit) {
     ) {
         Box {
             Text(
-                text = "Login", style = MaterialTheme.typography.labelLarge, fontSize = 28.sp, color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier
+                text = text, style = MaterialTheme.typography.labelLarge, fontSize = 28.sp, color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier
                     .padding(16.dp)
                     .align(Alignment.Center)
             )

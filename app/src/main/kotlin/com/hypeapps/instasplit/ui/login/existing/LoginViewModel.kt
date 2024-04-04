@@ -2,7 +2,6 @@ package com.hypeapps.instasplit.ui.login.existing
 
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
-import com.hypeapps.instasplit.ui.login.existing.LoginState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -10,8 +9,8 @@ class LoginViewModel : ViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
 
-    fun updateUsername(username: TextFieldValue) {
-        _state.value = _state.value.copy(username = username)
+    fun updateEmail(email: TextFieldValue) {
+        _state.value = _state.value.copy(email = email)
     }
 
     fun updatePassword(password: TextFieldValue) {
