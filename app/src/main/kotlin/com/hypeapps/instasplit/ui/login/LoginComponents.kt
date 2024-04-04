@@ -64,30 +64,30 @@ fun LoginButton(onLogin: () -> Unit) {
 
 @Preview
 @Composable
-fun ExampleLoginTitle() {
+private fun ExampleLoginTitle() {
     LoginTitle("Login")
 }
 
 @Preview
 @Composable
-fun ExampleLoginField() {
+private fun ExampleLoginField() {
     LoginField(fieldValue = TextFieldValue(""), onTextChanged = {}, placeholder = "Email", imageVector  = Icons.Default.Email)
 }
 
 @Preview
 @Composable
-fun ExampleLoginFieldSecure() {
+private fun ExampleLoginFieldSecure() {
     LoginFieldSecure(fieldValue = TextFieldValue(""), onTextChanged = {}, placeholder = "Password", imageVector = Icons.Default.Lock)
 }
 
 @Preview
 @Composable
-fun ExampleToggleButton() {
+private fun ExampleToggleButton() {
     RememberMeToggle(checked = true, onCheckedChange = {})
 }
 
 @Preview
 @Composable
-fun ExampleLoginButton() {
+private fun ExampleLoginButton() {
     LoginButton {}
 }

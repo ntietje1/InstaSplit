@@ -59,9 +59,12 @@ fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, goToForgotPasswor
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.width(24.dp))
-                RememberMeToggle {
-                    viewModel.updateRememberMe(it)
-                }
+                RememberMeToggle(
+                    checked = loginState.rememberMe,
+                    onCheckedChange = {
+                        viewModel.updateRememberMe(it)
+                    }
+                )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = "Remember Me",
@@ -99,6 +102,6 @@ fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, goToForgotPasswor
 
 @Preview
 @Composable
-fun LoginScreenPreview() {
+private fun LoginScreenPreview() {
     LoginScreen(onLogin = {}, goToRegister = {}, goToForgotPassword = {})
 }
