@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -47,12 +49,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun CameraScreen(
-    viewModel: CameraViewModel = viewModel()
+    viewModel: CameraViewModel = viewModel(factory = CameraViewModel.Factory)
 ) {
     val cameraState: CameraState by viewModel.state.collectAsState()
 
+    DisposableEffect(Unit) {
+        viewModel.lockOrientation()
+        onDispose {
+            viewModel.closeTextExtractor()
+            viewModel.unlockOrientation()
+        }
+    }
+
     CameraContent(
-        onPhotoCaptured = viewModel::performUseCase,
+        onPhotoCaptured = viewModel::extractText,
         lastCapturedPhoto = cameraState.capturedImage
     )
 }
@@ -165,12 +175,12 @@ private fun LastPhotoPreview(
             .height(previewHeight)
             .padding(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.small
     ) {
         Image(
             bitmap = capturedPhoto,
             contentDescription = "Last captured photo",
-            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            contentScale = ContentScale.Crop
         )
     }
 }
