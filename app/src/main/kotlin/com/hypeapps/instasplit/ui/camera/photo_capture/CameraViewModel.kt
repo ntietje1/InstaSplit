@@ -15,9 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CameraViewModel(
-    private val textExtractor: TextExtractor,
-    private val textElementParser: TextElementParser,
-    private val orientationController: OrientationController
+    private val textExtractor: TextExtractor, private val textElementParser: TextElementParser, private val orientationController: OrientationController
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CameraState())
@@ -30,6 +28,7 @@ class CameraViewModel(
     fun lockOrientation() {
         orientationController.lockPortrait()
     }
+
     fun unlockOrientation() {
         orientationController.unlockOrientation()
     }
@@ -37,6 +36,7 @@ class CameraViewModel(
     fun extractText(bitmap: Bitmap) {
         viewModelScope.launch {
             updateIsProcessing(true)
+            //TODO: make this work on a background thread
             textExtractor.extractText(bitmap).apply {
                 addOnCompleteListener {
                     updateIsProcessing(false)
@@ -75,9 +75,7 @@ class CameraViewModel(
 
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 return CameraViewModel(
-                    TextExtractor(),
-                    TextElementParser(),
-                    (application as App).appContainer.orientationController
+                    TextExtractor(), TextElementParser(), (application as App).appContainer.orientationController
                 ) as T
             }
         }
