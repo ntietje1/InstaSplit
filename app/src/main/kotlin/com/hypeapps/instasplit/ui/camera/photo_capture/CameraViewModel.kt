@@ -36,7 +36,11 @@ class CameraViewModel(
 
     fun extractText(bitmap: Bitmap) {
         viewModelScope.launch {
+            updateIsProcessing(true)
             textExtractor.extractText(bitmap).apply {
+                addOnCompleteListener {
+                    updateIsProcessing(false)
+                }
                 addOnSuccessListener { text ->
                     val nameAndPrice = textElementParser.getTotal(text)
                     updateExtractedElements(nameAndPrice)
@@ -53,6 +57,10 @@ class CameraViewModel(
 
     private fun updateExtractedElements(elements: Pair<Text.Element, Text.Element>?) {
         _state.value = _state.value.copy(extractedElements = elements)
+    }
+
+    private fun updateIsProcessing(isProcessing: Boolean) {
+        _state.value = _state.value.copy(isProcessing = isProcessing)
     }
 
     override fun onCleared() {
