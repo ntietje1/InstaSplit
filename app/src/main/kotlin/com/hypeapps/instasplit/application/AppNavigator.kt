@@ -35,7 +35,11 @@ fun AppNavigator() {
             goToLogin = { navController.navigate(Screen.LoginExisting.route) }
         )}
         composable(Screen.GroupList.route) {} //yen
-        composable(Screen.GroupEdit.route) {} //khoi
+        composable(Screen.GroupEdit.route) {
+            GroupEditScreen(
+                goToSingleGroup = { navController.navigate(Screen.GroupSingle.route)}
+            )
+        } //khoi
         composable(Screen.GroupSingle.route) {} //yen
         composable(Screen.ExpenseEdit.route) {} //khoi
         composable(Screen.Camera.route) { CameraMainScreen() }
