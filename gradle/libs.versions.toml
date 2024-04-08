@@ -13,6 +13,7 @@ kotlinCompilerExtension = "1.5.11"
 material3 = "1.2.1"
 androidPlugin = "8.3.1"
 kotlinAndroidPlugin = "1.9.23"
+retrofit = "2.9.0"
 textRecognition = "16.0.0"
 room = "2.6.1"
 ksp = "1.9.23-1.0.19"
@@ -46,6 +47,8 @@ androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref =
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 #junit = { module = "junit:junit", version.ref = "junit" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "textRecognition" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
