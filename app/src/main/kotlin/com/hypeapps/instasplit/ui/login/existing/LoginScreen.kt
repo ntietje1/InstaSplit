@@ -30,7 +30,7 @@ import com.hypeapps.instasplit.ui.login.LoginTitle
 import com.hypeapps.instasplit.ui.login.RememberMeToggle
 
 @Composable
-fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, goToForgotPassword: () -> Unit, viewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, viewModel: LoginViewModel = viewModel()) {
     val loginState : LoginState by viewModel.state.collectAsState()
     Surface(
         color = MaterialTheme.colorScheme.background,
@@ -75,13 +75,13 @@ fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, goToForgotPasswor
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                 )
                 Spacer(modifier = Modifier.weight(0.4f))
-                Text(
-                    text = "Forgot Password?",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { goToForgotPassword() }
-                )
-                Spacer(modifier = Modifier.width(24.dp))
+//                Text(
+//                    text = "Forgot Password?",
+//                    fontSize = 12.sp,
+//                    color = MaterialTheme.colorScheme.primary,
+//                    modifier = Modifier.clickable { goToForgotPassword() }
+//                )
+//                Spacer(modifier = Modifier.width(24.dp))
             }
             Spacer(modifier = Modifier.height(12.dp))
             LoginButton {
@@ -110,5 +110,5 @@ fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, goToForgotPasswor
 @Preview
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen(onLogin = {}, goToRegister = {}, goToForgotPassword = {})
+    LoginScreen(onLogin = {}, goToRegister = {})
 }
