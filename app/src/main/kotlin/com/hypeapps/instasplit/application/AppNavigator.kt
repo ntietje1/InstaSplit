@@ -27,8 +27,7 @@ fun AppNavigator() {
         composable(Screen.Splash.route) { SplashScreen { navController.navigate(Screen.LoginExisting.route) } }
         composable(Screen.LoginExisting.route) { LoginScreen(
             onLogin = { navController.navigate(Screen.GroupList.route) },
-            goToRegister  = { navController.navigate(Screen.LoginRegister.route) },
-            goToForgotPassword = { /* TODO */ }
+            goToRegister  = { navController.navigate(Screen.LoginRegister.route) }
         )}
         composable(Screen.LoginRegister.route) { RegisterScreen(
             onRegister = { navController.navigate(Screen.GroupList.route) },
