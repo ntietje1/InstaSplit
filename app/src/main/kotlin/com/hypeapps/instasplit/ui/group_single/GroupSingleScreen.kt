@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupDetailScreen(group: Group, expenses: List<Expense>, onAddExpense: () -> Unit
+fun GroupSingleScreen(group: Group, expenses: List<Expense>, onAddExpense: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -162,7 +162,7 @@ data class Expense(val title: String, val total: String)
 @Composable
 fun PreviewGroupDetailScreen() {
     MaterialTheme {
-        GroupDetailScreen(
+        GroupSingleScreen(
             group = Group("Apartment", 2, "$200"),
             expenses = listOf(
                 Expense("March Cleaning Supplies", "$100"),

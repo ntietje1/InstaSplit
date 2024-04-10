@@ -5,11 +5,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.hypeapps.instasplit.ui.camera.CameraMainScreen
+import com.hypeapps.instasplit.ui.expense_edit.ExpenseEditScreen
 import com.hypeapps.instasplit.ui.group_list.GroupListScreen
 import com.hypeapps.instasplit.ui.login.existing.LoginScreen
 import com.hypeapps.instasplit.ui.login.register.RegisterScreen
 import com.hypeapps.instasplit.ui.splash.SplashScreen
 import com.hypeapps.instasplit.ui.group_list.Group
+import com.hypeapps.instasplit.ui.group_single.Expense
+import com.hypeapps.instasplit.ui.group_single.GroupSingleScreen
 
 private enum class Screen(val route: String) {
     Splash("splash"),
@@ -44,13 +47,41 @@ fun AppNavigator() {
                 Group(name = "Friends", status = "you are owed $200.00")
             )
             // Placeholder functions for group click and add expense actions
-            val onGroupClick: (Group) -> Unit = { /* TODO: Implement group click action */ }
-            val onAddExpense: () -> Unit = { /* TODO: Implement add expense action */ }
-            GroupListScreen(groups = sampleGroups, onGroupClick = onGroupClick, onAddExpense = onAddExpense)
+            val onGroupClick: (Group) -> Unit = { group ->
+            // When a group is clicked, navigate to GroupSingleScreen
+            // with mock data for that specific group.
+            navController.navigate("${Screen.GroupSingle.route}/${group.name}") }
+//            val onAddExpense: () -> Unit = { /* TODO: Implement add expense action */ }
+            GroupListScreen(groups = sampleGroups,
+                onGroupClick = onGroupClick,
+                onAddExpense = { navController.navigate(Screen.ExpenseEdit.route) })
         } //yen
         composable(Screen.GroupEdit.route) {} //khoi
-        composable(Screen.GroupSingle.route) {} //yen
-        composable(Screen.ExpenseEdit.route) {} //khoi
+        composable("${Screen.GroupSingle.route}/{groupName}") {
+            //TODO: figure out how to navigate from GroupList to GroupSingle, and
+            // from GroupSingle to ExpenseEdit -> NEED TO FINALIZE THE MODEL DATA (USING MOCK DATA CLASSES NOW)
+            // Here we're just using a mock group and list of expenses for the preview
+            val mockGroup =
+                com.hypeapps.instasplit.ui.group_single.Group("Apartment", 2, "$200")
+            val mockExpenses = listOf(
+                Expense("March Cleaning Supplies", "$100"),
+                Expense("March 10 Week Grocery", "$100"),
+            )
+            GroupSingleScreen(
+                group = mockGroup,
+                expenses = mockExpenses,
+                onAddExpense = { navController.navigate(Screen.ExpenseEdit.route) }
+            )
+        } //yen
+
+
+        composable(Screen.ExpenseEdit.route) {
+            ExpenseEditScreen(
+                onBackClick = { navController.popBackStack() }, // Move back 1 screen
+                onDeleteClick = { /* Handle delete */ },
+                onAddExpense = { /* Handle add expense */ }
+            )
+        } //khoi
         composable(Screen.Camera.route) { CameraMainScreen() }
     }
 }
