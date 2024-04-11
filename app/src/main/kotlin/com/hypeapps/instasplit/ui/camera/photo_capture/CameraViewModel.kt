@@ -10,6 +10,7 @@ import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.model.textrecognition.TextElementParser
 import com.hypeapps.instasplit.core.model.textrecognition.TextExtractor
 import com.hypeapps.instasplit.ui.OrientationController
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -33,10 +34,13 @@ class CameraViewModel(
         orientationController.unlockOrientation()
     }
 
-    fun extractText(bitmap: Bitmap) {
-        viewModelScope.launch {
+    fun onImageCaptured(bitmap: Bitmap) {
+        extractText(bitmap)
+    }
+
+    private fun extractText(bitmap: Bitmap) {
+        viewModelScope.launch(Dispatchers.IO) {
             updateIsProcessing(true)
-            //TODO: make this work on a background thread
             textExtractor.extractText(bitmap).apply {
                 addOnCompleteListener {
                     updateIsProcessing(false)
@@ -46,8 +50,8 @@ class CameraViewModel(
                     updateExtractedElements(nameAndPrice)
                 }
             }
-            updateCapturedPhotoState(bitmap)
         }
+        updateCapturedPhotoState(bitmap)
     }
 
     private fun updateCapturedPhotoState(updatedPhoto: Bitmap?) {
