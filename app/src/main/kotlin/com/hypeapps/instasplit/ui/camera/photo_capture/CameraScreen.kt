@@ -10,38 +10,33 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.BottomStart
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -56,7 +51,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.utils.rotateBitmap
-import kotlinx.coroutines.delay
 import java.util.concurrent.Executor
 
 
@@ -75,13 +69,51 @@ fun CameraScreen(
     }
 
     CameraContent(
-        onPhotoCaptured = viewModel::extractText, lastCapturedPhoto = cameraState.capturedImage
+        onPhotoCaptured = viewModel::onImageCaptured,
+//        lastCapturedPhoto = cameraState.capturedImage
     )
+
+    if (cameraState.capturedImage != null) {
+        println("capturedImage: ${cameraState.capturedImage}")
+        ConfirmPhotoPreview(
+            onConfirm = { TODO() },
+            onRetake = { TODO() },
+            lastCapturedPhoto = cameraState.capturedImage!!
+        )
+    }
+}
+
+@Composable
+private fun ConfirmPhotoPreview(
+    onConfirm: () -> Unit, onRetake: () -> Unit, lastCapturedPhoto: Bitmap
+) {
+    val capturedPhoto: ImageBitmap = remember(lastCapturedPhoto.hashCode()) { lastCapturedPhoto.asImageBitmap() }
+    Box(
+        modifier = Modifier.fillMaxSize().background(Color.Black)
+    ) {
+        Image(
+            modifier = Modifier.align(Alignment.Center),
+            bitmap = capturedPhoto, contentDescription = "Last captured photo", contentScale = ContentScale.Fit
+        )
+            Row(
+                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(onClick = onConfirm) {
+                    Text("Confirm")
+                }
+                Button(onClick = onRetake) {
+                    Text("Retake")
+                }
+            }
+        }
+
 }
 
 @Composable
 private fun CameraContent(
-    onPhotoCaptured: (Bitmap) -> Unit, lastCapturedPhoto: Bitmap? = null
+    onPhotoCaptured: (Bitmap) -> Unit
+//    , lastCapturedPhoto: Bitmap? = null
 ) {
 
     val context: Context = LocalContext.current
@@ -120,11 +152,11 @@ private fun CameraContent(
                 }
             })
 
-            if (lastCapturedPhoto != null) {
-                LastPhotoPreview(
-                    modifier = Modifier.align(alignment = BottomStart), lastCapturedPhoto = lastCapturedPhoto
-                )
-            }
+//            if (lastCapturedPhoto != null) {
+//                LastPhotoPreview(
+//                    modifier = Modifier.align(alignment = BottomStart), lastCapturedPhoto = lastCapturedPhoto
+//                )
+//            }
         }
     }
 }
@@ -157,43 +189,48 @@ private fun capturePhoto(
         }
     })
 }
-
-@Composable
-private fun LastPhotoPreview(
-    modifier: Modifier = Modifier, lastCapturedPhoto: Bitmap
-) {
-
-    val capturedPhoto: ImageBitmap = remember(lastCapturedPhoto.hashCode()) { lastCapturedPhoto.asImageBitmap() }
-    var isFullScreenPreview by remember { mutableStateOf(true) }
-
-    LaunchedEffect(key1 = capturedPhoto) {
-        isFullScreenPreview = true
-        delay(100)
-        isFullScreenPreview = false
-    }
-
-    val bitmapDimensions = capturedPhoto.width to capturedPhoto.height
-    // smallest of two dimensions should be 128 dp
-    val bitmapAspectRatio = bitmapDimensions.first.toFloat() / bitmapDimensions.second
-    val currentScreenWidth = LocalContext.current.resources.displayMetrics.widthPixels
-    val previewWidth = animateDpAsState(
-        animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessVeryLow), targetValue = if (isFullScreenPreview) {
-            currentScreenWidth.dp
-        } else {
-            128.dp
-        }, label = ""
-    )
-
-    //TODO: make last captured photo larger and show extracted text boxes, then have button to confirm or retake
-
-    Card(
-        modifier = modifier
-            .width(previewWidth.value)
-            .aspectRatio(bitmapAspectRatio)
-            .padding(16.dp), elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), shape = MaterialTheme.shapes.small
-    ) {
-        Image(
-            bitmap = capturedPhoto, contentDescription = "Last captured photo", contentScale = ContentScale.Crop
-        )
-    }
-}
+//
+//@Composable
+//private fun LastPhotoPreview(
+//    modifier: Modifier = Modifier, lastCapturedPhoto: Bitmap
+//) {
+//
+//    val capturedPhoto: ImageBitmap = remember(lastCapturedPhoto.hashCode()) { lastCapturedPhoto.asImageBitmap() }
+//    var isFullScreenPreview by remember { mutableStateOf(true) }
+//
+//    val bitmapDimensions = capturedPhoto.width to capturedPhoto.height
+//    // smallest of two dimensions should be 128 dp
+//    val bitmapAspectRatio = bitmapDimensions.first.toFloat() / bitmapDimensions.second
+//    val currentScreenWidth = LocalContext.current.resources.displayMetrics.widthPixels
+//    val previewWidth = animateDpAsState(
+//        animationSpec = if (isFullScreenPreview) {
+//            snap()
+//        } else {
+//            spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessVeryLow)
+//        }, targetValue = if (isFullScreenPreview) {
+//            currentScreenWidth.dp
+//        } else {
+//            128.dp
+//        }, label = ""
+//    )
+//
+//    LaunchedEffect(key1 = capturedPhoto) {
+//        isFullScreenPreview = true
+//        delay(100)
+//        isFullScreenPreview = false
+//    }
+//
+//
+//    //TODO: make last captured photo larger and show extracted text boxes, then have button to confirm or retake
+//
+//    Card(
+//        modifier = modifier
+//            .width(previewWidth.value)
+//            .aspectRatio(bitmapAspectRatio)
+//            .padding(16.dp), elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), shape = MaterialTheme.shapes.small
+//    ) {
+//        Image(
+//            bitmap = capturedPhoto, contentDescription = "Last captured photo", contentScale = ContentScale.Crop
+//        )
+//    }
+//}
