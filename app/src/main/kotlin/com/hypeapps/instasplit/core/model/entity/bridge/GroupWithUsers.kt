@@ -15,5 +15,4 @@ data class GroupWithUsers(
         associateBy = Junction(GroupMember::class)
     )
     val users: List<User>
-) {
-}
+)

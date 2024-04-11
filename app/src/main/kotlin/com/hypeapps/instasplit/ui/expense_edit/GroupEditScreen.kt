@@ -45,7 +45,7 @@ topBar = {
     TopAppBar(
         title = {
             Text(
-                "Your Groups",
+                "Edit Expenses",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier.padding(start = 20.dp).padding(top = 24.dp) // left + top padding for the title

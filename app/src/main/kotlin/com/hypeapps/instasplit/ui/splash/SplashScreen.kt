@@ -32,7 +32,7 @@ fun SplashScreen(goToLogin: () -> Unit) {
             modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.weight(1.25f))
-            Text("InstaSplit", style = MaterialTheme.typography.displayLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+            Text("InstaSplit", style = MaterialTheme.typography.displayLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onPrimary)
 //            Spacer(modifier = Modifier.weight(0.3f))
 //            Icon(imageVector = Icons.Default.InsertEmoticon, contentDescription = "Logo", modifier = Modifier.size(150.dp))
             Spacer(modifier = Modifier.weight(1.0f))
