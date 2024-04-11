@@ -72,7 +72,7 @@ fun RegisterScreen(onRegister: () -> Unit, goToLogin: () -> Unit, viewModel: Reg
                 imageVector = Icons.Default.Phone
             )
             Spacer(modifier = Modifier.height(24.dp))
-            LoginButton("Sign Up") {
+            LoginButton("SIGN UP") {
                 if (viewModel.validate()) {
                     onRegister()
                 }
