@@ -9,7 +9,7 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 class TextExtractor  {
     private val imageProcessor = TextRecognitionProcessor(TextRecognizerOptions.Builder().build())
 
-    fun extractText(bitmap: Bitmap): Task<Text> {
+    suspend fun extractText(bitmap: Bitmap): Task<Text> {
         return imageProcessor.processBitmap(bitmap)
     }
 
