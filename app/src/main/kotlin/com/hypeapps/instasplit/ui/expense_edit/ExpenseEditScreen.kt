@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +34,7 @@ fun ExpenseEditScreen(
     viewModel: ExpenseEditViewModel = viewModel()
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.background,
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
         modifier = Modifier.fillMaxSize(),
     ) {
         val state by viewModel.state.collectAsState()
@@ -51,12 +52,14 @@ fun ExpenseEditScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.size(40.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Text("Expense", style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.ExtraBold)
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onPrimary)
             }
             Spacer(modifier = Modifier.height(24.dp))
             Row(
@@ -67,17 +70,19 @@ fun ExpenseEditScreen(
                 Icon(imageVector = Icons.Default.EditNote, contentDescription = "Edit Expense",
                     modifier = Modifier
                         .padding(top = 0.dp)
-                        .size(30.dp))
+                        .size(30.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Edit Expense",
                     style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
                 Spacer(modifier = Modifier.width(115.dp))
                 IconButton(onClick = { onDeleteClick() }) {
                     Icon(imageVector = Icons.Default.RemoveCircle, contentDescription = "Delete Expense",
                         modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                        tint = MaterialTheme.colorScheme.error)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -104,25 +109,36 @@ fun ExpenseEditScreen(
                 secure = false
             )
             Spacer(modifier = Modifier.height(24.dp))
-            Button(
-                onClick = { onAddExpense() },
+            Surface(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .fillMaxWidth() // Ensure the button fills the width of its container
+                    .fillMaxWidth() // Ensure the Surface fills the width of its container
                     .padding(horizontal = 80.dp), // Adjust horizontal padding
-                shape = RoundedCornerShape(20.dp),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
+                shape = RoundedCornerShape(20.dp), // Match the button's shape
+                color = Color.Transparent, // Use a transparent color for the Surface
+                shadowElevation = 4.dp // Set the shadow elevation
             ) {
-                Icon(
-                    Icons.Filled.AccountBalanceWallet, contentDescription = null,
-                    Modifier.size(36.dp)
-                )
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(
-                    "ADD EXPENSE",
-                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
-                )
+                Button(
+                    onClick = { onAddExpense() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 0.dp, vertical = 0.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
+                ) {
+                    Icon(
+                        Icons.Filled.AccountBalanceWallet, contentDescription = null,
+                        Modifier.size(36.dp)
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(
+                        "ADD EXPENSE",
+                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp),
+                        color = MaterialTheme.colorScheme.onPrimary // Ensure text color is onPrimary for contrast
+                    )
+                }
             }
+
 
             Spacer(modifier = Modifier.height(40.dp))
             Card(
@@ -136,29 +152,41 @@ fun ExpenseEditScreen(
                     Text(
                         text = "Try out our AI scanning to add expense faster",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Spacer(modifier = Modifier.height(25.dp))
-                    Button(
-                        onClick = { /* TODO: Open scanner */ },
+                    Surface(
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .fillMaxWidth()
-                            .padding(horizontal = 30.dp), // Adjust horizontal padding to match the width of the Add Expense button
-                        shape = RoundedCornerShape(20.dp),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
+                            .padding(horizontal = 30.dp), // Match the button's horizontal padding
+                        shape = RoundedCornerShape(20.dp), // Match the button's shape
+                        color = Color.Transparent, // Transparent surface to only show the shadow
+                        shadowElevation = 4.dp
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Camera,
-                            contentDescription = "Scan Receipt",
-                            modifier = Modifier.size(36.dp)
-                        )
-                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(
-                            "SCAN RECEIPT",
-                            style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
-                        )
+                        Button(
+                            onClick = { /* TODO: Open scanner */ },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(0.dp),
+                            shape = RoundedCornerShape(20.dp), // Maintain the button's shape
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp), // Maintain content padding
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Camera,
+                                contentDescription = "Scan Receipt",
+                                modifier = Modifier.size(36.dp)
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text(
+                                "SCAN RECEIPT",
+                                style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp),
+                                color = MaterialTheme.colorScheme.onPrimary // Ensure text color is onPrimary for contrast
+                            )
+                        }
                     }
+
                 }
             }
         }

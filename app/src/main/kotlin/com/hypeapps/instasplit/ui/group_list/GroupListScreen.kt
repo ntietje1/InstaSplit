@@ -12,6 +12,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +46,7 @@ fun GroupListScreen(
                 title = {
                     Text(
                         "Your Groups",
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.ExtraBold,
                         modifier = Modifier.padding(start = 20.dp).padding(top = 24.dp) // left + top padding for the title
@@ -70,14 +72,31 @@ fun GroupListScreen(
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                icon = { Icon(Icons.Filled.AccountBalanceWallet, contentDescription = null,
-                    Modifier.size(36.dp)) },
-                text = { Text("ADD EXPENSE",
-                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)) },
-                onClick = onAddExpense
+                icon = {
+                    Icon(
+                        Icons.Filled.AccountBalanceWallet,
+                        contentDescription = null,
+                        Modifier.size(36.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                },
+                text = {
+                    Text(
+                        "ADD EXPENSE",
+                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                },
+                onClick = onAddExpense,
+                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                // Apply elevation to create the shadow
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 4.dp  // You can adjust this value to increase or decrease the shadow
+                )
             )
         },
-        floatingActionButtonPosition = FabPosition.Center, // Position the FAB to the center
+        floatingActionButtonPosition = FabPosition.Center,  // Position the FAB to the center
+
         content = { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding).padding(top = 16.dp) ) {
                 groups.forEach { group ->
@@ -99,6 +118,7 @@ fun GroupCard(group: Group, onClick: () -> Unit) {
     ) {
         Row(
             modifier = Modifier
+                .background(MaterialTheme.colorScheme.primary) // Set the background color here
                 .padding(16.dp)
                 .fillMaxSize(), // Changed to fill the increased height
             verticalAlignment = Alignment.Top // Align the row content to the top
@@ -123,8 +143,8 @@ fun GroupCard(group: Group, onClick: () -> Unit) {
                 modifier = Modifier.fillMaxHeight() // Take up all available height
             ) {
                 Text(text = group.name, style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold)
-                Text(text = group.status)
+                    fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = group.status, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 //TODO: add status for user such  as "Bob owes you $100"
             }
         }

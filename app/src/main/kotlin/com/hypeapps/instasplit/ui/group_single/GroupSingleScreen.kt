@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,9 +39,12 @@ fun GroupSingleScreen(group: Group, expenses: List<Expense>,
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Group, contentDescription = null, modifier = Modifier.padding(top = 24.dp).size(48.dp))
+                        Icon(Icons.Default.Group, contentDescription = null,
+                            modifier = Modifier.padding(top = 24.dp).size(48.dp)
+                            , tint = MaterialTheme.colorScheme.onPrimaryContainer)
                         Spacer(Modifier.width(8.dp))
                         Text("Group Info", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.padding(start = 10.dp).padding(top = 24.dp) )
                         Spacer(Modifier.weight(1f))
                         IconButton(
@@ -62,11 +66,26 @@ fun GroupSingleScreen(group: Group, expenses: List<Expense>,
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                icon = { Icon(Icons.Filled.AccountBalanceWallet, contentDescription = null,
-                    Modifier.size(36.dp)) },
-                text = { Text("ADD EXPENSE",
-                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)) },
-                onClick = onAddExpense
+                icon = {
+                    Icon(
+                        Icons.Filled.AccountBalanceWallet,
+                        contentDescription = null,
+                        Modifier.size(36.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                },
+                text = {
+                    Text(
+                        "ADD EXPENSE",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
+                    )
+                },
+                onClick = onAddExpense,
+                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 4.dp  // Adjust the shadow elevation here
+                )
             )
         },
         floatingActionButtonPosition = FabPosition.Center
@@ -85,9 +104,11 @@ fun GroupInfoCard(group: Group) {
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp)
+
+    shape = RoundedCornerShape(20.dp),
     ) {
-        Row(Modifier.padding(10.dp), verticalAlignment = Alignment.Top) {
+        Row(Modifier.fillMaxWidth()
+            .background(MaterialTheme.colorScheme.onPrimaryContainer).padding(10.dp), verticalAlignment = Alignment.Top) {
             Box(
                 modifier = Modifier
                     .size(90.dp)
@@ -98,9 +119,10 @@ fun GroupInfoCard(group: Group) {
             }
             Spacer(Modifier.width(16.dp))
             Column {
-                Text(group.name, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                Text("${group.members} members")
-                Text("Total expense: ${group.totalExpense}")
+                Text(group.name, style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                Text("${group.members} members", color = MaterialTheme.colorScheme.onPrimary)
+                Text("Total expense: ${group.totalExpense}", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
@@ -109,9 +131,12 @@ fun GroupInfoCard(group: Group) {
 @Composable
 fun ExpensesHeader() {
     Row(Modifier.padding(horizontal = 20.dp, vertical = 8.dp).padding(top = 18.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Default.Receipt, contentDescription = "Expenses", Modifier.size(36.dp))
+        Icon(Icons.Default.Receipt, contentDescription = "Expenses", Modifier.size(36.dp)
+        , tint = MaterialTheme.colorScheme.onPrimaryContainer)
         Spacer(Modifier.width(8.dp))
-        Text("Expenses", fontWeight = FontWeight.Medium, style = MaterialTheme.typography.headlineMedium)
+        Text("Expenses", fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer)
     }
 }
 
@@ -134,6 +159,7 @@ fun ExpenseItem(expense: Expense) {
     ) {
         Row(
             Modifier
+                .background(MaterialTheme.colorScheme.primary)
                 .padding(10.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -149,8 +175,10 @@ fun ExpenseItem(expense: Expense) {
             }
             Spacer(Modifier.width(16.dp))
             Column {
-                Text(expense.title, fontWeight = FontWeight.Bold)
-                Text("Total: ${expense.total}")
+                Text(expense.title, fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary)
+                Text("Total: ${expense.total}",
+                    color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
         }
     }

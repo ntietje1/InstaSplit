@@ -16,8 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -106,9 +109,11 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(), group: Group) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Group, contentDescription = null, modifier = Modifier
                             .padding(top = 24.dp)
-                            .size(48.dp))
+                            .size(48.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
                         Spacer(Modifier.width(8.dp))
-                        Text("Edit ${group.name}", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold,
+                        Text("Edit ${group.name}", style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier
                                 .padding(start = 10.dp)
                                 .padding(top = 24.dp) )
@@ -119,16 +124,33 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(), group: Group) {
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                icon = { Icon(Icons.Filled.Done, contentDescription = null,
-                    Modifier.size(36.dp)) },
-                text = { Text("APPLY CHANGES",
-                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)) },
+                icon = {
+                    Icon(
+                        Icons.Filled.Done,
+                        contentDescription = null,
+                        Modifier.size(36.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                },
+                text = {
+                    Text(
+                        "APPLY CHANGES",
+                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                },
                 onClick = {
-                /* TODO: Handle apply changes  (in viewmodel)*/ })
+                    // TODO: Handle apply changes (in viewmodel)
+                },
+                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp) // Apply elevation here
+            )
         },
         floatingActionButtonPosition = FabPosition.Center
+
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
+            Spacer(modifier = Modifier.height(10.dp))
             MemberHeader(members.size)
             MemberList(members, viewModel::removeMember)
             Spacer(modifier = Modifier.height(20.dp))
@@ -141,6 +163,7 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(), group: Group) {
 @Composable
 fun MemberHeader(memberCount: Int) {
     Text(
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
         text = "Group Members ($memberCount)",
         style = MaterialTheme.typography.headlineSmall,
         modifier = Modifier
@@ -175,6 +198,7 @@ fun MemberItem(member: GroupMember, onRemoveMember: (GroupMember) -> Unit) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary)
                     .padding(10.dp)
                     .fillMaxWidth()
             ) {
@@ -191,11 +215,13 @@ fun MemberItem(member: GroupMember, onRemoveMember: (GroupMember) -> Unit) {
                     Text(
                         text = member.name,
                         style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
                         text = member.email,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
                 Column(
@@ -203,24 +229,25 @@ fun MemberItem(member: GroupMember, onRemoveMember: (GroupMember) -> Unit) {
                     horizontalAlignment = Alignment.End
                 ) {
                     val statusText = member.status
-                    val statusColor = if (member.status == "owes") MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.primary
+//                    val statusColor = if (member.status == "owes") MaterialTheme.colorScheme.error
+//                    else MaterialTheme.colorScheme.onPrimaryContainer
 
                     Text(
                         text = statusText,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = statusColor
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
                         text = member.balance,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = statusColor
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
         }
         IconButton(onClick = { onRemoveMember(member) }) { //TODO: implement action
-            Icon(Icons.Default.RemoveCircle, contentDescription = "Remove")
+            Icon(Icons.Default.RemoveCircle, contentDescription = "Remove",
+                tint = MaterialTheme.colorScheme.error)
         }
     }
 }
@@ -237,7 +264,8 @@ fun AddNewMemberSection(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        Column(modifier = Modifier.padding(30.dp),
+        Column(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceTint)
+            .padding(30.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
             LoginField(
                 fieldValue = emailState,
@@ -246,17 +274,28 @@ fun AddNewMemberSection(
                 imageVector = Icons.Default.Email,
                 secure = false,
             )
-            Button(
-                onClick = onAddMember,
+
+            Surface(
                 modifier = Modifier
                     .padding(top = 8.dp)
-                    .fillMaxWidth(0.6f), // 80% of the width
-                contentPadding = PaddingValues(vertical = 15.dp) // Increase the vertical padding here
-
+                    .fillMaxWidth(0.6f), // Adjust the width as needed
+                shape = MaterialTheme.shapes.extraLarge, // Use the same shape as your Surface
+                color = MaterialTheme.colorScheme.primary, // Use the primary color for consistency
+                shadowElevation = 4.dp,
             ) {
-                Text("ADD A NEW MEMBER",
-                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp))
+                Button(
+                    onClick = onAddMember,
+                    contentPadding = PaddingValues(vertical = 15.dp), // Customize the padding
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "ADD A NEW MEMBER",
+                        color = MaterialTheme.colorScheme.onPrimary, // Ensure text color is onPrimary for contrast
+                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
+                    )
+                }
             }
+
         }
     }
 }
