@@ -30,7 +30,8 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupSingleScreen(group: Group, expenses: List<Expense>, onAddExpense: () -> Unit
+fun GroupSingleScreen(group: Group, expenses: List<Expense>,
+                      onAddExpense: () -> Unit, onEditGroup: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -43,7 +44,7 @@ fun GroupSingleScreen(group: Group, expenses: List<Expense>, onAddExpense: () ->
                             modifier = Modifier.padding(start = 10.dp).padding(top = 24.dp) )
                         Spacer(Modifier.weight(1f))
                         IconButton(
-                            onClick = {/* TODO: Handle edit group */ },
+                            onClick = {onEditGroup()},
                             modifier = Modifier.padding(20.dp).padding(top = 20.dp).size(48.dp) // // right + top padding for the action icon
 
                         ) {
@@ -168,7 +169,8 @@ fun PreviewGroupDetailScreen() {
                 Expense("March Cleaning Supplies", "$100"),
                 Expense("March 10 Week Grocery", "$100")
             ),
-            onAddExpense = {}
+            onAddExpense = {},
+            onEditGroup = {}
         )
     }
 }
