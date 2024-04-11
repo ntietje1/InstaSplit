@@ -1,6 +1,5 @@
 package com.hypeapps.instasplit.core.model.textrecognition
 
-import VisionProcessorBase
 import android.graphics.Bitmap
 import android.util.Log
 import com.google.android.gms.tasks.Task
@@ -9,6 +8,8 @@ import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.TextRecognizerOptionsInterface
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class TextRecognitionProcessor(
@@ -33,11 +34,13 @@ class TextRecognitionProcessor(
         Log.w(TAG, "Text detection failed.$e")
     }
 
-    fun processBitmap(bitmap: Bitmap?): Task<Text> {
+    suspend fun processBitmap(bitmap: Bitmap?): Task<Text> {
         val image = InputImage.fromBitmap(bitmap!!, 0)
-        return detectInImage(image)
-            .addOnSuccessListener { results -> onSuccess(results) }
-            .addOnFailureListener { e -> onFailure(e) }
+        return withContext(Dispatchers.IO) {
+            detectInImage(image)
+                .addOnSuccessListener { results -> onSuccess(results) }
+                .addOnFailureListener { e -> onFailure(e) }
+        }
     }
 
     companion object {

@@ -10,14 +10,13 @@ import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.model.textrecognition.TextElementParser
 import com.hypeapps.instasplit.core.model.textrecognition.TextExtractor
 import com.hypeapps.instasplit.ui.OrientationController
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CameraViewModel(
-    private val textExtractor: TextExtractor,
-    private val textElementParser: TextElementParser,
-    private val orientationController: OrientationController
+    private val textExtractor: TextExtractor, private val textElementParser: TextElementParser, private val orientationController: OrientationController
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CameraState())
@@ -30,20 +29,29 @@ class CameraViewModel(
     fun lockOrientation() {
         orientationController.lockPortrait()
     }
+
     fun unlockOrientation() {
         orientationController.unlockOrientation()
     }
 
-    fun extractText(bitmap: Bitmap) {
-        viewModelScope.launch {
+    fun onImageCaptured(bitmap: Bitmap) {
+        extractText(bitmap)
+    }
+
+    private fun extractText(bitmap: Bitmap) {
+        viewModelScope.launch(Dispatchers.IO) {
+            updateIsProcessing(true)
             textExtractor.extractText(bitmap).apply {
+                addOnCompleteListener {
+                    updateIsProcessing(false)
+                }
                 addOnSuccessListener { text ->
                     val nameAndPrice = textElementParser.getTotal(text)
                     updateExtractedElements(nameAndPrice)
                 }
             }
-            updateCapturedPhotoState(bitmap)
         }
+        updateCapturedPhotoState(bitmap)
     }
 
     private fun updateCapturedPhotoState(updatedPhoto: Bitmap?) {
@@ -53,6 +61,10 @@ class CameraViewModel(
 
     private fun updateExtractedElements(elements: Pair<Text.Element, Text.Element>?) {
         _state.value = _state.value.copy(extractedElements = elements)
+    }
+
+    private fun updateIsProcessing(isProcessing: Boolean) {
+        _state.value = _state.value.copy(isProcessing = isProcessing)
     }
 
     override fun onCleared() {
@@ -67,9 +79,7 @@ class CameraViewModel(
 
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 return CameraViewModel(
-                    TextExtractor(),
-                    TextElementParser(),
-                    (application as App).appContainer.orientationController
+                    TextExtractor(), TextElementParser(), (application as App).appContainer.orientationController
                 ) as T
             }
         }
