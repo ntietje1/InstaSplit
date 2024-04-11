@@ -124,7 +124,7 @@ fun ExpenseEditScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.height(40.dp))
             Card(
                 modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = 16.dp)
