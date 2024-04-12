@@ -13,7 +13,7 @@ import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWithUsers
 @Dao
 interface ExpenseDao {
 
-    @Query("SELECT * FROM expense WHERE expenseId = :expenseId LIMIT 1")
+    @Query("SELECT * FROM expense WHERE expenseId = :expenseId")
     suspend fun getExpenseById(expenseId: Int): Expense
 
     @Query("SELECT * FROM expense WHERE groupId = :groupId")
@@ -29,6 +29,6 @@ interface ExpenseDao {
     suspend fun deleteExpenseById(expenseId: Int)
 
     @Transaction
-    @Query("SELECT * FROM expense WHERE expenseId = :expenseId LIMIT 1")
+    @Query("SELECT * FROM expense WHERE expenseId = :expenseId")
     suspend fun getExpenseWithUsers(expenseId: Int): ExpenseWithUsers
 }

@@ -1,7 +1,7 @@
 package com.hypeapps.instasplit.core.network.api
 
 import com.hypeapps.instasplit.core.model.entity.Group
-import com.hypeapps.instasplit.core.model.entity.bridge.GroupWithUsers
+import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -11,8 +11,14 @@ import retrofit2.http.Path
 
 interface GroupApi {
 
+    @GET("group")
+    suspend fun getGroups(): List<Group>
+
     @GET("group/{groupId}")
     suspend fun getGroupById(@Path("groupId") groupId: Int): Group
+
+    @GET("group/{groupId}/info")
+    suspend fun getGroupWithUsersAndExpenses(groupId: Int): GroupWrapper
 
     @POST("group")
     suspend fun addGroup(@Body group: Group)
@@ -22,7 +28,4 @@ interface GroupApi {
 
     @DELETE("group/{groupId}")
     suspend fun deleteGroupById(@Path("groupId") groupId: Int)
-
-    @GET("group/users/{groupId}")
-    suspend fun getGroupWithUsers(@Path("groupId") groupId: Int): GroupWithUsers
 }
