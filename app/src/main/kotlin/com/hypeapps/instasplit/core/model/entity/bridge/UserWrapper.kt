@@ -3,16 +3,24 @@ package com.hypeapps.instasplit.core.model.entity.bridge
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
+import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.Group
 import com.hypeapps.instasplit.core.model.entity.GroupMember
 import com.hypeapps.instasplit.core.model.entity.User
+import com.hypeapps.instasplit.core.model.entity.UserExpense
 
-data class UserWithGroups(
+data class UserWrapper(
     @Embedded val user: User,
     @Relation(
         parentColumn = "userId",
         entityColumn = "groupId",
         associateBy = Junction(GroupMember::class)
     )
-    val groups: List<Group>
+    val groups: List<Group>,
+    @Relation(
+        parentColumn = "userId",
+        entityColumn = "expenseId",
+        associateBy = Junction(UserExpense::class)
+    )
+    val expenses: List<Expense>
 )
