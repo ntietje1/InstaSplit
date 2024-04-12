@@ -26,7 +26,7 @@ class GroupSingleViewModel(private val repository: InstaSplitRepository): ViewMo
 
     fun updateGroupId(groupId: Int) {
         viewModelScope.launch {
-            val groupWithUsersAndExpenses = repository.getGroupWithUsersAndExpenses(groupId)
+            val groupWithUsersAndExpenses = repository.getGroupWrapper(groupId)
             updateState(groupWithUsersAndExpenses)
         }
     }

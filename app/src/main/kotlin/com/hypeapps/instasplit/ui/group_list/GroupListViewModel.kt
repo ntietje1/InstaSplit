@@ -19,7 +19,7 @@ class GroupListViewModel(private val repository: InstaSplitRepository) : ViewMod
     init {
         viewModelScope.launch {
             repository.populateDb()
-            val userWithGroupsAndExpenses = repository.getUserWithGroupsAndExpenses(userId = 1)
+            val userWithGroupsAndExpenses = repository.getUserWrapper(userId = 1)
             updateState(userWithGroupsAndExpenses)
         }
     }

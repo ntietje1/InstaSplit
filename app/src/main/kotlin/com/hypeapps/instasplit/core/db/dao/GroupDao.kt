@@ -17,7 +17,7 @@ interface GroupDao {
 
     @Transaction
     @Query("SELECT * FROM `Group` WHERE groupId = :groupId")
-    suspend fun getGroupWithUsersAndExpenses(groupId: Int): GroupWrapper
+    suspend fun getGroupWrapper(groupId: Int): GroupWrapper
 
     @Query("SELECT * FROM 'group' WHERE groupId = :groupId")
     suspend fun getGroupById(groupId: Int): Group
