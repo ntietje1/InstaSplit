@@ -1,8 +1,7 @@
 package com.hypeapps.instasplit.core.network.api
 
 import com.hypeapps.instasplit.core.model.entity.User
-import com.hypeapps.instasplit.core.model.entity.bridge.UserWithExpenses
-import com.hypeapps.instasplit.core.model.entity.bridge.UserWithGroups
+import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -24,9 +23,6 @@ interface UserApi {
     @DELETE("user/{userId}")
     suspend fun deleteUserById(@Path("userId") userId: Int)
 
-    @GET("user/groups/{userId}")
-    suspend fun getUserWithGroups(@Path("userId") userId: Int): UserWithGroups
-
-    @GET("user/expenses/{userId}")
-    suspend fun getUserWithExpenses(@Path("userId") userId: Int): UserWithExpenses
+    @GET("user/{userId}/info")
+    suspend fun getUserWithGroupsAndExpenses(@Path("userId") userId: Int): UserWrapper
 }
