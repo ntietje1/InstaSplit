@@ -36,13 +36,12 @@ class InstaSplitRepository(
         }
     }
 
-    suspend fun getGroupWithUsersAndExpenses(groupId: Int): GroupWrapper {
-        return groupDao.getGroupWithUsersAndExpenses(groupId)
+    suspend fun getGroupWrapper(groupId: Int): GroupWrapper {
+        return groupDao.getGroupWrapper(groupId)
     }
 
-    //
-    suspend fun getUserWithGroupsAndExpenses(userId: Int): UserWrapper {
-        return userDao.getUserWithGroupsAndExpenses(userId)
+    suspend fun getUserWrapper(userId: Int): UserWrapper {
+        return userDao.getUserWrapper(userId)
     }
 
     private val groups = listOf(

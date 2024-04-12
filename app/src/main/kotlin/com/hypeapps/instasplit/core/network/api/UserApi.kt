@@ -24,5 +24,5 @@ interface UserApi {
     suspend fun deleteUserById(@Path("userId") userId: Int)
 
     @GET("user/{userId}/info")
-    suspend fun getUserWithGroupsAndExpenses(@Path("userId") userId: Int): UserWrapper
+    suspend fun getUserWrapper(@Path("userId") userId: Int): UserWrapper
 }

@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.hypeapps.instasplit.core.model.entity.Expense
-import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWithUsers
+import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
 
 
 @Dao
@@ -30,5 +30,5 @@ interface ExpenseDao {
 
     @Transaction
     @Query("SELECT * FROM expense WHERE expenseId = :expenseId")
-    suspend fun getExpenseWithUsers(expenseId: Int): ExpenseWithUsers
+    suspend fun getExpenseWrapper(expenseId: Int): ExpenseWrapper
 }

@@ -1,7 +1,7 @@
 package com.hypeapps.instasplit.core.network.api
 
 import com.hypeapps.instasplit.core.model.entity.Expense
-import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWithUsers
+import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -26,5 +26,5 @@ interface ExpenseApi {
     suspend fun deleteExpenseById(@Path("expenseId") expenseId: Int)
 
     @GET("expense/users/{expenseId}")
-    suspend fun getExpenseWithUsers(@Path("expenseId") expenseId: Int): ExpenseWithUsers
+    suspend fun getExpenseWrapper(@Path("expenseId") expenseId: Int): ExpenseWrapper
 }

@@ -18,7 +18,7 @@ interface GroupApi {
     suspend fun getGroupById(@Path("groupId") groupId: Int): Group
 
     @GET("group/{groupId}/info")
-    suspend fun getGroupWithUsersAndExpenses(groupId: Int): GroupWrapper
+    suspend fun getGroupWrapper(groupId: Int): GroupWrapper
 
     @POST("group")
     suspend fun addGroup(@Body group: Group)
