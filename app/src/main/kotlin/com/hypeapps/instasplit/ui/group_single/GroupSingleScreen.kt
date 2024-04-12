@@ -1,39 +1,60 @@
 package com.hypeapps.instasplit.ui.group_single
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hypeapps.instasplit.core.model.entity.Expense
+import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupSingleScreen(group: Group, expenses: List<Expense>,
-                      onAddExpense: () -> Unit, onEditGroup: () -> Unit
+fun GroupSingleScreen(
+    viewModel: GroupSingleViewModel = viewModel(factory = GroupSingleViewModel.Factory),
+    groupId: Int,
+    onAddExpense: () -> Unit,
+    onEditGroup: () -> Unit
 ) {
+    val groupSingleState: GroupSingleState by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.updateGroupId(groupId)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -91,15 +112,15 @@ fun GroupSingleScreen(group: Group, expenses: List<Expense>,
         floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding).padding(top = 32.dp)) {// Increase this value to move everything down
-            GroupInfoCard(group = group)
+            GroupInfoCard(groupSingleState.groupWrapper)
             ExpensesHeader()
-            ExpensesList(expenses = expenses)
+            ExpensesList(groupSingleState.expenses)
         }
     }
 }
 
 @Composable
-fun GroupInfoCard(group: Group) {
+fun GroupInfoCard(groupWrapper: GroupWrapper) {
     Card(
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
@@ -119,10 +140,10 @@ fun GroupInfoCard(group: Group) {
             }
             Spacer(Modifier.width(16.dp))
             Column {
-                Text(group.name, style = MaterialTheme.typography.headlineMedium,
+                Text(groupWrapper.group.groupName, style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
-                Text("${group.members} members", color = MaterialTheme.colorScheme.onPrimary)
-                Text("Total expense: ${group.totalExpense}", color = MaterialTheme.colorScheme.onPrimary)
+                Text("${groupWrapper.users.size} members", color = MaterialTheme.colorScheme.onPrimary)
+                Text("Total expense: ${groupWrapper.expenses.sumOf { it.totalAmount }}", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
@@ -175,30 +196,27 @@ fun ExpenseItem(expense: Expense) {
             }
             Spacer(Modifier.width(16.dp))
             Column {
-                Text(expense.title, fontWeight = FontWeight.Bold,
+                Text(expense.description, fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary)
-                Text("Total: ${expense.total}",
+                Text("Total: ${expense.totalAmount}",
                     color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
         }
     }
 }
 
-data class Group(val name: String, val members: Int, val totalExpense: String)
-data class Expense(val title: String, val total: String)
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewGroupDetailScreen() {
-    MaterialTheme {
-        GroupSingleScreen(
-            group = Group("Apartment", 2, "$200"),
-            expenses = listOf(
-                Expense("March Cleaning Supplies", "$100"),
-                Expense("March 10 Week Grocery", "$100")
-            ),
-            onAddExpense = {},
-            onEditGroup = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewGroupDetailScreen() {
+//    MaterialTheme {
+//        GroupSingleScreen(
+//            group = Group("Apartment", 2, "$200"),
+//            expenses = listOf(
+//                Expense("March Cleaning Supplies", "$100"),
+//                Expense("March 10 Week Grocery", "$100")
+//            ),
+//            onAddExpense = {},
+//            onEditGroup = {}
+//        )
+//    }
+//}
