@@ -1,9 +1,19 @@
 package com.hypeapps.instasplit.ui.group_list
 
-//import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
@@ -20,26 +30,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-//import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hypeapps.instasplit.core.model.entity.Group
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupListScreen(
-    groups: List<Group>,
     onGroupClick: (Group) -> Unit,
     onAddExpense: () -> Unit,
-    viewModel: GroupListViewModel = viewModel()
+    viewModel: GroupListViewModel = viewModel(factory = GroupListViewModel.Factory)
 ) { //TODO: Add Navigation bar for the app later
+    val groupListState: GroupListState by viewModel.state.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -99,7 +111,7 @@ fun GroupListScreen(
 
         content = { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding).padding(top = 16.dp) ) {
-                groups.forEach { group ->
+                groupListState.groups.forEach { group ->
                     GroupCard(group = group, onClick = { onGroupClick(group) })
                 }
             }
@@ -142,9 +154,9 @@ fun GroupCard(group: Group, onClick: () -> Unit) {
                 verticalArrangement = Arrangement.Top, // Align column content to the top
                 modifier = Modifier.fillMaxHeight() // Take up all available height
             ) {
-                Text(text = group.name, style = MaterialTheme.typography.headlineMedium,
+                Text(text = group.groupName, style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
-                Text(text = group.status, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(text = group.groupId.toString(), color = MaterialTheme.colorScheme.onPrimaryContainer)
                 //TODO: add status for user such  as "Bob owes you $100"
             }
         }
@@ -155,20 +167,25 @@ fun GroupCard(group: Group, onClick: () -> Unit) {
 // TODO: Replace with our actual data model (+ logic to generate status)
 // package com.hypeapps.instasplit.core.model.entity.Group
 
-data class Group(val name: String, val status: String)
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewGroupListScreen() {
-    MaterialTheme {
-        GroupListScreen(
-            groups = listOf(
-                Group(name = "Apartment", status = "you owe $120.00"),
-                Group(name = "Co-op Group", status = "no expenses"),
-                Group(name = "Friends", status = "you are owed $200.00")
-            ),
-            onGroupClick = {},
-            onAddExpense = {}
-        )
-    }
-}
+//private data class Group(val name: String, val status: String)
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewGroupListScreen() {
+//    val exampleViewModel = GroupListViewModel().apply {
+//        updateGroups(
+//            listOf(
+//                Group(name = "Apartment", status = "you owe $120.00"),
+//                Group(name = "Co-op Group", status = "no expenses"),
+//                Group(name = "Friends", status = "you are owed $200.00")
+//            )
+//        )
+//    }
+//    MaterialTheme {
+//        GroupListScreen(
+//            viewModel = exampleViewModel,
+//            onGroupClick = {},
+//            onAddExpense = {}
+//        )
+//    }
+//}
