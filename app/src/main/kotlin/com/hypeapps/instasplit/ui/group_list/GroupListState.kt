@@ -7,7 +7,7 @@ import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 
 data class GroupListState(
     val userWrapper: UserWrapper = UserWrapper(
-        user = User(userId = 0, userName = "", email = "", password = ""),
+        user = User(userId = 0, userName = "", email = "", password = "", phoneNumber = ""),
         groups = emptyList(),
         expenses = emptyList(),
         ),
