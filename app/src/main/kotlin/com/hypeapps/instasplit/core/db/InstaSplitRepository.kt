@@ -8,8 +8,11 @@ import com.hypeapps.instasplit.core.model.entity.UserExpense
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 import com.hypeapps.instasplit.core.network.InstaSplitApi
+import com.hypeapps.instasplit.core.utils.LoginRequest
+import com.hypeapps.instasplit.core.utils.RegisterRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 
 class InstaSplitRepository(
     private val database: InstaSplitDatabase, private val api: InstaSplitApi
@@ -44,13 +47,41 @@ class InstaSplitRepository(
         return userDao.getUserWrapper(userId)
     }
 
+    suspend fun login(loginRequest: LoginRequest): Result<User> {
+        return try {
+//            val response = api.loginUser(loginRequest)
+            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Failed to login user"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun register(registerRequest: RegisterRequest): Result<User> {
+        return try {
+//            val response = api.registerUser(registerRequest)
+            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Failed to register user"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     private val groups = listOf(
         Group(groupId = 1, groupName = "Test Group 1"), Group(groupId = 2, groupName = "Test Group 2")
     )
     private val users = listOf(
-        User(userId = 1, userName = "User 1", email = "", password = ""),
-        User(userId = 2, userName = "User 2", email = "", password = ""),
-        User(userId = 3, userName = "User 3", email = "", password = "")
+        User(userId = 1, userName = "User 1", email = "", password = "", phoneNumber = ""),
+        User(userId = 2, userName = "User 2", email = "", password = "", phoneNumber = ""),
+        User(userId = 3, userName = "User 3", email = "", password = "", phoneNumber = "")
     )
     private val expenses = listOf(
         Expense(expenseId = 1, groupId = 1, totalAmount = 90.00), Expense(expenseId = 2, groupId = 2, totalAmount = 200.00), Expense(expenseId = 3, groupId = 2, totalAmount = 100.00)

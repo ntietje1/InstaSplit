@@ -18,3 +18,7 @@ class UserManager(context: Context) {
         sharedPreferences.edit().remove("userId").apply()
     }
 }
+
+data class LoginRequest(val email: String, val password: String)
+
+data class RegisterRequest(val email: String, val phoneNumber: String, val password: String, val username: String)
