@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         val appContainer = (application as App).appContainer
         appContainer.initOrientationController(this)
         appContainer.initDatabase(this.applicationContext)
+        appContainer.initUserManager(this.applicationContext)
 
         setContent {
             InstaSplitTheme {

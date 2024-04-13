@@ -6,13 +6,15 @@ import androidx.room.Room
 import com.hypeapps.instasplit.core.db.InstaSplitDatabase
 import com.hypeapps.instasplit.core.db.InstaSplitRepository
 import com.hypeapps.instasplit.core.network.RetrofitInstance
-import com.hypeapps.instasplit.ui.OrientationController
+import com.hypeapps.instasplit.core.utils.OrientationManager
+import com.hypeapps.instasplit.core.utils.UserManager
 
 class AppContainer {
-    lateinit var orientationController: OrientationController
+    lateinit var orientationManager: OrientationManager
     private val remoteDataSource = RetrofitInstance.instaSplitApi
     private lateinit var localDataSource: InstaSplitDatabase
     lateinit var repository: InstaSplitRepository
+    lateinit var userManager: UserManager
 
     fun initDatabase(context: Context) {
         localDataSource =
@@ -26,7 +28,11 @@ class AppContainer {
     }
 
     fun initOrientationController(activity: Activity) {
-        orientationController = OrientationController(activity)
+        orientationManager = OrientationManager(activity)
+    }
+
+    fun initUserManager(context: Context) {
+        userManager = UserManager(context)
     }
 
 }
