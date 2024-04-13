@@ -9,14 +9,14 @@ import com.google.mlkit.vision.text.Text
 import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.model.textrecognition.TextElementParser
 import com.hypeapps.instasplit.core.model.textrecognition.TextExtractor
-import com.hypeapps.instasplit.ui.OrientationController
+import com.hypeapps.instasplit.core.utils.OrientationManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CameraViewModel(
-    private val textExtractor: TextExtractor, private val textElementParser: TextElementParser, private val orientationController: OrientationController
+    private val textExtractor: TextExtractor, private val textElementParser: TextElementParser, private val orientationManager: OrientationManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CameraState())
@@ -27,11 +27,11 @@ class CameraViewModel(
     }
 
     fun lockOrientation() {
-        orientationController.lockPortrait()
+        orientationManager.lockPortrait()
     }
 
     fun unlockOrientation() {
-        orientationController.unlockOrientation()
+        orientationManager.unlockOrientation()
     }
 
     fun onImageCaptured(bitmap: Bitmap) {
@@ -79,7 +79,7 @@ class CameraViewModel(
 
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 return CameraViewModel(
-                    TextExtractor(), TextElementParser(), (application as App).appContainer.orientationController
+                    TextExtractor(), TextElementParser(), (application as App).appContainer.orientationManager
                 ) as T
             }
         }
