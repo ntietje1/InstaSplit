@@ -77,9 +77,9 @@ class CameraViewModel(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
 
-                val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+                val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as App
                 return CameraViewModel(
-                    TextExtractor(), TextElementParser(), (application as App).appContainer.orientationManager
+                    TextExtractor(), TextElementParser(), app.appContainer.orientationManager
                 ) as T
             }
         }
