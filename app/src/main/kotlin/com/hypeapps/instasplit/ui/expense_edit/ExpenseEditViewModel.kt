@@ -11,15 +11,28 @@ class ExpenseEditViewModel: ViewModel() {
     val state: StateFlow<ExpenseEditState> = _state.asStateFlow()
 
     fun updateGroupName(newGroupName: String) {
-        _state.value = _state.value.copy(groupName = TextFieldValue(newGroupName))
+        val newTextFieldValue = TextFieldValue(
+            text = newGroupName,
+            selection = androidx.compose.ui.text.TextRange(newGroupName.length)
+        )
+        _state.value = _state.value.copy(groupName = newTextFieldValue)
     }
 
     fun updateDescription(newDescription: String) {
-        _state.value = _state.value.copy(description = TextFieldValue(newDescription))
+        val newTextFieldValue = TextFieldValue(
+            text = newDescription,
+            selection = androidx.compose.ui.text.TextRange(newDescription.length)
+        )
+        _state.value = _state.value.copy(description = newTextFieldValue)
     }
 
     fun updateAmount(newAmount: String) {
-        _state.value = _state.value.copy(amount = TextFieldValue(newAmount))
+        val newTextFieldValue = TextFieldValue(
+            text = newAmount,
+            selection = androidx.compose.ui.text.TextRange(newAmount.length)
+        )
+        _state.value = _state.value.copy(amount = newTextFieldValue)
     }
 }
+
 
