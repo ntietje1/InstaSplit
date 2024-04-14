@@ -32,6 +32,7 @@ fun ExpenseEditScreen(
     onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onAddExpense: () -> Unit,
+    onScanReceipt: () -> Unit,
     viewModel: ExpenseEditViewModel = viewModel()
 ) {
     Surface(
@@ -167,7 +168,7 @@ fun ExpenseEditScreen(
                         shadowElevation = 4.dp
                     ) {
                         Button(
-                            onClick = { /* TODO: Open scanner */ },
+                            onClick = { onScanReceipt() },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(0.dp),
@@ -197,5 +198,5 @@ fun ExpenseEditScreen(
 @Preview(showBackground = true)
 @Composable
 fun ExpenseEditScreenPreview() {
-    ExpenseEditScreen(onBackClick = {}, onDeleteClick = {}, onAddExpense = {})
+    ExpenseEditScreen(onBackClick = {}, onDeleteClick = {}, onAddExpense = {}, onScanReceipt = {})
 }

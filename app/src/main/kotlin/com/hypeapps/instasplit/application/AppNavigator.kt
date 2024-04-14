@@ -147,7 +147,8 @@ fun AppNavigator() {
             ExpenseEditScreen(
                 onBackClick = { navController.popBackStack() }, // Move back 1 screen
                 onDeleteClick = { /* Handle delete */ },
-                onAddExpense = { /* Handle add expense */ }
+                onAddExpense = { /* Handle add expense */ },
+                { navController.navigate(Screen.Camera.route) }
             )
         } //khoi
          composable(Screen.Camera.route) { CameraMainScreen() }
