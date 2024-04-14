@@ -44,7 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginField(
+fun InputField(
     modifier: Modifier = Modifier,
     fieldValue: TextFieldValue,
     onTextChanged: (TextFieldValue) -> Unit,
@@ -111,7 +111,7 @@ fun LoginField(
 fun PreviewLoginField() {
     MaterialTheme {
         Column(modifier = Modifier.padding(16.dp)) {
-            LoginField(
+            InputField(
                 fieldValue = TextFieldValue(text = "example@example.com"),
                 onTextChanged = {},
                 placeholder = "Enter your email",
@@ -119,7 +119,7 @@ fun PreviewLoginField() {
                 keyboardType = KeyboardType.Email
             )
             Spacer(modifier = Modifier.height(16.dp))
-            LoginField(
+            InputField(
                 fieldValue = TextFieldValue(text = ""),
                 onTextChanged = {},
                 placeholder = "Enter your password",

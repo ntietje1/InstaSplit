@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hypeapps.instasplit.ui.login.LoginField //reuse composable
+import com.hypeapps.instasplit.ui.login.InputField //reuse composable
 
 
 @Composable
@@ -88,21 +88,21 @@ fun ExpenseEditScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             //Reusing LoginField as input fields in this screen
-            LoginField(
+            InputField(
                 fieldValue = state.groupName,
                 onTextChanged = { newValue -> viewModel.updateGroupName(newValue.text) },
                 placeholder = "Enter Group Name",
                 imageVector = Icons.Default.Group,
                 secure = false
             )
-            LoginField(
+            InputField(
                 fieldValue = state.description,
                 onTextChanged = { newValue -> viewModel.updateDescription(newValue.text) },
                 placeholder = "Enter Description",
                 imageVector = Icons.Default.Description,
                 secure = false
             )
-            LoginField(
+            InputField(
                 fieldValue = state.amount,
                 onTextChanged = { newValue -> viewModel.updateAmount(newValue.text) },
                 placeholder = "0.00",

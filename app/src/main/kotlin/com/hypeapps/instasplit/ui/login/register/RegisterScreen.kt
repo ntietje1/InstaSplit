@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.ui.login.LoginButton
-import com.hypeapps.instasplit.ui.login.LoginField
+import com.hypeapps.instasplit.ui.login.InputField
 import com.hypeapps.instasplit.ui.login.LoginTitle
 import kotlinx.coroutines.launch
 
@@ -83,27 +83,27 @@ fun RegisterScreen(onRegister: () -> Unit, goToLogin: () -> Unit, viewModel: Reg
             ) {
                 LoginTitle("Sign Up")
                 Spacer(modifier = Modifier.height(24.dp))
-                LoginField(
+                InputField(
                     fieldValue = registerState.name,
                     onTextChanged = { viewModel.updateName(it) },
                     placeholder = "Full Name",
                     imageVector = Icons.Default.Person
                 )
-                LoginField(
+                InputField(
                     fieldValue = registerState.email,
                     onTextChanged = { viewModel.updateEmail(it) },
                     placeholder = "Email",
                     imageVector = Icons.Default.Email,
                     keyboardType = KeyboardType.Email
                 )
-                LoginField(
+                InputField(
                     fieldValue = registerState.password,
                     onTextChanged = { viewModel.updatePassword(it) },
                     placeholder = "Password",
                     imageVector = Icons.Default.Lock,
                     secure = true
                 )
-                LoginField(
+                InputField(
                     fieldValue = registerState.phoneNumber,
                     onTextChanged = { viewModel.updatePhoneNumber(it) },
                     placeholder = "Phone Number",
