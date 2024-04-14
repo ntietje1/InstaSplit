@@ -273,6 +273,7 @@
 //                placeholder = "Email",
 //                imageVector = Icons.Default.Email,
 //                secure = false,
+//                keyboardType = KeyboardType.Email
 //            )
 //
 //            Surface(

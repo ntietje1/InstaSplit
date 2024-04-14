@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -27,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,8 +75,9 @@ fun RegisterScreen(onRegister: () -> Unit, goToLogin: () -> Unit, viewModel: Reg
             color = MaterialTheme.colorScheme.background,
             modifier = Modifier.fillMaxSize().padding(paddingValues)
         ) {
+            val maxWidth = 300.dp
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().widthIn(max = maxWidth),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -90,7 +93,8 @@ fun RegisterScreen(onRegister: () -> Unit, goToLogin: () -> Unit, viewModel: Reg
                     fieldValue = registerState.email,
                     onTextChanged = { viewModel.updateEmail(it) },
                     placeholder = "Email",
-                    imageVector = Icons.Default.Email
+                    imageVector = Icons.Default.Email,
+                    keyboardType = KeyboardType.Email
                 )
                 LoginField(
                     fieldValue = registerState.password,
@@ -103,7 +107,8 @@ fun RegisterScreen(onRegister: () -> Unit, goToLogin: () -> Unit, viewModel: Reg
                     fieldValue = registerState.phoneNumber,
                     onTextChanged = { viewModel.updatePhoneNumber(it) },
                     placeholder = "Phone Number",
-                    imageVector = Icons.Default.Phone
+                    imageVector = Icons.Default.Phone,
+                    keyboardType = KeyboardType.Number // This will now properly show the numeric keypad
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 LoginButton("SIGN UP") {
