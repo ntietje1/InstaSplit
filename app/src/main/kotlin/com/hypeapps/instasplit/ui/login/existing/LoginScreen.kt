@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,7 +82,7 @@ fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, viewModel: LoginV
                 LoginTitle("Login")
                 Spacer(modifier = Modifier.height(24.dp))
                 LoginField(
-                    fieldValue = loginState.email, onTextChanged = { viewModel.updateEmail(it) }, placeholder = "Email", imageVector = Icons.Default.Email
+                    fieldValue = loginState.email, onTextChanged = { viewModel.updateEmail(it) }, placeholder = "Email", imageVector = Icons.Default.Email,  keyboardType = KeyboardType.Email
                 )
                 LoginField(
                     fieldValue = loginState.password, onTextChanged = { viewModel.updatePassword(it) }, placeholder = "Password", imageVector = Icons.Default.Lock, secure = true
