@@ -69,7 +69,7 @@ private fun ExampleLoginTitle() {
 @Preview
 @Composable
 private fun ExampleLoginField() {
-    LoginField(fieldValue = TextFieldValue(""), onTextChanged = {}, placeholder = "Email", imageVector  = Icons.Default.Email)
+    InputField(fieldValue = TextFieldValue(""), onTextChanged = {}, placeholder = "Email", imageVector  = Icons.Default.Email)
 }
 
 @Preview
