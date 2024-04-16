@@ -27,13 +27,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.ui.login.LoginButton
-import com.hypeapps.instasplit.ui.login.LoginField
+import com.hypeapps.instasplit.ui.login.InputField
 import com.hypeapps.instasplit.ui.login.LoginTitle
 import com.hypeapps.instasplit.ui.login.RememberMeToggle
 import kotlinx.coroutines.launch
@@ -80,10 +81,10 @@ fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, viewModel: LoginV
             ) {
                 LoginTitle("Login")
                 Spacer(modifier = Modifier.height(24.dp))
-                LoginField(
-                    fieldValue = loginState.email, onTextChanged = { viewModel.updateEmail(it) }, placeholder = "Email", imageVector = Icons.Default.Email
+                InputField(
+                    fieldValue = loginState.email, onTextChanged = { viewModel.updateEmail(it) }, placeholder = "Email", imageVector = Icons.Default.Email,  keyboardType = KeyboardType.Email
                 )
-                LoginField(
+                InputField(
                     fieldValue = loginState.password, onTextChanged = { viewModel.updatePassword(it) }, placeholder = "Password", imageVector = Icons.Default.Lock, secure = true
                 )
                 Spacer(modifier = Modifier.height(2.dp))

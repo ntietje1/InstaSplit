@@ -19,11 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hypeapps.instasplit.ui.login.LoginField //reuse composable
+import com.hypeapps.instasplit.ui.login.InputField //reuse composable
 
 
 @Composable
@@ -31,6 +32,7 @@ fun ExpenseEditScreen(
     onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onAddExpense: () -> Unit,
+    onScanReceipt: () -> Unit,
     viewModel: ExpenseEditViewModel = viewModel()
 ) {
     Surface(
@@ -87,26 +89,26 @@ fun ExpenseEditScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             //Reusing LoginField as input fields in this screen
-            LoginField(
+            InputField(
                 fieldValue = state.groupName,
                 onTextChanged = { newValue -> viewModel.updateGroupName(newValue.text) },
                 placeholder = "Enter Group Name",
                 imageVector = Icons.Default.Group,
                 secure = false
             )
-            LoginField(
+            InputField(
                 fieldValue = state.description,
                 onTextChanged = { newValue -> viewModel.updateDescription(newValue.text) },
                 placeholder = "Enter Description",
                 imageVector = Icons.Default.Description,
                 secure = false
             )
-            LoginField(
+            InputField(
                 fieldValue = state.amount,
                 onTextChanged = { newValue -> viewModel.updateAmount(newValue.text) },
                 placeholder = "0.00",
                 imageVector = Icons.Default.AttachMoney,
-                secure = false
+                keyboardType =  KeyboardType.Number  // This will now properly show the numeric keypad
             )
             Spacer(modifier = Modifier.height(24.dp))
             Surface(
@@ -166,7 +168,7 @@ fun ExpenseEditScreen(
                         shadowElevation = 4.dp
                     ) {
                         Button(
-                            onClick = { /* TODO: Open scanner */ },
+                            onClick = { onScanReceipt() },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(0.dp),
@@ -196,5 +198,5 @@ fun ExpenseEditScreen(
 @Preview(showBackground = true)
 @Composable
 fun ExpenseEditScreenPreview() {
-    ExpenseEditScreen(onBackClick = {}, onDeleteClick = {}, onAddExpense = {})
+    ExpenseEditScreen(onBackClick = {}, onDeleteClick = {}, onAddExpense = {}, onScanReceipt = {})
 }
