@@ -37,7 +37,7 @@ private fun NoPermissionContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Please grant the permission to use the camera to use the core functionality of this app.")
+        Text(text = "Please grant the permission to use the camera to use the receipt scanning functionality.")
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRequestPermission) {
             Icon(imageVector = Icons.Default.Camera, contentDescription = "Camera")
