@@ -8,7 +8,7 @@ import kotlin.math.min
 class TextElementParser {
 
     companion object {
-        val TOTAL_STRINGS = listOf("TOTAL", "BALANCE", "VISA")
+        val TOTAL_STRINGS = listOf("TOTAL", "BALANCE", "VISA", "GRAND TOTAL", "AMOUNT", "TOTAL AMOUNT", "TOTAL DUE", "MASTERCARD")
     }
 
     /**
@@ -48,10 +48,10 @@ class TextElementParser {
      * Process and filter out duplicate or irrelevant pairs
      */
     private fun generateFilteredPairs(results: Text): List<Pair<Text.Element, Text.Element>> {
-        return generatePairs(results).filter {pair ->
+        return generatePairs(results).filter { pair ->
             val (first, second) = pair
             val name = if (first.text.endsWith(":")) first.text.dropLast(1) else first.text
-            val price = second.text.replace(",", "").toFloatOrNull()
+            val price = second.text.replace(",", "").replace("$", "").toFloatOrNull()
             name in TOTAL_STRINGS && price != null
         }
     }
