@@ -1,5 +1,6 @@
 package com.hypeapps.instasplit.ui.group_list
 
+import android.widget.ImageView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +40,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.hypeapps.instasplit.R
 import com.hypeapps.instasplit.core.model.entity.Group
 
 
@@ -123,41 +128,46 @@ fun GroupListScreen(
 fun GroupCard(group: Group, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .padding(horizontal = 20.dp, vertical = 15.dp) // Custom padding for each card
+            .padding(horizontal = 20.dp, vertical = 15.dp)
             .fillMaxWidth()
-            .height(150.dp) // Increased height
+            .height(150.dp)
             .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.primary) // Set the background color here
+                .background(MaterialTheme.colorScheme.primary)
                 .padding(16.dp)
-                .fillMaxSize(), // Changed to fill the increased height
-            verticalAlignment = Alignment.Top // Align the row content to the top
+                .fillMaxSize(),
+            verticalAlignment = Alignment.Top
         ) {
-            Box(
+            // Use AndroidView to integrate Glide
+            AndroidView(
+                factory = { context ->
+                    ImageView(context).apply {
+                        scaleType = ImageView.ScaleType.CENTER_CROP
+                        adjustViewBounds = true                    }
+                },
                 modifier = Modifier
-                    .size(120.dp) // Square shape with increased size
-                    .clip(RoundedCornerShape(12.dp)) // Rounded corners for the square
-                    .background(Color.LightGray) // Placeholder for the group image
-            ) {
-            // TODO: Load actual image here
-            // This is a placeholder, replace it with an actual Image composable
-//                Image(
-//                    painter = painterResource(id = R.drawable.ic_launcher_background),
-//                    contentDescription = "Group Image",
-//                    modifier = Modifier.matchParentSize()
-//                )
-            }
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(12.dp)), // Apply clipping for rounded corners
+                update = { imageView ->
+                    Glide.with(imageView.context)
+                        .load("https://thumb.ac-illust.com/23/23ae0414df316a166952315cbf00cdd9_t.jpeg")
+                        .override(240, 240) // Resize
+                        .placeholder(R.drawable.loading)  // Display a loading image while the image loads
+                        .into(imageView)
+                }
+            )
+
             Spacer(modifier = Modifier.width(16.dp))
+
             Column(
-                verticalArrangement = Arrangement.Top, // Align column content to the top
-                modifier = Modifier.fillMaxHeight() // Take up all available height
+                verticalArrangement = Arrangement.Top,
+                modifier = Modifier.fillMaxHeight()
             ) {
                 Text(text = group.groupName, style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
                 Text(text = group.groupId.toString(), color = MaterialTheme.colorScheme.onPrimaryContainer)
-                //TODO: add status for user such  as "Bob owes you $100"
             }
         }
     }
