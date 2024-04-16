@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.hypeapps.instasplit.ui.camera.CameraMainScreen
 import com.hypeapps.instasplit.ui.expense_edit.ExpenseEditScreen
+import com.hypeapps.instasplit.ui.group_edit.GroupEditScreen
 import com.hypeapps.instasplit.ui.group_list.GroupListScreen
 import com.hypeapps.instasplit.ui.group_single.GroupSingleScreen
 import com.hypeapps.instasplit.ui.login.existing.LoginScreen
@@ -54,7 +55,7 @@ fun AppNavigator() {
             GroupSingleScreen(
                 groupId = groupId,
                 onAddExpense = { navController.navigate(Screen.ExpenseEdit.route) },
-                onEditGroup = { /* TODO: Implement edit group action */ }
+                onEditGroup = { navController.navigate("${Screen.GroupEdit.route}/$groupId") }
             )
         }
         composable(
@@ -62,6 +63,7 @@ fun AppNavigator() {
             arguments = listOf(navArgument("groupId") { type = NavType.StringType })
         ) { backStackEntry ->
             val groupId = backStackEntry.arguments?.getString("groupId")?.toIntOrNull() ?: 0
+            GroupEditScreen(groupId = groupId)
         }
 //        composable(Screen.GroupList.route) {
 //            // Sample placeholder groups for demonstration
