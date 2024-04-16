@@ -10,10 +10,14 @@ import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 import com.hypeapps.instasplit.core.network.InstaSplitApi
 import com.hypeapps.instasplit.core.utils.LoginRequest
 import com.hypeapps.instasplit.core.utils.RegisterRequest
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
+@OptIn(DelicateCoroutinesApi::class)
 class InstaSplitRepository(
     private val database: InstaSplitDatabase, private val api: InstaSplitApi
 ) {
@@ -28,7 +32,13 @@ class InstaSplitRepository(
     // on updating/deleting data, call (fake) API to update data, then also make change to database
     // UI observes livedata from database
 
-    suspend fun populateDb() {
+    init {
+        GlobalScope.launch { // TODO: remove this once API can get data
+            populateDb()
+        }
+    }
+
+    private suspend fun populateDb() {
         withContext(Dispatchers.IO) {
             database.clearAllTables()
             groups.forEach { groupDao.addGroup(it) }
@@ -44,7 +54,7 @@ class InstaSplitRepository(
     }
 
     suspend fun getUserWrapper(userId: Int): UserWrapper {
-        return userDao.getUserWrapper(userId)
+        return userDao.getUserWrapper(userId) ?: throw Exception("User not found")
     }
 
     suspend fun login(loginRequest: LoginRequest): Result<User> {
@@ -73,6 +83,25 @@ class InstaSplitRepository(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    suspend fun removeUserFromGroup(userId: Int, groupId: Int) {
+        groupMemberDao.delete(GroupMember(groupId = groupId, userId = userId))
+    }
+
+    suspend fun getOrAddUserByEmail(email: String): User {
+        // if no user with given email already exists, add a new user
+        var user = userDao.getUserByEmail(email)
+        if (user == null) {
+            val newUser = User(userName = email, email = email, phoneNumber = "", password = "")
+            userDao.addUser(newUser)
+            user = userDao.getUserByEmail(email)
+        }
+        return user ?: throw Exception("Error creating new user")
+    }
+
+    suspend fun addUserToGroup(userId: Int, groupId: Int) {
+        groupMemberDao.insert(GroupMember(groupId = groupId, userId = userId, isAdmin = false))
     }
 
     private val groups = listOf(
