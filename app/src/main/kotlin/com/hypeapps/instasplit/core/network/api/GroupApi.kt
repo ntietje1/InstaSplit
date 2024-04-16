@@ -15,7 +15,7 @@ interface GroupApi {
     @GET("api/groups")
     suspend fun getGroups(): List<Group>
 
-    // Fetch a specific group by name (not by ID, as your Flask uses group names as keys)
+    // Fetch a specific group by name (not by ID, as our Flask uses group names as keys)
     @GET("api/groups/{groupName}")
     suspend fun getGroupByName(@Path("groupName") groupName: String): Group
 
