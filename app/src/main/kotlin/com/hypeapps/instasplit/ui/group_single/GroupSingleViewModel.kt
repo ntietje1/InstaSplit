@@ -16,10 +16,6 @@ class GroupSingleViewModel(private val repository: InstaSplitRepository): ViewMo
     private val _state = MutableStateFlow(GroupSingleState())
     val state: StateFlow<GroupSingleState> = _state.asStateFlow()
 
-    init {
-        updateGroupId(1)
-    }
-
     fun updateState(groupWrapper: GroupWrapper) {
         _state.value = GroupSingleState(groupWrapper)
     }
