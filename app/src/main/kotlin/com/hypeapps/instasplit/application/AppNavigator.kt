@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.gson.Gson
 import com.hypeapps.instasplit.ui.camera.CameraMainScreen
 import com.hypeapps.instasplit.ui.expense_edit.ExpenseEditScreen
 import com.hypeapps.instasplit.ui.group_edit.GroupEditScreen
@@ -16,13 +17,8 @@ import com.hypeapps.instasplit.ui.login.register.RegisterScreen
 import com.hypeapps.instasplit.ui.splash.SplashScreen
 
 private enum class Screen(val route: String) {
-    Splash("splash"),
-    LoginExisting("login_existing"),
-    LoginRegister("login_register"),
-    GroupList("group_list"),
-    GroupEdit("group_edit"), // also handles group creation
-    GroupSingle("group_single"),
-    ExpenseEdit("expense_edit"), // also handles expense creation
+    Splash("splash"), LoginExisting("login_existing"), LoginRegister("login_register"), GroupList("group_list"), GroupEdit("group_edit"), // also handles group creation
+    GroupSingle("group_single"), ExpenseEdit("expense_edit"), // also handles expense creation
     Camera("camera"),
 }
 
@@ -31,130 +27,62 @@ fun AppNavigator() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
         composable(Screen.Splash.route) { SplashScreen { navController.navigate(Screen.LoginExisting.route) } }
-        composable(Screen.LoginExisting.route) { LoginScreen(
-            onLogin = { navController.navigate(Screen.GroupList.route) },
-            goToRegister  = { navController.navigate(Screen.LoginRegister.route) }
-        )}
-        composable(Screen.LoginRegister.route) { RegisterScreen(
-            onRegister = { navController.navigate(Screen.GroupList.route) },
-            goToLogin = { navController.navigate(Screen.LoginExisting.route) }
-        )}
+        composable(Screen.LoginExisting.route) {
+            LoginScreen(onLogin = { navController.navigate(Screen.GroupList.route) }, goToRegister = { navController.navigate(Screen.LoginRegister.route) })
+        }
+        composable(Screen.LoginRegister.route) {
+            RegisterScreen(onRegister = { navController.navigate(Screen.GroupList.route) }, goToLogin = { navController.navigate(Screen.LoginExisting.route) })
+        }
         composable(Screen.GroupList.route) {
-            GroupListScreen(
-                onGroupClick = { group ->
-                    navController.navigate("${Screen.GroupSingle.route}/${group.groupId}")
-                },
-                onAddExpense = { navController.navigate(Screen.ExpenseEdit.route) }
-            )
+            GroupListScreen(onGroupClick = { group ->
+                navController.navigate("${Screen.GroupSingle.route}/${group.groupId}")
+            }, onAddExpense = {
+                val args = ExpenseEditArgs()
+                navController.navigate("${Screen.ExpenseEdit.route}/${Gson().toJson(args)}")
+            })
         }
         composable(
-            route = Screen.GroupSingle.route + "/{groupId}",
-            arguments = listOf(navArgument("groupId") { type = NavType.StringType })
+            route = Screen.GroupSingle.route + "/{groupId}", arguments = listOf(navArgument("groupId") { type = NavType.StringType })
         ) { backStackEntry ->
             val groupId = backStackEntry.arguments?.getString("groupId")?.toIntOrNull() ?: 0
-            GroupSingleScreen(
-                groupId = groupId,
-                onAddExpense = { navController.navigate(Screen.ExpenseEdit.route) },
-                onEditGroup = { navController.navigate("${Screen.GroupEdit.route}/$groupId") }
-            )
+            GroupSingleScreen(groupId = groupId, onAddExpense = { group ->
+                val args = ExpenseEditArgs(initialGroupId = group.groupId.toString(), groupLocked = true)
+                navController.navigate("${Screen.ExpenseEdit.route}/${Gson().toJson(args)}")
+            }, onEditGroup = { navController.navigate("${Screen.GroupEdit.route}/$groupId") })
         }
         composable(
-            route = Screen.GroupEdit.route + "/{groupId}",
-            arguments = listOf(navArgument("groupId") { type = NavType.StringType })
+            route = Screen.GroupEdit.route + "/{groupId}", arguments = listOf(navArgument("groupId") { type = NavType.StringType })
         ) { backStackEntry ->
             val groupId = backStackEntry.arguments?.getString("groupId")?.toIntOrNull() ?: 0
             GroupEditScreen(groupId = groupId) {
                 navController.popBackStack()
             }
         }
-//        composable(Screen.GroupList.route) {
-//            // Sample placeholder groups for demonstration
-//            val sampleGroups = listOf(
-//                Group(name = "Apartment", status = "you owe $120.00"),
-//                Group(name = "Co-op Group", status = "no expenses"),
-//                Group(name = "Friends", status = "you are owed $200.00")
-//            )
-//            // Placeholder functions for group click and add expense actions
-//            val onGroupClick: (Group) -> Unit = { group ->
-//            // When a group is clicked, navigate to GroupSingleScreen
-//            // with mock data for that specific group.
-//            navController.navigate("${Screen.GroupSingle.route}/${group.name}") }
-////            val onAddExpense: () -> Unit = { /* TODO: Implement add expense action */ }
-//            GroupListScreen(groups = sampleGroups,
-//                onGroupClick = onGroupClick,
-//                onAddExpense = { navController.navigate(Screen.ExpenseEdit.route) })
-//        } //yen
-//        composable(Screen.GroupEdit.route) {
-//
-//        } //khoi
-//        composable("${Screen.GroupSingle.route}/{groupName}") {
-//            //TODO: figure out how to navigate from GroupList to GroupSingle, and
-//            // from GroupSingle to ExpenseEdit -> NEED TO FINALIZE THE MODEL DATA (USING MOCK DATA CLASSES NOW)
-//            // Here we're just using a mock group and list of expenses for the preview
-//            val mockGroup =
-//                com.hypeapps.instasplit.ui.group_single.Group("Apartment", 2, "$200")
-//            val mockExpenses = listOf(
-//                Expense("March Cleaning Supplies", "$100"),
-//                Expense("March 10 Week Grocery", "$100"),
-//            )
-//            GroupSingleScreen(
-//                group = mockGroup,
-//                expenses = mockExpenses,
-//                onAddExpense = { navController.navigate(Screen.ExpenseEdit.route)},
-//                onEditGroup = {navController.navigate("${Screen.GroupEdit.route}/${mockGroup.name}")} // GROUP NAME
-//            )
-//        } //yen
-
-//        // This route is for navigating to the GroupEditScreen with a groupName parameter
-//        composable(
-//            route = Screen.GroupEdit.route,
-//            arguments = listOf(navArgument("groupName") { type = NavType.StringType })
-//        ) { backStackEntry ->
-//            // Here, we fetch the groupName from the backStackEntry
-//            val groupName = backStackEntry.arguments?.getString("groupName") ?: ""
-//            // using a mock group here for previewing
-//            val mockGroup = com.hypeapps.instasplit.ui.group_single.Group(
-//                name = groupName,
-//                members = 2,
-//                totalExpense = "$200"
-//            )
-//
-//            GroupEditScreen(group = mockGroup)
-//        }
-//
-//        composable("${Screen.GroupSingle.route}/{groupName}") { backStackEntry ->
-//            val groupName = backStackEntry.arguments?.getString("groupName") ?: ""
-//            val mockGroup = com.hypeapps.instasplit.ui.group_single.Group(name = groupName, members = 2, totalExpense = "$200")
-//            val mockExpenses = listOf(
-//                com.hypeapps.instasplit.core.model.entity.Expense("March Cleaning Supplies", "$100"),
-//                com.hypeapps.instasplit.core.model.entity.Expense("March 10 Week Grocery", "$100"),
-//            )
-//            GroupSingleScreen(
-//                group = mockGroup,
-//                expenses = mockExpenses,
-//                onAddExpense = { navController.navigate(Screen.ExpenseEdit.route) },
-//                onEditGroup = { navController.navigate("group_edit/$groupName") } // Correct navigation action
-//            )
-//        }
-//
-//        // Setup for GroupEditScreen
-//        composable(
-//            route = "group_edit/{groupName}", // Ensure this matches the pattern used in the navigation action
-//            arguments = listOf(navArgument("groupName") { type = NavType.StringType })
-//        ) { backStackEntry ->
-//            val groupName = backStackEntry.arguments?.getString("groupName") ?: ""
-//            val mockGroup = com.hypeapps.instasplit.ui.group_single.Group(name = groupName, members = 2, totalExpense = "$200")
-//            GroupEditScreen(group = mockGroup)
-//        }
-
-        composable(Screen.ExpenseEdit.route) {
-            ExpenseEditScreen(
-                onBackClick = { navController.popBackStack() }, // Move back 1 screen
-                onDeleteClick = { /* Handle delete */ },
-                onAddExpense = { /* Handle add expense */ },
-                { navController.navigate(Screen.Camera.route) }
-            )
-        } //khoi
-         composable(Screen.Camera.route) { CameraMainScreen() }
+        composable(
+            route = Screen.ExpenseEdit.route + "/{args}", arguments = listOf(navArgument("args") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val argsJson = backStackEntry.arguments?.getString("args") ?: ""
+            val args = Gson().fromJson(argsJson, ExpenseEditArgs::class.java)
+            ExpenseEditScreen(initialGroupId = args.initialGroupId, initialAmount = args.initialAmount, groupLocked = args.groupLocked, onDone = { navController.popBackStack() }, onScanReceipt = {
+                navController.navigate("${Screen.Camera.route}/${Gson().toJson(args)}")
+            })
+        }
+        composable(
+            route = Screen.Camera.route + "/{args}", arguments = listOf(navArgument("args") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val argsJson = backStackEntry.arguments?.getString("args") ?: ""
+            val args = Gson().fromJson(argsJson, ExpenseEditArgs::class.java)
+            CameraMainScreen(onResult = { result ->
+                args.copy(initialAmount = result.toString()).also {
+                    navController.popBackStack()
+                    navController.popBackStack()
+                    navController.navigate("${Screen.ExpenseEdit.route}/${Gson().toJson(it)}")
+                }
+            }, onBack = { navController.popBackStack() })
+        }
     }
 }
+
+private data class ExpenseEditArgs(
+    val initialGroupId: String? = null, val initialDesc: String? = null, val initialAmount: String? = null, val groupLocked: Boolean = false
+)

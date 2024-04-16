@@ -10,6 +10,16 @@ class ExpenseEditViewModel: ViewModel() {
     private val _state = MutableStateFlow(ExpenseEditState())
     val state: StateFlow<ExpenseEditState> = _state.asStateFlow()
 
+    fun deleteExpense() {
+        //TODO: delete expense from db
+        resetState()
+    }
+
+    fun addExpense() {
+        //TODO: add expense to db
+        resetState()
+    }
+
     fun updateGroupName(newGroupName: String) {
         val newTextFieldValue = TextFieldValue(
             text = newGroupName,
@@ -32,6 +42,14 @@ class ExpenseEditViewModel: ViewModel() {
             selection = androidx.compose.ui.text.TextRange(newAmount.length)
         )
         _state.value = _state.value.copy(amount = newTextFieldValue)
+    }
+
+    fun resetState() {
+        _state.value = ExpenseEditState()
+    }
+
+    fun lockGroup() {
+        _state.value = _state.value.copy(isGroupLocked = true)
     }
 }
 

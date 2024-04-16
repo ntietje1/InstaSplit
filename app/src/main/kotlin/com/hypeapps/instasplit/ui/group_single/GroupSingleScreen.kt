@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.Expense
+import com.hypeapps.instasplit.core.model.entity.Group
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +47,7 @@ import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 fun GroupSingleScreen(
     viewModel: GroupSingleViewModel = viewModel(factory = GroupSingleViewModel.Factory),
     groupId: Int,
-    onAddExpense: () -> Unit,
+    onAddExpense: (Group) -> Unit,
     onEditGroup: () -> Unit
 ) {
     val groupSingleState: GroupSingleState by viewModel.state.collectAsState()
@@ -102,7 +103,7 @@ fun GroupSingleScreen(
                         style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
                     )
                 },
-                onClick = onAddExpense,
+                onClick = { onAddExpense(groupSingleState.groupWrapper.group) },
                 containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 elevation = FloatingActionButtonDefaults.elevation(
                     defaultElevation = 4.dp  // Adjust the shadow elevation here
