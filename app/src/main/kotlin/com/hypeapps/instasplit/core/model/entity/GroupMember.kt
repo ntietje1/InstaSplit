@@ -24,5 +24,5 @@ import androidx.room.ForeignKey
 data class GroupMember(
     @ColumnInfo val groupId: Int,
     @ColumnInfo val userId: Int,
-    @ColumnInfo val isAdmin: Boolean
+    @ColumnInfo val isAdmin: Boolean = false
 )
