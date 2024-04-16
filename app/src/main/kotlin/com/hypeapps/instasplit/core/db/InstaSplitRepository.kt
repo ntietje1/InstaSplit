@@ -89,7 +89,7 @@ class InstaSplitRepository(
         groupMemberDao.delete(GroupMember(groupId = groupId, userId = userId))
     }
 
-    suspend fun getOrAddUserByEmail(email: String): User {
+    suspend fun addUserByEmail(email: String): User {
         // if no user with given email already exists, add a new user
         var user = userDao.getUserByEmail(email)
         if (user == null) {
