@@ -1,7 +1,6 @@
 package com.hypeapps.instasplit.core.network.api
 
 import com.hypeapps.instasplit.core.model.entity.Group
-import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -11,21 +10,23 @@ import retrofit2.http.Path
 
 interface GroupApi {
 
-    @GET("group")
+    // Fetch all groups
+    @GET("api/groups")
     suspend fun getGroups(): List<Group>
 
-    @GET("group/{groupId}")
-    suspend fun getGroupById(@Path("groupId") groupId: Int): Group
+    // Fetch a specific group by name (not by ID, as our Flask uses group names as keys)
+    @GET("api/groups/{groupName}")
+    suspend fun getGroupByName(@Path("groupName") groupName: String): Group
 
-    @GET("group/{groupId}/info")
-    suspend fun getGroupWrapper(groupId: Int): GroupWrapper
-
-    @POST("group")
+    // Add a new group
+    @POST("api/groups")
     suspend fun addGroup(@Body group: Group)
 
-    @PUT("group")
-    suspend fun updateGroup(@Body group: Group)
+    // Update an existing group by name
+    @PUT("api/groups/{groupName}")
+    suspend fun updateGroup(@Path("groupName") groupName: String, @Body group: Group)
 
-    @DELETE("group/{groupId}")
-    suspend fun deleteGroupById(@Path("groupId") groupId: Int)
+    // Delete a group by name
+    @DELETE("api/groups/{groupName}")
+    suspend fun deleteGroupByName(@Path("groupName") groupName: String)
 }
