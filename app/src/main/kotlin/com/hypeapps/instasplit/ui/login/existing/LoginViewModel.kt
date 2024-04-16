@@ -54,7 +54,8 @@ class LoginViewModel(
         )
         val user = res.getOrNull()
         return if (res.isSuccess && user != null) {
-            userManager.setUserId(user.userId)
+            val userId = user.userId ?: throw Exception("User does not have an ID")
+            userManager.setUserId(userId)
             updateLoginResult(LoginResult.SUCCESS)
         } else if (res.exceptionOrNull() is IOException) {
             updateLoginResult(LoginResult.NETWORK_ERROR)
