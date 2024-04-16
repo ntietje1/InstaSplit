@@ -63,7 +63,9 @@ fun AppNavigator() {
             arguments = listOf(navArgument("groupId") { type = NavType.StringType })
         ) { backStackEntry ->
             val groupId = backStackEntry.arguments?.getString("groupId")?.toIntOrNull() ?: 0
-            GroupEditScreen(groupId = groupId)
+            GroupEditScreen(groupId = groupId) {
+                navController.popBackStack()
+            }
         }
 //        composable(Screen.GroupList.route) {
 //            // Sample placeholder groups for demonstration
