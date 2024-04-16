@@ -10,25 +10,34 @@ import com.hypeapps.instasplit.ui.camera.photo_capture.CameraScreen
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CameraMainScreen() {
-
+fun CameraMainScreen(
+    onResult: (Double) -> Unit,
+    onBack: () -> Unit
+) {
     val cameraPermissionState: PermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
 
     MainContent(
         hasPermission = cameraPermissionState.status.isGranted,
-        onRequestPermission = cameraPermissionState::launchPermissionRequest
+        onRequestPermission = cameraPermissionState::launchPermissionRequest,
+        onResult = onResult,
+        onBack = onBack
     )
 }
 
 @Composable
 private fun MainContent(
     hasPermission: Boolean,
-    onRequestPermission: () -> Unit
+    onRequestPermission: () -> Unit,
+    onResult: (Double) -> Unit,
+    onBack: () -> Unit
 ) {
 
     if (hasPermission) {
-        CameraScreen()
+        CameraScreen(
+            onResult = onResult,
+            onBack = onBack
+        )
     } else {
-        NoPermissionScreen(onRequestPermission)
+        NoPermissionScreen(onRequestPermission) //TODO add back button
     }
 }

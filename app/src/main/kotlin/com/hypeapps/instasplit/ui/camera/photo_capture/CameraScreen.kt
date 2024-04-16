@@ -15,8 +15,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,7 +27,11 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -45,18 +51,20 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.mlkit.vision.text.Text
 import com.hypeapps.instasplit.core.utils.rotateBitmap
 import java.util.concurrent.Executor
 
 
 @Composable
 fun CameraScreen(
-    viewModel: CameraViewModel = viewModel(factory = CameraViewModel.Factory)
+    viewModel: CameraViewModel = viewModel(factory = CameraViewModel.Factory), onResult: (Double) -> Unit, onBack: () -> Unit
 ) {
     val cameraState: CameraState by viewModel.state.collectAsState()
 
@@ -68,52 +76,126 @@ fun CameraScreen(
         }
     }
 
-    CameraContent(
-        onPhotoCaptured = viewModel::onImageCaptured,
-//        lastCapturedPhoto = cameraState.capturedImage
-    )
+
 
     if (cameraState.capturedImage != null) {
-        println("capturedImage: ${cameraState.capturedImage}")
         ConfirmPhotoPreview(
-            onConfirm = { TODO() },
-            onRetake = { TODO() },
-            lastCapturedPhoto = cameraState.capturedImage!!
+            onConfirm = { onResult(cameraState.extractedElements!!.second.text.toDouble()) }, // guaranteed to be non-null & a valid double
+            onRetake = viewModel::resetImageCaptured,
+            onCancel = onBack,
+            lastCapturedPhoto = cameraState.capturedImage!!,
+            processing = cameraState.isProcessing,
+            extractedName = cameraState.extractedElements?.first,
+            extractedPrice = cameraState.extractedElements?.second
         )
+    } else {
+        CameraContent(onPhotoCaptured = viewModel::onImageCaptured)
     }
 }
 
 @Composable
 private fun ConfirmPhotoPreview(
-    onConfirm: () -> Unit, onRetake: () -> Unit, lastCapturedPhoto: Bitmap
+    onConfirm: () -> Unit, onRetake: () -> Unit, onCancel: () -> Unit, lastCapturedPhoto: Bitmap, processing: Boolean, extractedName: Text.Element?, extractedPrice: Text.Element?
 ) {
     val capturedPhoto: ImageBitmap = remember(lastCapturedPhoto.hashCode()) { lastCapturedPhoto.asImageBitmap() }
     Box(
-        modifier = Modifier.fillMaxSize().background(Color.Black)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
     ) {
         Image(
-            modifier = Modifier.align(Alignment.Center),
-            bitmap = capturedPhoto, contentDescription = "Last captured photo", contentScale = ContentScale.Fit
+            modifier = Modifier.align(Alignment.Center), bitmap = capturedPhoto, contentDescription = "Last captured photo", contentScale = ContentScale.Fit
         )
-            Row(
-                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+        // dim and loading indicator while processing
+        if (processing) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .align(Alignment.Center),
+                contentAlignment = Alignment.Center
             ) {
-                Button(onClick = onConfirm) {
-                    Text("Confirm")
+                CircularProgressIndicator(color = Color.White)
+            }
+        }
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (processing) {
+                Text(
+                    text = "Processing...", color = Color.White
+                )
+            } else if (extractedName != null && extractedPrice != null) {
+                Text(
+                    text = "Extracted Text:", color = Color.White
+                )
+                Text(
+                    text = "${extractedName.text} : $${extractedPrice.text}", color = Color.White
+                )
+            } else {
+                Text(
+                    text = "Failed to extract :(", color = Color.White
+                )
+            }
+        }
+        if (!processing) {
+            ActionButtonsRow(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                onRetake = onRetake,
+                onConfirm = onConfirm,
+                onCancel = onCancel,
+                extractedSuccessfully = extractedName != null && extractedPrice != null
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionButtonsRow(
+    modifier: Modifier = Modifier,
+    onRetake: () -> Unit,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+    extractedSuccessfully: Boolean
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(32.dp), horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Button(onClick = onRetake) {
+            Row(Modifier.padding(4.dp)) {
+                Icon(imageVector = Icons.Default.Refresh, contentDescription = "Confirm")
+                Spacer(modifier = Modifier.size(4.dp))
+                Text(text = "Retake", textAlign = TextAlign.Center)
+            }
+        }
+        if (extractedSuccessfully) {
+            Button(onClick = onConfirm) {
+                Row(Modifier.padding(4.dp)) {
+                    Icon(imageVector = Icons.Default.Check, contentDescription = "Confirm")
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Text(text = "Confirm", textAlign = TextAlign.Center)
                 }
-                Button(onClick = onRetake) {
-                    Text("Retake")
+            }
+        } else {
+            Button(onClick = onCancel) {
+                Row(Modifier.padding(4.dp)) {
+                    Icon(imageVector = Icons.Default.Cancel, contentDescription = "Confirm")
+                    Spacer(modifier = Modifier.size(4.dp))
+                    Text(text = "Cancel", textAlign = TextAlign.Center)
                 }
             }
         }
-
+    }
 }
 
 @Composable
 private fun CameraContent(
     onPhotoCaptured: (Bitmap) -> Unit
-//    , lastCapturedPhoto: Bitmap? = null
 ) {
 
     val context: Context = LocalContext.current
@@ -151,12 +233,6 @@ private fun CameraContent(
                     cameraController.bindToLifecycle(lifecycleOwner)
                 }
             })
-
-//            if (lastCapturedPhoto != null) {
-//                LastPhotoPreview(
-//                    modifier = Modifier.align(alignment = BottomStart), lastCapturedPhoto = lastCapturedPhoto
-//                )
-//            }
         }
     }
 }

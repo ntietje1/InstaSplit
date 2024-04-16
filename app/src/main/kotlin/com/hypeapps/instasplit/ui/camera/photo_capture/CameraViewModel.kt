@@ -10,6 +10,7 @@ import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.model.textrecognition.TextElementParser
 import com.hypeapps.instasplit.core.model.textrecognition.TextExtractor
 import com.hypeapps.instasplit.core.utils.OrientationManager
+import com.hypeapps.instasplit.core.utils.drawBox
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,11 +35,17 @@ class CameraViewModel(
         orientationManager.unlockOrientation()
     }
 
+    fun resetImageCaptured() {
+        updateCapturedPhotoState(null)
+        updateExtractedElements(null)
+    }
+
     fun onImageCaptured(bitmap: Bitmap) {
+        updateCapturedPhotoState(bitmap)
         extractText(bitmap)
     }
 
-    private fun extractText(bitmap: Bitmap) {
+    private fun extractText(bitmap: Bitmap)  {
         viewModelScope.launch(Dispatchers.IO) {
             updateIsProcessing(true)
             textExtractor.extractText(bitmap).apply {
@@ -48,11 +55,13 @@ class CameraViewModel(
                 addOnSuccessListener { text ->
                     val nameAndPrice = textElementParser.getTotal(text)
                     updateExtractedElements(nameAndPrice)
+                    nameAndPrice?.second?.boundingBox?.let { bitmap.drawBox(it) }
+                    nameAndPrice?.first?.boundingBox?.let { bitmap.drawBox(it) }
                 }
             }
         }
-        updateCapturedPhotoState(bitmap)
     }
+
 
     private fun updateCapturedPhotoState(updatedPhoto: Bitmap?) {
         _state.value.capturedImage?.recycle()
