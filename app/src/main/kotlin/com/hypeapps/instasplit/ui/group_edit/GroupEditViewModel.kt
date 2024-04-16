@@ -18,46 +18,54 @@ class GroupEditViewModel(private val repository: InstaSplitRepository) : ViewMod
     private val _state = MutableStateFlow(GroupEditState())
     val state: StateFlow<GroupEditState> = _state.asStateFlow()
 
-//    init {
-//        viewModelScope.launch {
-//
-//        }
-//    }
-
     private fun updateGroupWrapper(groupWrapper: GroupWrapper) {
         _state.value = GroupEditState(groupWrapper)
+    }
+
+    fun validateEmailField(): Boolean {
+        return _state.value.email.text.isNotEmpty()
     }
 
     fun updateEmailField(email: TextFieldValue) {
         _state.value = _state.value.copy(email = email)
     }
 
+    private fun addChange(change: suspend () -> Unit) {
+        _state.value = _state.value.copy(changesMade = _state.value.changesMade + change)
+    }
+
+    suspend fun applyChanges() {
+        _state.value.changesMade.forEach { it() }
+        _state.value = _state.value.copy(changesMade = emptyList())
+    }
+
     fun updateGroupId(groupId: Int) {
         viewModelScope.launch {
+            println("Updating group ID: $groupId")
             val groupWithUsersAndExpenses = repository.getGroupWrapper(groupId)
             updateGroupWrapper(groupWithUsersAndExpenses)
         }
     }
 
     fun removeMember(user: User) {
-        viewModelScope.launch {
-            val userId = user.userId ?: throw Exception("User does not have an ID")
-            val groupWrapper = _state.value.groupWrapper
-            val groupId = groupWrapper.group.groupId ?: throw Exception("Group does not have an ID")
-            val newUsers = groupWrapper.users.filter { it.userId != userId }
-            repository.removeUserFromGroup(userId, groupId)
-            _state.value = _state.value.copy(groupWrapper = groupWrapper.copy(users = newUsers))
-        }
+        val userId = user.userId ?: throw Exception("User does not have an ID")
+        val groupWrapper = _state.value.groupWrapper
+        val groupId = groupWrapper.group.groupId ?: throw Exception("Group does not have an ID")
+        val newUsers = groupWrapper.users.filter { it.userId != userId }
+        addChange { repository.removeUserFromGroup(userId, groupId) }
+        _state.value = _state.value.copy(groupWrapper = groupWrapper.copy(users = newUsers))
+
     }
 
     fun addMemberByEmail(email: String) {
-        viewModelScope.launch {
-            val groupWrapper = _state.value.groupWrapper
-            val newUser = repository.getOrAddUserByEmail(email)
+        val groupWrapper = _state.value.groupWrapper
+        val placeholderUser = User(userName = email, email = email, phoneNumber = "", password = "")
+        addChange {
+            val newUser = repository.addUserByEmail(email)
             repository.addUserToGroup(newUser.userId!!, groupWrapper.group.groupId!!)
-            val newUsers = groupWrapper.users + newUser
-            _state.value = _state.value.copy(groupWrapper = groupWrapper.copy(users = newUsers))
         }
+        val newUsers = groupWrapper.users + placeholderUser
+        _state.value = _state.value.copy(groupWrapper = groupWrapper.copy(users = newUsers))
     }
 
     companion object {

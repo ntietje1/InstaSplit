@@ -1,16 +1,21 @@
 package com.hypeapps.instasplit.ui.group_edit
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -18,7 +23,11 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
@@ -27,7 +36,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -41,11 +49,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.ui.login.InputField
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 //// Mock data class for a group member
 //data class GroupMember(
@@ -66,7 +78,7 @@ import com.hypeapps.instasplit.ui.login.InputField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEditViewModel.Factory), groupId: Int) {
+fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEditViewModel.Factory), groupId: Int, onBack: () -> Unit) {
     val groupEditState: GroupEditState by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -104,7 +116,10 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEdi
                 "APPLY CHANGES", style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp), color = MaterialTheme.colorScheme.onPrimary
             )
         }, onClick = {
-            // TODO: Handle apply changes (in viewmodel)
+            CoroutineScope(Dispatchers.IO).launch {
+                viewModel.applyChanges()
+            }
+            onBack()
         }, containerColor = MaterialTheme.colorScheme.onPrimaryContainer, elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 4.dp) // Apply elevation here
         )
     }, floatingActionButtonPosition = FabPosition.Center
@@ -113,9 +128,22 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEdi
         Column(modifier = Modifier.padding(innerPadding)) {
             Spacer(modifier = Modifier.height(10.dp))
             MemberHeader(groupEditState.users.size)
-            MemberList(groupEditState.users, viewModel::removeMember)
-            Spacer(modifier = Modifier.height(20.dp))
-            AddNewMemberSection(groupEditState.email, viewModel::updateEmailField, viewModel::addMemberByEmail)
+            LazyColumn(Modifier.fillMaxSize()) {
+                items(groupEditState.users) { user ->
+                    MemberItem(user, viewModel::removeMember)
+                }
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    AddNewMemberSection(
+                        modifier = Modifier.weight(1.0f),
+                        emailState = groupEditState.email,
+                        onEmailChanged = viewModel::updateEmailField,
+                        onAddMemberByEmail = viewModel::addMemberByEmail,
+                        validateEmail = viewModel::validateEmailField
+                    )
+                    Spacer(modifier = Modifier.height(80.dp))
+                }
+            }
         }
     }
 }
@@ -131,73 +159,56 @@ fun MemberHeader(memberCount: Int) {
     )
 }
 
-// Composable to list all the members in the group
-@Composable
-fun MemberList(members: List<User>, onRemoveMember: (User) -> Unit) {
-    Column {
-        members.forEach { user ->
-            MemberItem(user, onRemoveMember)
-        }
-    }
-}
-
 // Composable for each member item in the list
 @Composable
 fun MemberItem(member: User, onRemoveMember: (User) -> Unit) {
     Row(
         verticalAlignment = Alignment.Top, modifier = Modifier
             .fillMaxWidth()
+            .aspectRatio(3.5f)
             .padding(horizontal = 16.dp)
     ) {
         Card(
             modifier = Modifier
                 .padding(horizontal = 0.dp, vertical = 8.dp)
-                .weight(1f), shape = RoundedCornerShape(20.dp)
+                .weight(1f), shape = MaterialTheme.shapes.small,
+            colors = CardColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ),
+            elevation = CardDefaults.elevatedCardElevation()
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(10.dp)
-                    .fillMaxWidth()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(60.dp) // Size of the icon/image placeholder
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(Color.LightGray) // Placeholder color
+                Row(
+                    modifier = Modifier.fillMaxWidth().weight(0.5f).padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Placeholder for the expense type icon/image
-                    // Replace with actual Image composable when ready
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp) // Size of the icon/image placeholder
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(Color.LightGray) // Placeholder color
+                    ) {
+                        // Placeholder for the expense type icon/image
+                        // Replace with actual Image composable when ready
+                    }
+                    Column(
+                        modifier = Modifier.padding(start = 10.dp), horizontalAlignment = Alignment.End
+                    ) {
+                        Text(
+                            text = member.userName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            text = member.email, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "Owes you $100.00", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 10.dp)
-                ) {
-                    Text(
-                        text = member.userName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Text(
-                        text = member.email, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-                Column(
-                    modifier = Modifier.padding(start = 10.dp), horizontalAlignment = Alignment.End
-                ) {
-                    val statusText = "owes <not yet implemented>"
-//                    val statusText = member.status
-//                    val statusColor = if (member.status == "owes") MaterialTheme.colorScheme.error
-//                    else MaterialTheme.colorScheme.onPrimaryContainer
-                    val balance = "balance <not yet implemented>"
-
-                    Text(
-                        text = statusText, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Text(
-                        text = balance, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-            }
         }
         IconButton(onClick = { onRemoveMember(member) }) {
             Icon(
@@ -210,48 +221,79 @@ fun MemberItem(member: User, onRemoveMember: (User) -> Unit) {
 
 @Composable
 fun AddNewMemberSection(
-    emailState: TextFieldValue, onEmailChanged: (TextFieldValue) -> Unit, onAddMemberByEmail: (String) -> Unit
+    modifier: Modifier = Modifier,
+    emailState: TextFieldValue, onEmailChanged: (TextFieldValue) -> Unit, onAddMemberByEmail: (String) -> Unit, validateEmail: () -> Boolean
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .aspectRatio(1.9f)
+            .padding(horizontal = 16.dp),
+        colors = CardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        ),
+        elevation = CardDefaults.elevatedCardElevation()
     ) {
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceTint)
                 .padding(30.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             InputField(
                 fieldValue = emailState,
-                onTextChanged = { newValue -> onEmailChanged(TextFieldValue(newValue.text)) },
+                onTextChanged = { onEmailChanged(it) },
                 placeholder = "Email",
                 imageVector = Icons.Default.Email,
                 secure = false,
                 keyboardType = KeyboardType.Email
             )
-
-            Surface(
+            Button(
+                colors = ButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                ),
+                elevation =  ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp),
+                onClick = {
+                    if (validateEmail()) {
+                        onAddMemberByEmail(emailState.text)
+                        onEmailChanged(TextFieldValue(""))
+                    }
+                },
+                contentPadding = PaddingValues(vertical = 15.dp),
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .fillMaxWidth(0.6f),
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.primary,
-                shadowElevation = 4.dp,
             ) {
-                Button(
-                    onClick = {
-                        onAddMemberByEmail(emailState.text)
-                        onEmailChanged(TextFieldValue(""))
-                    }, contentPadding = PaddingValues(vertical = 15.dp), modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        "ADD A NEW MEMBER", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
-                    )
-                }
+                Text(
+                    "ADD A NEW MEMBER", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
+                )
             }
 
         }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewGroupMemberItem() {
+    MemberItem(User(userName = "very long testing name", email = "someone@gmail.com", phoneNumber = "12894612945", password = "12398567189367"), onRemoveMember = {})
+}
+
+@Preview
+@Composable
+fun PreviewGroupMemberItem2() {
+    MemberItem(User(userName = "name", email = "email", phoneNumber = "1234567890", password = "password"), onRemoveMember = {})
+}
+
+@Preview
+@Composable
+fun PreviewAddNewMemberSection() {
+    MaterialTheme {
+        AddNewMemberSection(emailState = TextFieldValue(""), onEmailChanged = {}, onAddMemberByEmail = {}, validateEmail = { true })
     }
 }
 

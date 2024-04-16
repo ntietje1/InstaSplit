@@ -12,7 +12,8 @@ data class GroupEditState(
         users = emptyList(),
         expenses = emptyList(),
     ),
-    val email: TextFieldValue = TextFieldValue("")
+    val email: TextFieldValue = TextFieldValue(""),
+    val changesMade: List<suspend () -> Unit> = emptyList(),
 ) {
     val group: Group
         get() = groupWrapper.group
