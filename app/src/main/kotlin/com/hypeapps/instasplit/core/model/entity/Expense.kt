@@ -18,5 +18,9 @@ import androidx.room.PrimaryKey
 data class Expense(
     @PrimaryKey(autoGenerate = true) val expenseId: Int,
     @ColumnInfo val groupId: Int,
-    @ColumnInfo val totalAmount: Int,
+    @ColumnInfo val description: String = "",
+    @ColumnInfo val date: Long = 0L,
+    @ColumnInfo val totalAmount: Double = 0.00,
 )
+
+//TODO: USE EMBEDDING FOR USEREXPENSES INSTEAD OF RELATION

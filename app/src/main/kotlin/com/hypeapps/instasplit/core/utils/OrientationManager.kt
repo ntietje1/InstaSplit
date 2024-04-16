@@ -1,9 +1,9 @@
-package com.hypeapps.instasplit.ui
+package com.hypeapps.instasplit.core.utils
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
 
-class OrientationController(private val activity: Activity) {
+class OrientationManager(private val activity: Activity) {
 
     fun lockPortrait() {
         lockOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)

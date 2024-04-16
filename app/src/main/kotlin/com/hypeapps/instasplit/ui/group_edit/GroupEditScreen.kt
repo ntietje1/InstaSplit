@@ -32,7 +32,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
-import com.hypeapps.instasplit.ui.group_single.Group
+import com.hypeapps.instasplit.core.model.entity.Group
+
 import com.hypeapps.instasplit.ui.login.LoginField
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,7 +71,7 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(), group: Group) {
                             .padding(top = 24.dp)
                             .size(48.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
                         Spacer(Modifier.width(8.dp))
-                        Text("Edit ${group.name}", style = MaterialTheme.typography.headlineLarge,
+                        Text("Edit ${group.groupName}", style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier
@@ -266,7 +267,7 @@ fun AddNewMemberSection(
 @Composable
 fun PreviewGroupEditScreen() {
     MaterialTheme {
-        val currentGroup = Group("Apartment", 2, "$200")
+        val currentGroup = Group(1, "Apartment")
         GroupEditScreen(group = currentGroup)
     }
 }

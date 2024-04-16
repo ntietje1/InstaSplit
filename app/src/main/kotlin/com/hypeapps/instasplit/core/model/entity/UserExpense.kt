@@ -24,5 +24,6 @@ import androidx.room.ForeignKey
 data class UserExpense(
     @ColumnInfo val userId: Int,
     @ColumnInfo val expenseId: Int,
-    @ColumnInfo val amount: Int
+    @ColumnInfo val date: Long = 0L,
+    @ColumnInfo val amount: Double = 0.00
 )

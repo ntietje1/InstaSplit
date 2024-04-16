@@ -7,8 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.hypeapps.instasplit.core.model.entity.User
-import com.hypeapps.instasplit.core.model.entity.bridge.UserWithExpenses
-import com.hypeapps.instasplit.core.model.entity.bridge.UserWithGroups
+import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 
 @Dao
 interface UserDao {
@@ -25,11 +24,8 @@ interface UserDao {
     suspend fun deleteUserById(userId: Int)
 
     @Transaction
-    @Query("SELECT * FROM User WHERE userId = :userId LIMIT 1")
-    suspend fun getUserWithGroups(userId: Int): UserWithGroups
+    @Query("SELECT * FROM User WHERE userId = :userId")
+    suspend fun getUserWrapper(userId: Int): UserWrapper
 
-    @Transaction
-    @Query("SELECT * FROM User WHERE userId = :userId LIMIT 1")
-    suspend fun getUserWithExpenses(userId: Int): UserWithExpenses
 
 }

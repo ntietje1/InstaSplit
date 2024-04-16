@@ -47,3 +47,4 @@ class GroupEditViewModel : ViewModel() {
         _members.value = _members.value.filterNot { it.email == member.email }
     }
 }
+
