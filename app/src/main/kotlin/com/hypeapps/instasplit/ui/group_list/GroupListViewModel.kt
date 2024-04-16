@@ -7,19 +7,22 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.db.InstaSplitRepository
 import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
+import com.hypeapps.instasplit.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class GroupListViewModel(private val repository: InstaSplitRepository) : ViewModel()  {
+class GroupListViewModel(
+    private val repository: InstaSplitRepository,
+    private val userManager : UserManager
+) : ViewModel()  {
     private val _state = MutableStateFlow(GroupListState())
     val state: StateFlow<GroupListState> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            repository.populateDb()
-            val userWithGroupsAndExpenses = repository.getUserWrapper(userId = 1)
+            val userWithGroupsAndExpenses = repository.getUserWrapper(userId = userManager.getUserId())
             updateState(userWithGroupsAndExpenses)
         }
     }
@@ -39,7 +42,8 @@ class GroupListViewModel(private val repository: InstaSplitRepository) : ViewMod
 
                 val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as App
                 return GroupListViewModel(
-                    app.appContainer.repository
+                    app.appContainer.repository,
+                    app.appContainer.userManager
                 ) as T
             }
         }
