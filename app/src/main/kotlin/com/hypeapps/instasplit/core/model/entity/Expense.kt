@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
     ]
 )
 data class Expense(
-    @PrimaryKey(autoGenerate = true) val expenseId: Int,
+    @PrimaryKey(autoGenerate = true) val expenseId: Int? = null,
     @ColumnInfo val groupId: Int,
     @ColumnInfo val description: String = "",
     @ColumnInfo val date: Long = 0L,
