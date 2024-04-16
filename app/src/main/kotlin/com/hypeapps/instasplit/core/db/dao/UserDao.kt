@@ -11,8 +11,11 @@ import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM user WHERE userId = :userId LIMIT 1")
-    suspend fun getUserById(userId: Int): User
+    @Query("SELECT * FROM user WHERE userId = :userId")
+    suspend fun getUserById(userId: Int): User?
+
+    @Query("SELECT * FROM user WHERE email = :email")
+    suspend fun getUserByEmail(email: String): User?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addUser(user: User)
@@ -25,7 +28,7 @@ interface UserDao {
 
     @Transaction
     @Query("SELECT * FROM User WHERE userId = :userId")
-    suspend fun getUserWrapper(userId: Int): UserWrapper
+    suspend fun getUserWrapper(userId: Int): UserWrapper?
 
 
 }
