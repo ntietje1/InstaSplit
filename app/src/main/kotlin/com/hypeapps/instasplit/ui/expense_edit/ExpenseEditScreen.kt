@@ -1,5 +1,7 @@
 package com.hypeapps.instasplit.ui.expense_edit
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,41 +25,51 @@ import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 import com.hypeapps.instasplit.ui.login.InputField
 
 
 @Composable
 fun ExpenseEditScreen(
-    initialGroupId: String? = null,
+    expenseId: Int?,
+    initialGroupId: Int? = null,
     initialDesc: String? = null,
     initialAmount: String? = null,
     groupLocked: Boolean = false,
     onDone: () -> Unit,
     onScanReceipt: () -> Unit,
-    viewModel: ExpenseEditViewModel = viewModel()
+    viewModel: ExpenseEditViewModel = viewModel(factory = ExpenseEditViewModel.Factory)
 ) {
     val expenseEditState: ExpenseEditState by viewModel.state.collectAsState()
-    initialGroupId?.let { viewModel.updateGroupName(it) }
-    initialDesc?.let { viewModel.updateDescription(it) }
-    initialAmount?.let { viewModel.updateAmount(it) }
-    if (groupLocked) {
-        viewModel.lockGroup()
+
+    LaunchedEffect(Unit) {
+        expenseId?.let { viewModel.updateExpenseId(expenseId) }
+        viewModel.setUserToCurrentUser()
+        viewModel.acceptInitialValues(initialGroupId, initialDesc, initialAmount, groupLocked)
     }
 
     Surface(
@@ -109,23 +121,21 @@ fun ExpenseEditScreen(
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            InputField( //TODO: switch to dropdown menu
-                fieldValue = expenseEditState.groupName,
-                onTextChanged = { newValue -> viewModel.updateGroupName(newValue.text) },
-                placeholder = "Enter Group Name",
-                imageVector = Icons.Default.Group,
-                secure = false
+            GroupDropdownField(
+                userWrapper = expenseEditState.userWrapper,
+                initialGroupId = expenseEditState.expenseWrapper.expense.groupId,
+                onGroupSelected = { groupId -> viewModel.updateGroupId(groupId) }
             )
             InputField(
-                fieldValue = expenseEditState.description,
-                onTextChanged = { newValue -> viewModel.updateDescription(newValue.text) },
+                fieldValue = expenseEditState.descriptionField,
+                onTextChanged = { newValue -> viewModel.updateDescriptionField(newValue) },
                 placeholder = "Enter Description",
                 imageVector = Icons.Default.Description,
                 secure = false
             )
             InputField(
-                fieldValue = expenseEditState.amount,
-                onTextChanged = { newValue -> viewModel.updateAmount(newValue.text) },
+                fieldValue = expenseEditState.amountField,
+                onTextChanged = { newValue -> viewModel.updateAmountField(newValue) },
                 placeholder = "0.00",
                 imageVector = Icons.Default.AttachMoney,
                 keyboardType = KeyboardType.Number  // This will now properly show the numeric keypad
@@ -207,6 +217,51 @@ fun ExpenseEditScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun GroupDropdownField(
+    userWrapper: UserWrapper,
+    initialGroupId: Int,
+    onGroupSelected: (Int) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedGroupId by remember { mutableIntStateOf(initialGroupId) }
+    var selectedGroupName by remember { mutableStateOf("") }
+
+    LaunchedEffect(initialGroupId, userWrapper.groups) {
+        selectedGroupId = initialGroupId
+        selectedGroupName = userWrapper.groups.find { it.groupId == initialGroupId }?.groupName ?: ""
+    }
+
+    Box {
+        InputField(
+            fieldValue = TextFieldValue(selectedGroupName),
+            onTextChanged = {},
+            readOnly = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = true },
+            placeholder = "Select Group",
+            imageVector = Icons.Default.Group,
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            userWrapper.groups.forEach { group ->
+                DropdownMenuItem(
+                    text = { Text(group.groupName) },
+                    onClick = {
+                        selectedGroupId = group.groupId!!
+                        selectedGroupName = group.groupName
+                        onGroupSelected(group.groupId)
+                        expanded = false
+                    })
             }
         }
     }
