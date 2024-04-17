@@ -124,7 +124,8 @@ fun ExpenseEditScreen(
             GroupDropdownField(
                 userWrapper = expenseEditState.userWrapper,
                 initialGroupId = expenseEditState.expenseWrapper.expense.groupId,
-                onGroupSelected = { groupId -> viewModel.updateGroupId(groupId) }
+                onGroupSelected = { groupId -> viewModel.updateGroupId(groupId) },
+                locked = expenseEditState.isGroupLocked
             )
             InputField(
                 fieldValue = expenseEditState.descriptionField,
@@ -227,6 +228,7 @@ private fun GroupDropdownField(
     userWrapper: UserWrapper,
     initialGroupId: Int,
     onGroupSelected: (Int) -> Unit,
+    locked: Boolean
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedGroupId by remember { mutableIntStateOf(initialGroupId) }
@@ -242,9 +244,10 @@ private fun GroupDropdownField(
             fieldValue = TextFieldValue(selectedGroupName),
             onTextChanged = {},
             readOnly = true,
+            disabled = locked,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { expanded = true },
+                .clickable { if (!locked) expanded = true },
             placeholder = "Select Group",
             imageVector = Icons.Default.Group,
         )
