@@ -11,6 +11,7 @@ data class ExpenseEditState(
         user = User(userId = 0, userName = "", email = "", password = "", phoneNumber = ""),
         groups = emptyList(),
         expenses = emptyList(),
+        userExpenses = emptyList(),
     ),
     val expenseWrapper: ExpenseWrapper = ExpenseWrapper(
         expense = Expense(

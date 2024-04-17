@@ -22,5 +22,3 @@ data class Expense(
     @ColumnInfo val date: Long = 0L,
     @ColumnInfo val totalAmount: Double = 0.00,
 )
-
-//TODO: USE EMBEDDING FOR USEREXPENSES INSTEAD OF RELATION

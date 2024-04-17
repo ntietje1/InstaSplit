@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.ui.login.LoginButton
-import com.hypeapps.instasplit.ui.login.InputField
+import com.hypeapps.instasplit.ui.common.InputField
 import com.hypeapps.instasplit.ui.login.LoginTitle
 import kotlinx.coroutines.launch
 

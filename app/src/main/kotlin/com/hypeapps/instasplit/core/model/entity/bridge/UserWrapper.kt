@@ -22,5 +22,10 @@ data class UserWrapper(
         entityColumn = "expenseId",
         associateBy = Junction(UserExpense::class)
     )
-    val expenses: List<Expense>
+    val expenses: List<Expense>,
+    @Relation(
+        parentColumn = "userId",
+        entityColumn = "expenseId",
+    )
+    val userExpenses: List<UserExpense>
 )
