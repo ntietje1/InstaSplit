@@ -23,7 +23,7 @@ class GroupSingleViewModel(
     val state: StateFlow<GroupSingleState> = _state.asStateFlow()
 
     fun getBalance(expenseWrapper: ExpenseWrapper): Double {
-        val user = userManager.getUserId()
+        val user = userManager.currentUserId
         return expenseWrapper.getBalance(user)
     }
 

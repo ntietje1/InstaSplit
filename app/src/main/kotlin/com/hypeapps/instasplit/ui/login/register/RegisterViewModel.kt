@@ -60,7 +60,7 @@ class RegisterViewModel(
         val user = res.getOrNull()
         return if (res.isSuccess && user != null) {
             val userId = user.userId ?: throw Exception("User ID is null")
-            userManager.setUserId(userId)
+            userManager.currentUserId = userId
             updateRegisterResult(RegisterResult.SUCCESS)
         } else if (res.exceptionOrNull() is IOException) {
             updateRegisterResult(RegisterResult.NETWORK_ERROR)

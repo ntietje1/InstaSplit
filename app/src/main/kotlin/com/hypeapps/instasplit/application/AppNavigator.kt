@@ -26,7 +26,7 @@ private enum class Screen(val route: String) {
 fun AppNavigator() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
-        composable(Screen.Splash.route) { SplashScreen { navController.navigate(Screen.LoginExisting.route) } }
+        composable(Screen.Splash.route) { SplashScreen( { navController.navigate(Screen.LoginExisting.route) } ) }
         composable(Screen.LoginExisting.route) {
             LoginScreen(onLogin = { navController.navigate(Screen.GroupList.route) }, goToRegister = { navController.navigate(Screen.LoginRegister.route) })
         }

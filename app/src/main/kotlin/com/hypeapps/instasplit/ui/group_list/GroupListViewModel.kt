@@ -40,7 +40,7 @@ class GroupListViewModel(
 
     private fun setUserToCurrentUser() {
         viewModelScope.launch {
-            repository.getUserWrapper(userManager.getUserId()).observeForever { userWrapper ->
+            repository.getUserWrapper(userManager.currentUserId).observeForever { userWrapper ->
                 updateState(userWrapper)
             }
         }
@@ -49,7 +49,7 @@ class GroupListViewModel(
     suspend fun addGroup(): Group {
         return viewModelScope.async {
             val groupId = repository.addGroup(Group(groupName = "New Group"))
-            repository.addUserToGroup(userManager.getUserId(), groupId)
+            repository.addUserToGroup(userManager.currentUserId, groupId)
             repository.getGroup(groupId)
         }.await()
     }

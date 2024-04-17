@@ -1,6 +1,5 @@
 package com.hypeapps.instasplit.ui.splash
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -18,15 +17,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun SplashScreen(goToLogin: () -> Unit) {
+fun SplashScreen(goToLogin: () -> Unit, viewModel: SplashScreenViewModel = viewModel(factory = SplashScreenViewModel.Factory)) {
+
+    LaunchedEffect(Unit) {
+        if (viewModel.checkRememberMe()) {
+            goToLogin()
+        }
+    }
+
     Surface(color = MaterialTheme.colorScheme.primary) {
         Column(
             modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally
@@ -84,10 +91,4 @@ fun SplashScreen(goToLogin: () -> Unit) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun ExampleSplashScreen() {
-    SplashScreen(goToLogin = {})
 }

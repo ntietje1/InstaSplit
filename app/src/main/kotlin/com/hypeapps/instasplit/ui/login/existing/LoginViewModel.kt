@@ -3,6 +3,7 @@ package com.hypeapps.instasplit.ui.login.existing
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.InstaSplitRepository
@@ -10,13 +11,33 @@ import com.hypeapps.instasplit.core.utils.LoginRequest
 import com.hypeapps.instasplit.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 class LoginViewModel(
-    private val instaSplitRepository: InstaSplitRepository, private val userManager: UserManager
+    private val repository: InstaSplitRepository, private val userManager: UserManager
 ) : ViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
+
+    init {
+        updateRememberMe(userManager.rememberMe)
+        if (userManager.rememberMe) {
+            viewModelScope.launch {
+                prefillFields()
+            }
+        }
+    }
+
+    private suspend fun prefillFields() {
+       repository.getUser(userId = userManager.currentUserId)?.let {
+            _state.value = _state.value.copy(
+                email = TextFieldValue(it.email),
+                password = TextFieldValue(it.password)
+            )
+        }
+
+    }
 
     fun updateEmail(email: TextFieldValue) {
         _state.value = _state.value.copy(email = email)
@@ -28,6 +49,7 @@ class LoginViewModel(
 
     fun updateRememberMe(rememberMe: Boolean) {
         _state.value = _state.value.copy(rememberMe = rememberMe)
+        userManager.rememberMe = rememberMe
     }
 
     fun updateLoginResult(result: LoginResult): LoginResult {
@@ -47,7 +69,7 @@ class LoginViewModel(
         if (!validateEmptyFields()) {
             return updateLoginResult(LoginResult.EMPTY_FIELDS)
         }
-        val res = instaSplitRepository.login(
+        val res = repository.login(
             LoginRequest(
                 _state.value.email.text, _state.value.password.text
             )
@@ -55,7 +77,7 @@ class LoginViewModel(
         val user = res.getOrNull()
         return if (res.isSuccess && user != null) {
             val userId = user.userId ?: throw Exception("User does not have an ID")
-            userManager.setUserId(userId)
+            userManager.currentUserId = userId
             updateLoginResult(LoginResult.SUCCESS)
         } else if (res.exceptionOrNull() is IOException) {
             updateLoginResult(LoginResult.NETWORK_ERROR)

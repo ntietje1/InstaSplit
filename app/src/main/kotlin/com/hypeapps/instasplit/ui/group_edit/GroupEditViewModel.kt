@@ -23,7 +23,7 @@ class GroupEditViewModel(
     private val _state = MutableStateFlow(GroupEditState())
     val state: StateFlow<GroupEditState> = _state.asStateFlow()
     val userId: Int
-        get() = userManager.getUserId()
+        get() = userManager.currentUserId
 
     fun updateGroupNameField(groupName: TextFieldValue) {
         updateGroupWrapper(_state.value.groupWrapper.copy(group = _state.value.groupWrapper.group.copy(groupName = groupName.text)))
@@ -32,7 +32,7 @@ class GroupEditViewModel(
     }
 
     fun getBalanceBetweenUsers(otherUser: Int): Double {
-        val currentUser = userManager.getUserId()
+        val currentUser = userManager.currentUserId
         return state.value.expenseWrappers.sumOf {
             it.getBalanceToUser(currentUser, otherUser)
         }

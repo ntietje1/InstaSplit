@@ -133,6 +133,10 @@ class InstaSplitRepository(
         expenseDao.deleteExpenseById(expenseId)
     }
 
+    suspend fun getUser(userId: Int): User? {
+        return userDao.getUserById(userId)
+    }
+
     suspend fun addGroup(group: Group): Int {
         return groupDao.addGroup(group).toInt()
     }

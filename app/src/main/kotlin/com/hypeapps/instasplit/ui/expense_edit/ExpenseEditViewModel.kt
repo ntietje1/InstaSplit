@@ -43,7 +43,7 @@ class ExpenseEditViewModel(
 
     fun setUserToCurrentUser() {
         viewModelScope.launch {
-            repository.getUserWrapper(userManager.getUserId()).observeForever { userWrapper ->
+            repository.getUserWrapper(userManager.currentUserId).observeForever { userWrapper ->
                 updateUserWrapper(userWrapper)
             }
         }
@@ -60,7 +60,7 @@ class ExpenseEditViewModel(
         //TODO: add way to "settle up"
         viewModelScope.launch {
             repository.addOrUpdateExpense(
-                userManager.getUserId(), _state.value.expenseWrapper.expense.copy(
+                userManager.currentUserId, _state.value.expenseWrapper.expense.copy(
                     date = System.currentTimeMillis()
                 )
             )
