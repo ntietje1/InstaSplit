@@ -53,7 +53,7 @@ class InstaSplitRepository(
 
     fun getUserWrapper(userId: Int) = userDao.getUserWrapperLiveData(userId)
 
-    fun getExpenseWrapperLiveData(expenseId: Int) = expenseDao.getExpenseWrapperLiveData(expenseId)
+    fun getExpenseWrapper(expenseId: Int) = expenseDao.getExpenseWrapperLiveData(expenseId)
 
     suspend fun login(loginRequest: LoginRequest): Result<User> {
         return try {
@@ -127,10 +127,6 @@ class InstaSplitRepository(
 
     suspend fun deleteExpense(expenseId: Int) {
         expenseDao.deleteExpenseById(expenseId)
-    }
-
-    suspend fun getExpenseWrapper(expenseId: Int): ExpenseWrapper {
-        return expenseDao.getExpenseWrapper(expenseId)
     }
 
     suspend fun addGroup(group: Group): Int {

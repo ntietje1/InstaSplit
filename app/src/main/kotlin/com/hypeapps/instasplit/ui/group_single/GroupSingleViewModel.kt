@@ -23,7 +23,7 @@ class GroupSingleViewModel(
     private fun updateState(groupWrapper: GroupWrapper) {
         val expenseBalances = groupWrapper.expenses.associateWith { expense ->
             println("MAPPING EXPENSE: : $expense")
-            repository.getExpenseWrapperLiveData(expense.expenseId!!).value?.getBalance(userManager.getUserId()) ?: 0.0
+            repository.getExpenseWrapper(expense.expenseId!!).value?.getBalance(userManager.getUserId()) ?: 0.0
         }
         _state.value = GroupSingleState(groupWrapper, expenseBalances)
     }
