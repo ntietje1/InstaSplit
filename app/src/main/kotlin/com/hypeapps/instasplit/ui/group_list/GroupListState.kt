@@ -10,6 +10,7 @@ data class GroupListState(
         user = User(userId = 0, userName = "", email = "", password = "", phoneNumber = ""),
         groups = emptyList(),
         expenses = emptyList(),
+        userExpenses = emptyList(),
         ),
 ) {
     val user: User
