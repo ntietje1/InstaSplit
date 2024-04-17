@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import com.hypeapps.instasplit.core.InstaSplitRepository
 import com.hypeapps.instasplit.core.model.entity.Expense
+import com.hypeapps.instasplit.core.model.entity.Group
 import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.model.entity.UserExpense
 import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
@@ -12,10 +13,13 @@ import com.hypeapps.instasplit.core.utils.UserManager
 import com.hypeapps.instasplit.ui.group_single.GroupSingleViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.*
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -39,8 +43,8 @@ class GroupSingleViewModelTest {
         viewModel = GroupSingleViewModel(repository, userManager)
     }
 
-    // verify that when the updateGroupId method is called on your GroupSingleViewModel, it triggers a fetch for group details based on the provided group ID,
-    // and subsequently updates the ViewModel's state with the fetched data.
+   // verifies that when the updateGroupId method is called on the GroupSingleViewModel, it triggers a fetch for group
+   // details based on the provided group ID.
     @Test
     fun `updateGroupId should fetch group details and update state`() = runTest {
         val groupId = 1
@@ -54,6 +58,55 @@ class GroupSingleViewModelTest {
         groupWrapperLiveData.postValue(groupWrapper) // Simulating the repository updating its data
 
         assertEquals(groupWrapper, viewModel.state.value.groupWrapper)
+    }
+
+
+    // Define the user objects for the tests
+    val currentUser = User(
+        userId = 1,
+        userName = "User1",
+        email = "user1@example.com",
+        phoneNumber = "1234567890",
+        password = "pass1"
+    )
+
+    val otherUser = User(
+        userId = 2,
+        userName = "User2",
+        email = "user2@example.com",
+        phoneNumber = "0987654321",
+        password = "pass2"
+    )
+
+    val users = listOf(currentUser, otherUser)
+
+    // checks whether the ViewModel's state is correctly updated with the new user details after the group
+    // details have been updated
+    @Test
+    fun `update group details updates user data`() = runTest {
+        val groupId = 1
+        val initialGroupWrapper = GroupWrapper(
+            group = Group(groupId = groupId, groupName = "Initial Group"),
+            users = users,
+            expenses = emptyList()
+        )
+        val groupWrapperLiveData = MutableLiveData(initialGroupWrapper)
+
+        coEvery { repository.getGroupWrapper(groupId) } returns groupWrapperLiveData
+
+        // Simulate updating the group ID which should trigger a state update
+        viewModel.updateGroupId(groupId)
+
+        // Now let's assume that the group details including user details are updated
+        val updatedUsers = listOf(
+            currentUser.copy(email = "new_email@example.com"), // changing the email for the current user
+            otherUser
+        )
+        val updatedGroupWrapper = initialGroupWrapper.copy(users = updatedUsers)
+        groupWrapperLiveData.postValue(updatedGroupWrapper)
+
+        // Verify that the state has been updated with the new user details
+        assertEquals(updatedUsers, viewModel.state.value.groupWrapper.users)
     }
 
     //TODO: come back later to this when everything is done
