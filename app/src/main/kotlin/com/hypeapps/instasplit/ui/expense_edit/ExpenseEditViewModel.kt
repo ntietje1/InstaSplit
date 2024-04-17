@@ -121,15 +121,15 @@ class ExpenseEditViewModel(
         }
     }
 
-    fun resetState() {
+    private fun resetState() {
         _state.value = ExpenseEditState()
     }
 
-    fun lockGroup() { //TODO this is currently unused
+    private fun lockGroup() {
         _state.value = _state.value.copy(isGroupLocked = true)
     }
 
-    fun updateUserWrapper(user: UserWrapper) {
+    private fun updateUserWrapper(user: UserWrapper) {
         _state.value = _state.value.copy(userWrapper = user)
     }
 
