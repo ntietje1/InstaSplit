@@ -71,7 +71,7 @@ class LoginViewModel(
         }
         val res = repository.login(
             LoginRequest(
-                _state.value.email.text, _state.value.password.text
+                email = _state.value.email.text, password =  _state.value.password.text
             )
         )
         val user = res.getOrNull()
