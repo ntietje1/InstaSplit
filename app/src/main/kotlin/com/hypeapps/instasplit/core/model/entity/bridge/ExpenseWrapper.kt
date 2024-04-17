@@ -22,5 +22,7 @@ data class ExpenseWrapper(
     )
     val userExpenses: List<UserExpense>
 ) {
-
+    fun getBalance(userId: Int): Double {
+        return userExpenses.firstOrNull { it.userId == userId }?.balance ?: 0.0
+    }
 }
