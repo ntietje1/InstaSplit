@@ -59,7 +59,7 @@ class ExpenseEditViewModel(
         //TODO: add validation and first "UserExpense" for the user who created the expense
         //TODO: add way to "settle up"
         viewModelScope.launch {
-            val addedExpenseId = repository.addOrUpdateExpense(_state.value.expenseWrapper.expense)
+            val addedExpenseId = repository.addOrUpdateExpense(userManager.getUserId(), _state.value.expenseWrapper.expense)
             resetState()
         }
     }
