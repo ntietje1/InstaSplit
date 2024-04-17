@@ -1,4 +1,4 @@
-package com.hypeapps.instasplit.ui.login
+package com.hypeapps.instasplit.ui.common
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

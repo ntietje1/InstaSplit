@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.User
-import com.hypeapps.instasplit.ui.login.InputField
+import com.hypeapps.instasplit.ui.common.InputField
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -204,7 +204,7 @@ fun MemberItem(member: User, onRemoveMember: (User) -> Unit) {
                             text = member.email, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                         )
                         Spacer(modifier = Modifier.height(10.dp))
-                        Text(
+                        Text( //TODO implement this
                             text = "Owes you $100.00", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
