@@ -33,14 +33,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hypeapps.instasplit.ui.login.LoginButton
 import com.hypeapps.instasplit.ui.common.InputField
+import com.hypeapps.instasplit.ui.login.LoginButton
 import com.hypeapps.instasplit.ui.login.LoginTitle
 import com.hypeapps.instasplit.ui.login.RememberMeToggle
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(onLogin: () -> Unit, goToRegister: () -> Unit, viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)) {
+fun LoginScreen(
+    onLogin: () -> Unit,
+    goToRegister: () -> Unit,
+    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory)) {
     val loginState: LoginState by viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
