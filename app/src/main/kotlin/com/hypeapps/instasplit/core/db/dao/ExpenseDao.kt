@@ -20,7 +20,7 @@ interface ExpenseDao {
     suspend fun getExpensesByGroupId(groupId: Int): List<Expense>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addExpense(expense: Expense)
+    suspend fun addExpense(expense: Expense): Long
 
     @Update
     suspend fun updateExpense(expense: Expense)
