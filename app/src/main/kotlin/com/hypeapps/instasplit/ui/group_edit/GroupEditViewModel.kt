@@ -47,14 +47,16 @@ class GroupEditViewModel(
         expenses.forEach { expense ->
             repository.getExpenseWrapper(expense.expenseId!!)
                 .observeForever { expenseWrapper ->
-                    val currentWrappers = _state.value.expenseWrappers.toMutableList()
-                    val existingWrapperIndex = currentWrappers.indexOfFirst { it.expense.expenseId == expense.expenseId }
-                    if (existingWrapperIndex != -1) {
-                        currentWrappers[existingWrapperIndex] = expenseWrapper
-                    } else {
-                        currentWrappers.add(expenseWrapper)
+                    expenseWrapper?.let {
+                        val currentWrappers = _state.value.expenseWrappers.toMutableList()
+                        val existingWrapperIndex = currentWrappers.indexOfFirst { it.expense.expenseId == expense.expenseId }
+                        if (existingWrapperIndex != -1) {
+                            currentWrappers[existingWrapperIndex] = it
+                        } else {
+                            currentWrappers.add(it)
+                        }
+                        _state.value = _state.value.copy(expenseWrappers = currentWrappers)
                     }
-                    _state.value = _state.value.copy(expenseWrappers = currentWrappers)
                 }
         }
     }
