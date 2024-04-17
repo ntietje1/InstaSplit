@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
-import com.hypeapps.instasplit.ui.login.InputField
+import com.hypeapps.instasplit.ui.common.InputField
 
 
 @Composable
