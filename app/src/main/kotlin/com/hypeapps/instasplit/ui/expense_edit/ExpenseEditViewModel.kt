@@ -43,8 +43,9 @@ class ExpenseEditViewModel(
 
     fun setUserToCurrentUser() {
         viewModelScope.launch {
-            val userWrapper = repository.getUserWrapper(userManager.getUserId())
-            updateUser(userWrapper)
+            repository.getUserWrapper(userManager.getUserId()).observeForever { userWrapper ->
+                updateUserWrapper(userWrapper)
+            }
         }
     }
 
@@ -58,9 +59,10 @@ class ExpenseEditViewModel(
     fun addExpense() {
         //TODO: add way to "settle up"
         viewModelScope.launch {
-           repository.addOrUpdateExpense(
-                userManager.getUserId(),
-                _state.value.expenseWrapper.expense)
+            repository.addOrUpdateExpense(
+                userManager.getUserId(), _state.value.expenseWrapper.expense
+            )
+
             resetState()
         }
     }
@@ -72,8 +74,9 @@ class ExpenseEditViewModel(
 
     fun updateExpenseId(expenseId: Int) {
         viewModelScope.launch {
-            val expenseWrapper = repository.getExpenseWrapper(expenseId)
-            updateExpense(expenseWrapper)
+            repository.getExpenseWrapperLiveData(expenseId).observeForever { expenseWrapper ->
+                updateExpense(expenseWrapper)
+            }
         }
     }
 
@@ -107,6 +110,7 @@ class ExpenseEditViewModel(
 
     private fun updateAmount(amount: String) {
         val convertedAmount = amount.toDoubleOrNull()
+        //TODO validate here too
         if (convertedAmount != null) {
             _state.value = _state.value.copy(
                 expenseWrapper = _state.value.expenseWrapper.copy(expense = _state.value.expenseWrapper.expense.copy(totalAmount = convertedAmount))
@@ -118,11 +122,11 @@ class ExpenseEditViewModel(
         _state.value = ExpenseEditState()
     }
 
-    fun lockGroup() {
+    fun lockGroup() { //TODO this is currently unused
         _state.value = _state.value.copy(isGroupLocked = true)
     }
 
-    fun updateUser(user: UserWrapper) {
+    fun updateUserWrapper(user: UserWrapper) {
         _state.value = _state.value.copy(userWrapper = user)
     }
 

@@ -41,8 +41,9 @@ class GroupEditViewModel(private val repository: InstaSplitRepository) : ViewMod
 
     fun updateGroupId(groupId: Int) {
         viewModelScope.launch {
-            val groupWrapper = repository.getGroupWrapper(groupId)
-            updateGroupWrapper(groupWrapper)
+            repository.getGroupWrapper(groupId).observeForever { groupWrapper ->
+                updateGroupWrapper(groupWrapper)
+            }
         }
     }
 
@@ -52,7 +53,7 @@ class GroupEditViewModel(private val repository: InstaSplitRepository) : ViewMod
         val groupId = groupWrapper.group.groupId ?: throw Exception("Group does not have an ID")
         val newUsers = groupWrapper.users.filter { it.userId != userId }
         addChange { repository.removeUserFromGroup(userId, groupId) }
-        _state.value = _state.value.copy(groupWrapper = groupWrapper.copy(users = newUsers))
+        _state.value = _state.value.copy(groupWrapper = newUsers.let { groupWrapper.copy(users = it) })
 
     }
 

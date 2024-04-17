@@ -1,5 +1,6 @@
 package com.hypeapps.instasplit.core.db.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
@@ -12,12 +13,9 @@ import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 @Dao
 interface GroupDao {
 
-    @Query("SELECT * FROM 'group'")
-    suspend fun getGroups(): List<Group>
-
     @Transaction
-    @Query("SELECT * FROM `Group` WHERE groupId = :groupId")
-    suspend fun getGroupWrapper(groupId: Int): GroupWrapper
+    @Query("SELECT * FROM `group` WHERE groupId = :groupId")
+    fun getGroupWrapperLiveData(groupId: Int): LiveData<GroupWrapper>
 
     @Query("SELECT * FROM 'group' WHERE groupId = :groupId")
     suspend fun getGroupById(groupId: Int): Group

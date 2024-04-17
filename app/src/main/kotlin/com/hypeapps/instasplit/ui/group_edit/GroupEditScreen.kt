@@ -95,7 +95,7 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEdi
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    "Edit ${groupEditState.group.groupName}",
+                    "Edit ${groupEditState.group?.groupName}",
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,

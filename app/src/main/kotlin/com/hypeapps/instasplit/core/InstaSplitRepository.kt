@@ -7,8 +7,6 @@ import com.hypeapps.instasplit.core.model.entity.GroupMember
 import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.model.entity.UserExpense
 import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
-import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
-import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 import com.hypeapps.instasplit.core.network.InstaSplitApi
 import com.hypeapps.instasplit.core.utils.LoginRequest
 import com.hypeapps.instasplit.core.utils.RegisterRequest
@@ -51,13 +49,11 @@ class InstaSplitRepository(
         }
     }
 
-    suspend fun getGroupWrapper(groupId: Int): GroupWrapper {
-        return groupDao.getGroupWrapper(groupId)
-    }
+    fun getGroupWrapper(groupId: Int) = groupDao.getGroupWrapperLiveData(groupId)
 
-    suspend fun getUserWrapper(userId: Int): UserWrapper {
-        return userDao.getUserWrapper(userId) ?: throw Exception("User not found")
-    }
+    fun getUserWrapper(userId: Int) = userDao.getUserWrapperLiveData(userId)
+
+    fun getExpenseWrapperLiveData(expenseId: Int) = expenseDao.getExpenseWrapperLiveData(expenseId)
 
     suspend fun login(loginRequest: LoginRequest): Result<User> {
         return try {

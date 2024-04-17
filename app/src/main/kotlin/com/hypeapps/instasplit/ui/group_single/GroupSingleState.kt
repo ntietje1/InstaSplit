@@ -6,11 +6,8 @@ import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 
 data class GroupSingleState(
-    val groupWrapper: GroupWrapper = GroupWrapper(
-        group = Group(groupId = 0, groupName = ""),
-        users = emptyList(),
-        expenses = emptyList(),
-    ),
+    val groupWrapper: GroupWrapper = GroupWrapper.placeholder,
+    val expenseBalances: Map<Expense, Double> = emptyMap()
 ) {
     val group: Group
         get() = groupWrapper.group
@@ -18,4 +15,6 @@ data class GroupSingleState(
         get() = groupWrapper.users
     val expenses: List<Expense>
         get() = groupWrapper.expenses
+    val totalExpenseBalance: Double
+        get() = expenseBalances.values.sum()
 }

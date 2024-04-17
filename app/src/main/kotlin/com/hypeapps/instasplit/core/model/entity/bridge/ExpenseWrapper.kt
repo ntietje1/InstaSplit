@@ -22,7 +22,37 @@ data class ExpenseWrapper(
     )
     val userExpenses: List<UserExpense>
 ) {
+    val evenlySplitAmount: Double
+        get() = expense.totalAmount / users.size
+
+    val paidBy: Int?
+        get() = userExpenses.firstOrNull { it.balance == expense.totalAmount - evenlySplitAmount}?.userId
+
+    fun getBalanceToUser(currentUser: Int, otherUser: Int): Double {
+        val currentUserBalance = getBalance(currentUser)
+        val otherUserBalance = getBalance(otherUser)
+        if (currentUser == paidBy) {
+            return -otherUserBalance
+            // other user OWES money to current user
+        } else if (otherUser == paidBy) {
+            return currentUserBalance
+            // current user OWES money to other user
+        } else {
+            // current user and other user don't owe eachother anything here
+            return 0.0
+        }
+    }
+
     fun getBalance(userId: Int): Double {
         return userExpenses.firstOrNull { it.userId == userId }?.balance ?: 0.0
     }
+
+    companion object {
+        val placeholder: ExpenseWrapper = ExpenseWrapper(
+            expense = Expense(description = "PLACEHOLDER EXPENSE", groupId = 0, totalAmount = 0.0),
+            users = emptyList(),
+            userExpenses = emptyList()
+        )
+    }
+
 }

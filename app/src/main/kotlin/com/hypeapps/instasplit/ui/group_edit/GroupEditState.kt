@@ -7,11 +7,7 @@ import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 
 data class GroupEditState(
-    val groupWrapper: GroupWrapper = GroupWrapper(
-        group = Group(groupId = 0, groupName = ""),
-        users = emptyList(),
-        expenses = emptyList(),
-    ),
+    val groupWrapper: GroupWrapper = GroupWrapper.placeholder,
     val email: TextFieldValue = TextFieldValue(""),
     val changesMade: List<suspend () -> Unit> = emptyList(),
 ) {

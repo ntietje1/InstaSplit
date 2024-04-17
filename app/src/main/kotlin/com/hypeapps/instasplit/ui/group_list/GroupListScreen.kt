@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
@@ -98,13 +100,16 @@ fun GroupListScreen(
     }, floatingActionButtonPosition = FabPosition.Center,
 
         content = { innerPadding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .padding(innerPadding)
                     .padding(top = 16.dp)
             ) {
-                groupListState.groups.forEach { group ->
+                items(groupListState.groups) { group ->
                     GroupCard(group = group, onClick = { onGroupClick(group) })
+                }
+                item {
+                    Spacer(modifier = Modifier.height(80.dp))
                 }
             }
         })

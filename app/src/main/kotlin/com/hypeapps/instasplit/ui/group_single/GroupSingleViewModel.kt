@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.InstaSplitRepository
-import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 import com.hypeapps.instasplit.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,20 +20,26 @@ class GroupSingleViewModel(
     private val _state = MutableStateFlow(GroupSingleState())
     val state: StateFlow<GroupSingleState> = _state.asStateFlow()
 
-    fun updateState(groupWrapper: GroupWrapper) {
-        _state.value = GroupSingleState(groupWrapper)
+    private fun updateState(groupWrapper: GroupWrapper) {
+        val expenseBalances = groupWrapper.expenses.associateWith { expense ->
+            println("MAPPING EXPENSE: : $expense")
+            repository.getExpenseWrapperLiveData(expense.expenseId!!).value?.getBalance(userManager.getUserId()) ?: 0.0
+        }
+        _state.value = GroupSingleState(groupWrapper, expenseBalances)
     }
 
     fun updateGroupId(groupId: Int) {
         viewModelScope.launch {
-            val groupWithUsersAndExpenses = repository.getGroupWrapper(groupId)
-            updateState(groupWithUsersAndExpenses)
+            repository.getGroupWrapper(groupId).observeForever { groupWrapper ->
+                updateState(groupWrapper)
+            }
         }
     }
 
-    suspend fun expenseToBalance(expense: Expense): Double {
-        return repository.getExpenseWrapper(expense.expenseId!!).getBalance(userManager.getUserId())
-    }
+//    suspend fun expenseToBalance(expense: Expense): Double {
+//        val expenseWrapper = repository.getExpenseWrapper(expense.expenseId!!)
+//        return expenseWrapper.getBalance(userManager.getUserId())
+//    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
