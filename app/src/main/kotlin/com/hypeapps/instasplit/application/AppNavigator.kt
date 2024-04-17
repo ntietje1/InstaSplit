@@ -73,7 +73,14 @@ fun AppNavigator() {
         ) { backStackEntry ->
             val argsJson = backStackEntry.arguments?.getString("args") ?: ""
             val args = Gson().fromJson(argsJson, ExpenseEditArgs::class.java)
-            ExpenseEditScreen(expenseId = args.expenseId, initialGroupId = args.initialGroupId, initialDesc = args.initialDesc, initialAmount = args.initialAmount, groupLocked = args.groupLocked, onDone = { navController.popBackStack() }, onScanReceipt = {
+            var initialAmount = args.initialAmount?.toDoubleOrNull()
+            if (initialAmount != null && initialAmount <= 0) {
+                initialAmount = null
+            }
+            println("initialAmount: $initialAmount")
+            ExpenseEditScreen(expenseId = args.expenseId, initialGroupId = args.initialGroupId, initialDesc = args.initialDesc,
+                initialAmount = initialAmount,
+                groupLocked = args.groupLocked, onDone = { navController.popBackStack() }, onScanReceipt = {
                 navController.navigate("${Screen.Camera.route}/${Gson().toJson(args)}")
             })
         }

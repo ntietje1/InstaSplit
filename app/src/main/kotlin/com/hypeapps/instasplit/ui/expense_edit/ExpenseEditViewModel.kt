@@ -28,13 +28,13 @@ class ExpenseEditViewModel(
     fun acceptInitialValues(
         initialGroupId: Int? = null,
         initialDesc: String? = null,
-        initialAmount: String? = null,
+        initialAmount: Double? = null,
         groupLocked: Boolean = false,
     ) {
         viewModelScope.launch {
             initialGroupId?.let { updateGroupId(it) }
             initialDesc?.let { updateDescriptionField(TextFieldValue(it)) }
-            initialAmount?.let { updateAmountField(TextFieldValue(it)) }
+            if (initialAmount != null) updateAmountField(TextFieldValue(initialAmount.toString()))
             if (groupLocked) {
                 lockGroup()
             }
@@ -56,12 +56,18 @@ class ExpenseEditViewModel(
     }
 
     fun addExpense() {
-        //TODO: add validation and first "UserExpense" for the user who created the expense
         //TODO: add way to "settle up"
         viewModelScope.launch {
-            val addedExpenseId = repository.addOrUpdateExpense(userManager.getUserId(), _state.value.expenseWrapper.expense)
+           repository.addOrUpdateExpense(
+                userManager.getUserId(),
+                _state.value.expenseWrapper.expense)
             resetState()
         }
+    }
+
+    //TODO: add validation with toast popup
+    fun validateExpense(): Boolean {
+        return _state.value.expenseWrapper.expense.totalAmount > 0.0 && _state.value.expenseWrapper.expense.description.isNotBlank()
     }
 
     fun updateExpenseId(expenseId: Int) {

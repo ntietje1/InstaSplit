@@ -58,7 +58,7 @@ fun ExpenseEditScreen(
     expenseId: Int?,
     initialGroupId: Int? = null,
     initialDesc: String? = null,
-    initialAmount: String? = null,
+    initialAmount: Double? = null,
     groupLocked: Boolean = false,
     onDone: () -> Unit,
     onScanReceipt: () -> Unit,
