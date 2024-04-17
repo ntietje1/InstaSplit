@@ -36,7 +36,9 @@ class GroupSingleViewModel(
                     if (existingWrapperIndex != -1) {
                         currentWrappers[existingWrapperIndex] = expenseWrapper
                     } else {
-                        currentWrappers.add(expenseWrapper)
+                        expenseWrapper?.let {
+                            currentWrappers.add(it)
+                        }
                     }
                     _state.value = _state.value.copy(expenseWrappers = currentWrappers)
                 }
