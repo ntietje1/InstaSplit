@@ -47,4 +47,12 @@ data class ExpenseWrapper(
         return userExpenses.firstOrNull { it.userId == userId }?.balance ?: 0.0
     }
 
+    companion object {
+        val placeholder: ExpenseWrapper = ExpenseWrapper(
+            expense = Expense(description = "PLACEHOLDER EXPENSE", groupId = 0, totalAmount = 0.0),
+            users = emptyList(),
+            userExpenses = emptyList()
+        )
+    }
+
 }

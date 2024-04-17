@@ -28,4 +28,13 @@ data class UserWrapper(
         entityColumn = "expenseId",
     )
     val userExpenses: List<UserExpense>
-)
+) {
+    companion object {
+        val placeholder: UserWrapper = UserWrapper(
+            user = User(userName = "PLACEHOLDER USER", email = "test@email.com", phoneNumber = "", password = ""),
+            groups = emptyList(),
+            expenses = emptyList(),
+            userExpenses = emptyList(),
+        )
+    }
+}

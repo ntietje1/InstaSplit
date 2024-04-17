@@ -26,25 +26,27 @@ class GroupListViewModel(
         setUserToCurrentUser()
     }
 
-    fun updateState(userWrapper: UserWrapper) {
+    private fun updateState(userWrapper: UserWrapper) {
         _state.value = GroupListState(userWrapper)
     }
 
     private fun setUserToCurrentUser() {
         viewModelScope.launch {
-            val userWrapper = repository.getUserWrapper(userManager.getUserId())
-            updateState(userWrapper)
+            repository.getUserWrapper(userManager.getUserId()).observeForever { userWrapper ->
+                updateState(userWrapper)
+            }
         }
     }
 
     suspend fun addGroup(): Group {
         return viewModelScope.async {
             val groupId = repository.addGroup(Group(groupName = "New Group"))
+            repository.addUserToGroup(userManager.getUserId(), groupId)
             repository.getGroup(groupId)
         }.await()
     }
 
-//    fun getGroupStatus(group: Group): String {
+//    fun getGroupStatus(group: Group): String { TODO
 //
 //    }
 

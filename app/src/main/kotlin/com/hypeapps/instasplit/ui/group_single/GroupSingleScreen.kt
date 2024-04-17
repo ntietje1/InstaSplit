@@ -35,9 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
-import kotlin.reflect.KSuspendFunction1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,26 +113,17 @@ fun GroupSingleScreen(
                 .padding(innerPadding)
                 .padding(top = 32.dp)
         ) {// Increase this value to move everything down
-            GroupInfoCard(groupSingleState.groupWrapper, expenseToBalance = viewModel::expenseToBalance)
+            GroupInfoCard(groupSingleState.groupWrapper, groupSingleState.totalExpenseBalance)
             ExpensesHeader()
             ExpensesList(
-                groupSingleState.expenses, onExpenseClicked = { onAddExpense(it) }, expenseToBalance = viewModel::expenseToBalance
-            )
+                groupSingleState.expenses,  { onAddExpense(it) }, groupSingleState.expenseBalances
+                )
         }
     }
 }
 
 @Composable
-fun GroupInfoCard(groupWrapper: GroupWrapper, expenseToBalance: KSuspendFunction1<Expense, Double>) {
-    var totalBalance by remember { mutableDoubleStateOf(0.0) }
-
-    LaunchedEffect(groupWrapper.expenses) {
-        println("EXPENSES UPDATED!!! ${groupWrapper.expenses}")
-        totalBalance = groupWrapper.expenses.sumOf {
-            expenseToBalance(it)
-        }
-    }
-
+fun GroupInfoCard(groupWrapper: GroupWrapper, totalBalance: Double) {
     Card(
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
@@ -191,17 +178,15 @@ fun ExpensesHeader() {
 
 @Composable
 fun ExpensesList(
-    expenses: List<Expense>, onExpenseClicked: (Expense) -> Unit, expenseToBalance: KSuspendFunction1<Expense, Double>
+    expenses: List<Expense>, onExpenseClicked: (Expense) -> Unit, expenseBalances: Map<Expense, Double>
 ) {
     LazyColumn {
         items(expenses) { expense ->
-            var balance by remember { mutableDoubleStateOf(0.0) }
-            LaunchedEffect(expense.hashCode()) {
-                balance = expenseToBalance(expense)
+            expenseBalances[expense]?.let { balance ->
+                ExpenseItem(
+                    modifier = Modifier.clickable { onExpenseClicked(expense) }, description = expense.description, date = expense.formattedDate, balance = balance, totalAmount = expense.totalAmount
+                )
             }
-            ExpenseItem(
-                modifier = Modifier.clickable { onExpenseClicked(expense) }, description = expense.description, date = expense.formattedDate, balance = balance, totalAmount = expense.totalAmount
-            )
         }
         item {
             Spacer(modifier = Modifier.height(80.dp))

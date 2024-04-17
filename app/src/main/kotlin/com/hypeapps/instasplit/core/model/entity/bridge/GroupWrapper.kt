@@ -22,5 +22,11 @@ data class GroupWrapper(
     )
     val expenses: List<Expense>
 ) {
-
+    companion object {
+        val placeholder: GroupWrapper = GroupWrapper(
+            group = Group(groupName = "PLACEHOLDER GROUP"),
+            users = emptyList(),
+            expenses = emptyList()
+        )
+    }
 }

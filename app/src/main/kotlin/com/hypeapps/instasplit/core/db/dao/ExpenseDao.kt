@@ -1,5 +1,6 @@
 package com.hypeapps.instasplit.core.db.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -31,4 +32,8 @@ interface ExpenseDao {
     @Transaction
     @Query("SELECT * FROM expense WHERE expenseId = :expenseId")
     suspend fun getExpenseWrapper(expenseId: Int): ExpenseWrapper
+
+    @Transaction
+    @Query("SELECT * FROM expense WHERE expenseId = :expenseId")
+    fun getExpenseWrapperLiveData(expenseId: Int): LiveData<ExpenseWrapper>
 }
