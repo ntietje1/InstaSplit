@@ -60,9 +60,10 @@ class ExpenseEditViewModel(
         //TODO: add way to "settle up"
         viewModelScope.launch {
             repository.addOrUpdateExpense(
-                userManager.getUserId(), _state.value.expenseWrapper.expense
+                userManager.getUserId(), _state.value.expenseWrapper.expense.copy(
+                    date = System.currentTimeMillis()
+                )
             )
-
             resetState()
         }
     }
