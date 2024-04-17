@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun GroupListScreen(
     onGroupClick: (Group) -> Unit, onAddExpense: () -> Unit, onAddGroup: (Group) -> Unit, viewModel: GroupListViewModel = viewModel(factory = GroupListViewModel.Factory)
-) { //TODO: Add Navigation bar for the app later
+) {
     val groupListState: GroupListState by viewModel.state.collectAsState()
 
     Scaffold(topBar = {
@@ -105,8 +105,13 @@ fun GroupListScreen(
                     .padding(innerPadding)
                     .padding(top = 16.dp)
             ) {
-                items(groupListState.groups) { group ->
-                    GroupCard(group = group, onClick = { onGroupClick(group) })
+                items(groupListState.groupWrappers) { groupWrapper ->
+                    GroupCard(
+                        group = groupWrapper.group,
+                        groupStatus = viewModel.getGroupStatus(groupWrapper),
+                        memberCount = groupWrapper.users.size,
+                        onClick = { onGroupClick(groupWrapper.group) }
+                    )
                 }
                 item {
                     Spacer(modifier = Modifier.height(80.dp))
@@ -116,7 +121,7 @@ fun GroupListScreen(
 }
 
 @Composable
-fun GroupCard(group: Group, onClick: () -> Unit) {
+fun GroupCard(group: Group, groupStatus: String, memberCount: Int, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 15.dp)
@@ -134,13 +139,13 @@ fun GroupCard(group: Group, onClick: () -> Unit) {
                 ImageView(context).apply {
                     scaleType = ImageView.ScaleType.CENTER_CROP
                     adjustViewBounds = true
-                    setBackgroundColor(Color.WHITE)  // replace 'background_color' with your actual color resource
+                    setBackgroundColor(Color.WHITE)
 
                 }
             }, modifier = Modifier
                 .size(120.dp)
                 .clip(RoundedCornerShape(12.dp))
-            ) // Apply clipping for rounded corners
+            )
             { imageView ->
                 Glide.with(imageView.context)
                     .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1jVxHEjBZkIfrz6bYmOy1cE-pbs6Hpdb324HOb2Ntlg&s") //Default image
@@ -157,7 +162,8 @@ fun GroupCard(group: Group, onClick: () -> Unit) {
                 Text(
                     text = group.groupName, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
                 )
-                Text(text = group.groupId.toString(), color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(text = "$memberCount members",  style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onPrimary)
+                Text(text = groupStatus,  style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }

@@ -46,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
+import com.hypeapps.instasplit.core.utils.formatMoney
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,9 +158,9 @@ fun GroupInfoCard(modifier: Modifier = Modifier, groupWrapper: GroupWrapper, tot
                     groupWrapper.group.groupName, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
                 )
                 Text("${groupWrapper.users.size} members", color = MaterialTheme.colorScheme.onPrimary)
-                Text("Total expenses: $${groupWrapper.expenses.sumOf { it.totalAmount }}", color = MaterialTheme.colorScheme.onPrimary)
-                if (totalBalance > 0) Text("You are owed: $${totalBalance}", color = MaterialTheme.colorScheme.onPrimary)
-                else if (totalBalance <= 0) Text("You owe: $${totalBalance}", color = MaterialTheme.colorScheme.onPrimary)
+                Text("Total expenses: ${groupWrapper.expenses.sumOf { it.totalAmount }.formatMoney()}", color = MaterialTheme.colorScheme.onPrimary)
+                if (totalBalance > 0) Text("You are owed: ${totalBalance.formatMoney()}", color = MaterialTheme.colorScheme.onPrimary)
+                else if (totalBalance <= 0) Text("You owe: ${totalBalance.formatMoney()}", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
@@ -242,31 +243,16 @@ fun ExpenseItem(modifier: Modifier = Modifier, description: String, date: String
                     )
                 }
                 Text(
-                    "Total: $${totalAmount}", color = MaterialTheme.colorScheme.onPrimary
+                    "Total: ${totalAmount.formatMoney()}", color = MaterialTheme.colorScheme.onPrimary
                 )
                 if (balance > 0) Text(
-                    "You are owed: $${balance}", color = MaterialTheme.colorScheme.onPrimary
+                    "You are owed: ${balance.formatMoney()}", color = MaterialTheme.colorScheme.onPrimary
                 )
                 else if (balance <= 0) Text(
-                    "You owe: $${balance}", color = MaterialTheme.colorScheme.onPrimary
+                    "You owe: ${balance.formatMoney()}", color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewGroupDetailScreen() {
-//    MaterialTheme {
-//        GroupSingleScreen(
-//            group = Group("Apartment", 2, "$200"),
-//            expenses = listOf(
-//                Expense("March Cleaning Supplies", "$100"),
-//                Expense("March 10 Week Grocery", "$100")
-//            ),
-//            onAddExpense = {},
-//            onEditGroup = {}
-//        )
-//    }
-//}

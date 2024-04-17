@@ -7,8 +7,10 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.InstaSplitRepository
 import com.hypeapps.instasplit.core.model.entity.Group
+import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 import com.hypeapps.instasplit.core.utils.UserManager
+import com.hypeapps.instasplit.core.utils.formatMoney
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,8 +28,14 @@ class GroupListViewModel(
         setUserToCurrentUser()
     }
 
+    fun getGroupStatus(groupWrapper: GroupWrapper): String {
+        val totalExpense = groupWrapper.expenses.sumOf { it.totalAmount }
+        return "Total Expenses: ${totalExpense.formatMoney()}"
+    }
+
     private fun updateState(userWrapper: UserWrapper) {
         _state.value = GroupListState(userWrapper)
+        updateGroupWrappers(userWrapper.groups)
     }
 
     private fun setUserToCurrentUser() {
@@ -44,6 +52,24 @@ class GroupListViewModel(
             repository.addUserToGroup(userManager.getUserId(), groupId)
             repository.getGroup(groupId)
         }.await()
+    }
+
+    private fun updateGroupWrappers(groups: List<Group>) {
+        groups.forEach { group ->
+            repository.getGroupWrapper(group.groupId!!)
+                .observeForever { groupWrapper ->
+                    val currentWrappers = _state.value.groupWrappers.toMutableList()
+                    val existingWrapperIndex = currentWrappers.indexOfFirst { it.group.groupId == group.groupId }
+                    if (existingWrapperIndex != -1) {
+                        currentWrappers[existingWrapperIndex] = groupWrapper
+                    } else {
+                        groupWrapper?.let {
+                            currentWrappers.add(it)
+                        }
+                    }
+                    _state.value = _state.value.copy(groupWrappers = currentWrappers)
+                }
+        }
     }
 
 //    fun getGroupStatus(group: Group): String { TODO
