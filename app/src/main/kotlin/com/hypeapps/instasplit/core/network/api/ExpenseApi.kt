@@ -9,18 +9,16 @@ import retrofit2.http.Path
 
 interface ExpenseApi {
 
-    // Fetch all expenses for a specific group
-    @GET("api/groups/{groupName}/expenses")
-    suspend fun getExpensesByGroupName(@Path("groupName") groupName: String): List<Expense>
 
-    // Add a new expense to a specific group
-    @POST("api/groups/{groupName}/expenses")
-    suspend fun addExpense(@Path("groupName") groupName: String, @Body expense: Expense)
+    // Fetch all expenses
+    @GET("api/expenses")
+    suspend fun getExpenses(): List<Expense>
 
-    // Delete an expense by its "expenseId". Note: Need to decide on the ID.
-    @DELETE("api/groups/{groupName}/expenses/{expenseId}")
-    suspend fun deleteExpenseById(
-        @Path("groupName") groupName: String,
-        @Path("expenseId") expenseId: String
-    )
+    // add expense
+    @POST("api/expenses")
+    suspend fun addExpenses(): Expense
+
+    // Delete an expense by ID
+    @DELETE("api/expenses/{expense_id}")
+    suspend fun deleteExpense(@Path("expense_id") expenseId: Int): Unit
 }

@@ -54,7 +54,7 @@ class RegisterViewModel(
 
         val res = instaSplitRepository.register(
             RegisterRequest(
-                _state.value.name.text, _state.value.email.text, _state.value.password.text, _state.value.phoneNumber.text
+                username = _state.value.name.text, email = _state.value.email.text, password =  _state.value.password.text, phoneNumber = _state.value.phoneNumber.text
             )
         )
         val user = res.getOrNull()
