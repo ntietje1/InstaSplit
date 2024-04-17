@@ -2,14 +2,18 @@ package com.hypeapps.instasplit.ui.group_single
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
@@ -31,6 +35,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
+import kotlin.reflect.KSuspendFunction1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,9 +88,7 @@ fun GroupSingleScreen(
 
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Edit, contentDescription = "Edit Group",
-                        // Increase the icon size here if needed
-                        modifier = Modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        imageVector = Icons.Filled.Edit, contentDescription = "Edit Group", modifier = Modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -92,13 +98,17 @@ fun GroupSingleScreen(
             Icon(
                 Icons.Filled.AccountBalanceWallet, contentDescription = null, Modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary
             )
-        }, text = {
-            Text(
-                "ADD EXPENSE", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
+        },
+            text = {
+                Text(
+                    "ADD EXPENSE", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
+                )
+            },
+            onClick = { onAddExpense(Expense(groupId = groupSingleState.group.groupId!!)) },
+            containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            elevation = FloatingActionButtonDefaults.elevation(
+                defaultElevation = 4.dp  // Adjust the shadow elevation here
             )
-        }, onClick = { onAddExpense(Expense(groupId = groupSingleState.group.groupId!!)) }, containerColor = MaterialTheme.colorScheme.onPrimaryContainer, elevation = FloatingActionButtonDefaults.elevation(
-            defaultElevation = 4.dp  // Adjust the shadow elevation here
-        )
         )
     }, floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
@@ -107,17 +117,26 @@ fun GroupSingleScreen(
                 .padding(innerPadding)
                 .padding(top = 32.dp)
         ) {// Increase this value to move everything down
-            GroupInfoCard(groupSingleState.groupWrapper)
+            GroupInfoCard(groupSingleState.groupWrapper, expenseToBalance = viewModel::expenseToBalance)
             ExpensesHeader()
-            ExpensesList(groupSingleState.expenses) {
-                onAddExpense(it)
-            }
+            ExpensesList(
+                groupSingleState.expenses, onExpenseClicked = { onAddExpense(it) }, expenseToBalance = viewModel::expenseToBalance
+            )
         }
     }
 }
 
 @Composable
-fun GroupInfoCard(groupWrapper: GroupWrapper) {
+fun GroupInfoCard(groupWrapper: GroupWrapper, expenseToBalance: KSuspendFunction1<Expense, Double>) {
+    var totalBalance by remember { mutableDoubleStateOf(0.0) }
+
+    LaunchedEffect(groupWrapper.expenses) {
+        println("EXPENSES UPDATED!!! ${groupWrapper.expenses}")
+        totalBalance = groupWrapper.expenses.sumOf {
+            expenseToBalance(it)
+        }
+    }
+
     Card(
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
@@ -145,7 +164,9 @@ fun GroupInfoCard(groupWrapper: GroupWrapper) {
                     groupWrapper.group.groupName, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
                 )
                 Text("${groupWrapper.users.size} members", color = MaterialTheme.colorScheme.onPrimary)
-                Text("Total expense: ${groupWrapper.expenses.sumOf { it.totalAmount }}", color = MaterialTheme.colorScheme.onPrimary)
+                Text("Total expenses: $${groupWrapper.expenses.sumOf { it.totalAmount }}", color = MaterialTheme.colorScheme.onPrimary)
+                if (totalBalance > 0) Text("You are owed: $${totalBalance}", color = MaterialTheme.colorScheme.onPrimary)
+                else if (totalBalance <= 0) Text("You owe: $${totalBalance}", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
@@ -170,19 +191,26 @@ fun ExpensesHeader() {
 
 @Composable
 fun ExpensesList(
-    expenses: List<Expense>, onExpenseClicked: (Expense) -> Unit
+    expenses: List<Expense>, onExpenseClicked: (Expense) -> Unit, expenseToBalance: KSuspendFunction1<Expense, Double>
 ) {
-    Column {
-        expenses.forEach { expense ->
-            ExpenseItem(modifier = Modifier.clickable {
-                onExpenseClicked(expense)
-            }, expense = expense)
+    LazyColumn {
+        items(expenses) { expense ->
+            var balance by remember { mutableDoubleStateOf(0.0) }
+            LaunchedEffect(expense.hashCode()) {
+                balance = expenseToBalance(expense)
+            }
+            ExpenseItem(
+                modifier = Modifier.clickable { onExpenseClicked(expense) }, description = expense.description, date = expense.formattedDate, balance = balance, totalAmount = expense.totalAmount
+            )
+        }
+        item {
+            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }
 
 @Composable
-fun ExpenseItem(modifier: Modifier = Modifier, expense: Expense) {
+fun ExpenseItem(modifier: Modifier = Modifier, description: String, date: String, balance: Double, totalAmount: Double) {
     Card(
         modifier = modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
@@ -205,11 +233,27 @@ fun ExpenseItem(modifier: Modifier = Modifier, expense: Expense) {
             }
             Spacer(Modifier.width(16.dp))
             Column {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(end = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        description, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        date, color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
                 Text(
-                    expense.description, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
+                    "Total: $${totalAmount}", color = MaterialTheme.colorScheme.onPrimary
                 )
-                Text(
-                    "Total: ${expense.totalAmount}", color = MaterialTheme.colorScheme.onPrimaryContainer
+                if (balance > 0) Text(
+                    "You are owed: $${balance}", color = MaterialTheme.colorScheme.onPrimary
+                )
+                else if (balance <= 0) Text(
+                    "You owe: $${balance}", color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

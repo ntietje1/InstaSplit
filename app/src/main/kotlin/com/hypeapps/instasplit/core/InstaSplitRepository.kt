@@ -106,28 +106,27 @@ class InstaSplitRepository(
         groupMemberDao.insert(GroupMember(groupId = groupId, userId = userId, isAdmin = false))
     }
 
-    suspend fun addOrUpdateExpense(currentUserId: Int, expense: Expense): Int {
+    suspend fun getBalanceInGroup(userId: Int, groupId: Int): Double {
+        return groupDao.getBalanceInGroup(userId, groupId)
+    }
+
+    suspend fun addOrUpdateExpense(currentUserId: Int, expense: Expense): ExpenseWrapper {
         val expenseId = if (expense.expenseId != null) {
             expenseDao.updateExpense(expense)
             expense.expenseId
         } else {
             expenseDao.addExpense(expense).toInt()
         }
-        val expenseWrapper = expenseDao.getExpenseWrapper(expenseId)
-        val amountOwedPerUser = expense.totalAmount / expenseWrapper.users.size
-
-        for (user in expenseWrapper.users) {
-            val amount = if (user.userId == currentUserId) {
-                // The user who paid the expense is owed money
-                expense.totalAmount - amountOwedPerUser
-            } else {
-                0.0
-            }
-
-            val userExpense = UserExpense(userId = user.userId!!, expenseId = expenseId, amount = amount)
+        // get all other users in the group from groupId in expensse
+        val otherUserIds = groupMemberDao.getGroupMembers(expense.groupId).map { it.userId }.filter { it != currentUserId }
+        val amountOwedPerUser = expense.totalAmount / (otherUserIds.size + 1)
+        for (otherUserId in otherUserIds) {
+            val userExpense = UserExpense(userId = otherUserId, expenseId = expenseId, balance = 0.00 - amountOwedPerUser)
             userExpenseDao.insert(userExpense)
         }
-        return expenseId
+        val userExpense = UserExpense(userId = currentUserId, expenseId = expenseId, balance = expense.totalAmount - amountOwedPerUser)
+        userExpenseDao.insert(userExpense)
+        return expenseDao.getExpenseWrapper(expenseId)
     }
 
     suspend fun deleteExpense(expenseId: Int) {
@@ -157,19 +156,17 @@ class InstaSplitRepository(
     private val expenses = listOf(
         Expense(expenseId = 1, groupId = 1, totalAmount = 90.00, description = "Test Expense 1", date = 1000L),
         Expense(expenseId = 2, groupId = 2, totalAmount = 100.00, description = "Test Expense 2", date = 2000L),
-        Expense(expenseId = 3, groupId = 2, totalAmount = 40.00, description = "Test Expense 3", date = 3000L)
+        Expense(expenseId = 3, groupId = 2, totalAmount = 20.00, description = "Test Expense 3", date = 3000L)
     )
 
     private val userExpenses = listOf(
-        UserExpense(userId = 1, expenseId = 1, amount = -90.0),
-        UserExpense(userId = 1, expenseId = 1, amount = 30.0),
-        UserExpense(userId = 2, expenseId = 1, amount = 30.0),
-        UserExpense(userId = 3, expenseId = 1, amount = 30.0),
-        UserExpense(userId = 1, expenseId = 2, amount = 200.0),
-        UserExpense(userId = 1, expenseId = 2, amount = -100.0),
-        UserExpense(userId = 1, expenseId = 3, amount = 10.0),
-        UserExpense(userId = 1, expenseId = 3, amount = -5.0),
-        UserExpense(userId = 2, expenseId = 3, amount = -5.0),
+        UserExpense(userId = 1, expenseId = 1, balance = 60.0),
+        UserExpense(userId = 2, expenseId = 1, balance = -30.0),
+        UserExpense(userId = 3, expenseId = 1, balance = -30.0),
+        UserExpense(userId = 1, expenseId = 2, balance = 50.0),
+        UserExpense(userId = 2, expenseId = 2, balance = -50.0),
+        UserExpense(userId = 1, expenseId = 3, balance = 10.0),
+        UserExpense(userId = 2, expenseId = 3, balance = -10.0),
     )
 
     private val groupMembers = listOf(
