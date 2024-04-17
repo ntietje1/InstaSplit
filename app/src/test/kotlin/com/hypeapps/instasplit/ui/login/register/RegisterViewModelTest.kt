@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 
 @ExperimentalCoroutinesApi
 class RegisterViewModelTest {
@@ -29,7 +30,7 @@ class RegisterViewModelTest {
     }
 
     @Test
-    fun `test login with valid fields`() = runBlockingTest {
+    fun `test registration with valid fields`() = runBlockingTest {
         val registerRequest = RegisterRequest("name", "email", "password", "phoneNumber")
         val expectedUserId = 1
 
@@ -50,5 +51,51 @@ class RegisterViewModelTest {
 
         Assert.assertEquals(RegisterResult.SUCCESS, result)
         verify { userManager.setUserId(expectedUserId) }
+    }
+
+    @Test
+    fun `test registration with empty fields`() = runBlockingTest {
+        registerViewModel.updateName(TextFieldValue(""))
+        registerViewModel.updateEmail(TextFieldValue(""))
+        registerViewModel.updatePassword(TextFieldValue(""))
+        registerViewModel.updatePhoneNumber(TextFieldValue(""))
+
+        val result = registerViewModel.login()
+
+        Assert.assertEquals(RegisterResult.EMPTY_FIELDS, result)
+    }
+
+    @Test
+    fun `test registration with network error`() = runBlockingTest {
+        val registerRequest = RegisterRequest("name", "email", "password", "phoneNumber")
+
+        coEvery { instaSplitRepository.register(registerRequest) } returns Result.failure(
+            IOException()
+        )
+
+        registerViewModel.updateName(TextFieldValue("name"))
+        registerViewModel.updateEmail(TextFieldValue("email"))
+        registerViewModel.updatePassword(TextFieldValue("password"))
+        registerViewModel.updatePhoneNumber(TextFieldValue("phoneNumber"))
+
+        val result = registerViewModel.login()
+
+        Assert.assertEquals(RegisterResult.NETWORK_ERROR, result)
+    }
+
+    @Test
+    fun `test registration when user already exists`() = runBlockingTest {
+        val registerRequest = RegisterRequest("name", "email", "password", "phoneNumber")
+
+        coEvery { instaSplitRepository.register(registerRequest) } returns Result.failure(Exception("User already exists"))
+
+        registerViewModel.updateName(TextFieldValue("name"))
+        registerViewModel.updateEmail(TextFieldValue("email"))
+        registerViewModel.updatePassword(TextFieldValue("password"))
+        registerViewModel.updatePhoneNumber(TextFieldValue("phoneNumber"))
+
+        val result = registerViewModel.login()
+
+        Assert.assertEquals(RegisterResult.ALREADY_EXISTS, result)
     }
 }

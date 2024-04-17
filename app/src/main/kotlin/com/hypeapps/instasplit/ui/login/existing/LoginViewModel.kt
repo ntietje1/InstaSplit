@@ -47,22 +47,26 @@ class LoginViewModel(
         if (!validateEmptyFields()) {
             return updateLoginResult(LoginResult.EMPTY_FIELDS)
         }
-        val res = instaSplitRepository.login(
-            LoginRequest(
-                _state.value.email.text, _state.value.password.text
+        return try {
+            val res = instaSplitRepository.login(
+                LoginRequest(_state.value.email.text, _state.value.password.text)
             )
-        )
-        val user = res.getOrNull()
-        return if (res.isSuccess && user != null) {
-            val userId = user.userId ?: throw Exception("User does not have an ID")
-            userManager.setUserId(userId)
-            updateLoginResult(LoginResult.SUCCESS)
-        } else if (res.exceptionOrNull() is IOException) {
+            val user = res.getOrNull()
+            if (res.isSuccess && user != null) {
+                val userId = user.userId ?: throw Exception("User does not have an ID")
+                userManager.setUserId(userId)
+                updateLoginResult(LoginResult.SUCCESS)
+            } else {
+                updateLoginResult(LoginResult.INVALID_CREDENTIALS)
+            }
+        } catch (e: IOException) {
             updateLoginResult(LoginResult.NETWORK_ERROR)
-        } else {
-            updateLoginResult(LoginResult.INVALID_CREDENTIALS)
+        } catch (e: Exception) {
+            // Handling any other exception types
+            updateLoginResult(LoginResult.NETWORK_ERROR)
         }
     }
+
 
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
