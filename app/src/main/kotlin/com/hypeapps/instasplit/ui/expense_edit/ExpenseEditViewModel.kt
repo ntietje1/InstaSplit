@@ -76,7 +76,9 @@ class ExpenseEditViewModel(
     fun updateExpenseId(expenseId: Int) {
         viewModelScope.launch {
             repository.getExpenseWrapper(expenseId).observeForever { expenseWrapper ->
-                updateExpense(expenseWrapper)
+                expenseWrapper?.let {
+                    updateExpense(it)
+                }
             }
         }
     }
