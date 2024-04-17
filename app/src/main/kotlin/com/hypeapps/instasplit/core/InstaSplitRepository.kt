@@ -102,6 +102,10 @@ class InstaSplitRepository(
         groupMemberDao.insert(GroupMember(groupId = groupId, userId = userId, isAdmin = false))
     }
 
+    suspend fun editGroup(group: Group) {
+        groupDao.updateGroup(group)
+    }
+
 //    suspend fun getBalanceInGroup(userId: Int, groupId: Int): Double {
 //        return groupDao.getBalanceInGroup(userId, groupId)
 //    }
