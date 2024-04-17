@@ -297,7 +297,6 @@ private fun capturePhoto(
 //    }
 //
 //
-//    //TODO: make last captured photo larger and show extracted text boxes, then have button to confirm or retake
 //
 //    Card(
 //        modifier = modifier
