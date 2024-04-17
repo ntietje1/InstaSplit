@@ -33,7 +33,8 @@ class GroupSingleViewModel(
     }
 
     suspend fun expenseToBalance(expense: Expense): Double {
-        return repository.getExpenseWrapper(expense.expenseId!!).getBalance(userManager.getUserId())
+        val expenseWrapper = repository.getExpenseWrapper(expense.expenseId!!)
+        return expenseWrapper.getBalance(userManager.getUserId())
     }
 
     companion object {
