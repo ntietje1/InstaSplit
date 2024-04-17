@@ -51,7 +51,7 @@ class TextElementParser {
         return generatePairs(results).filter { pair ->
             val (first, second) = pair
             val name = if (first.text.endsWith(":")) first.text.dropLast(1) else first.text
-            val price = second.text.replace(",", "").replace("$", "").toFloatOrNull()
+            val price = second.text.replace(",", "").replace("$", "").toDoubleOrNull()
             name in TOTAL_STRINGS && price != null
         }
     }
