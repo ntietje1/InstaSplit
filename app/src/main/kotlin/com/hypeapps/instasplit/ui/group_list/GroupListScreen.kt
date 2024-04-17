@@ -1,5 +1,6 @@
 package com.hypeapps.instasplit.ui.group_list
 
+import android.graphics.Color
 import android.widget.ImageView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -128,15 +129,20 @@ fun GroupCard(group: Group, onClick: () -> Unit) {
                 ImageView(context).apply {
                     scaleType = ImageView.ScaleType.CENTER_CROP
                     adjustViewBounds = true
+                    setBackgroundColor(Color.WHITE)  // replace 'background_color' with your actual color resource
+
                 }
             }, modifier = Modifier
                 .size(120.dp)
-                .clip(RoundedCornerShape(12.dp)), // Apply clipping for rounded corners
-                update = { imageView ->
-                    Glide.with(imageView.context).load("https://thumb.ac-illust.com/23/23ae0414df316a166952315cbf00cdd9_t.jpeg").override(240, 240) // Resize
-                        .placeholder(R.drawable.loading)  // Display a loading image while the image loads
-                        .into(imageView)
-                })
+                .clip(RoundedCornerShape(12.dp))
+            ) // Apply clipping for rounded corners
+            { imageView ->
+                Glide.with(imageView.context)
+                    .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1jVxHEjBZkIfrz6bYmOy1cE-pbs6Hpdb324HOb2Ntlg&s") //Default image
+                    .override(240, 240) // Resize
+                    .placeholder(R.drawable.loading)  // Display a loading image while the image loads
+                    .into(imageView)
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 
