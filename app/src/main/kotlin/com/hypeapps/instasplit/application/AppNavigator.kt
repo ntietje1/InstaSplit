@@ -90,7 +90,10 @@ fun AppNavigator() {
             val argsJson = backStackEntry.arguments?.getString("args") ?: ""
             val args = Gson().fromJson(argsJson, ExpenseEditArgs::class.java)
             CameraMainScreen(onResult = { result ->
-                args.copy(initialAmount = result.toString()).also {
+                args.copy(
+                    initialDesc = args.initialDesc ?: "Scanned Receipt",
+                    initialAmount = result.toString()
+                ).also {
                     navController.popBackStack()
                     navController.popBackStack()
                     navController.navigate("${Screen.ExpenseEdit.route}/${Gson().toJson(it)}")
