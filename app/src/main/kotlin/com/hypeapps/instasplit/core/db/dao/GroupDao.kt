@@ -23,7 +23,7 @@ interface GroupDao {
     suspend fun getGroupById(groupId: Int): Group
 
     @Insert(onConflict = REPLACE)
-    suspend fun addGroup(group: Group)
+    suspend fun addGroup(group: Group): Long
 
     @Update
     suspend fun updateGroup(group: Group)

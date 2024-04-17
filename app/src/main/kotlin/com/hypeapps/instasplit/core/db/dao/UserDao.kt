@@ -18,7 +18,7 @@ interface UserDao {
     suspend fun getUserByEmail(email: String): User?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addUser(user: User)
+    suspend fun addUser(user: User): Long
 
     @Update
     suspend fun updateUser(user: User)
