@@ -106,9 +106,9 @@ class InstaSplitRepository(
         groupMemberDao.insert(GroupMember(groupId = groupId, userId = userId, isAdmin = false))
     }
 
-    suspend fun getBalanceInGroup(userId: Int, groupId: Int): Double {
-        return groupDao.getBalanceInGroup(userId, groupId)
-    }
+//    suspend fun getBalanceInGroup(userId: Int, groupId: Int): Double {
+//        return groupDao.getBalanceInGroup(userId, groupId)
+//    }
 
     suspend fun addOrUpdateExpense(currentUserId: Int, expense: Expense): ExpenseWrapper {
         val expenseId = if (expense.expenseId != null) {

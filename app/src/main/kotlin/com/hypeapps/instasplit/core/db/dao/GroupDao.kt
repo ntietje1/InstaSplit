@@ -31,5 +31,12 @@ interface GroupDao {
     @Query("DELETE FROM 'group' WHERE groupId = :groupId")
     suspend fun deleteGroupById(groupId: Int)
 
-
+//    @Query(
+//        """
+//        SELECT SUM(userexpense.balance)
+//        FROM userexpense JOIN expense ON userexpense.expenseId = expense.expenseId
+//        WHERE userId = :userId AND expense.groupId = :groupId
+//        """
+//    )
+//    suspend fun getBalanceInGroup(userId: Int, groupId: Int): Double
 }
