@@ -21,9 +21,7 @@ class AppContainer {
             Room.databaseBuilder(
                 context,
                 InstaSplitDatabase::class.java, "instasplit_database"
-            )
-                .fallbackToDestructiveMigration() //TODO GET RID OF THIS LATER
-                .build()
+            ).build()
         repository = InstaSplitRepository(localDataSource, remoteDataSource)
     }
 
