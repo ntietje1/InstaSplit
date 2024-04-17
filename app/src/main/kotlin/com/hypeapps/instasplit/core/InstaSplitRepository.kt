@@ -124,6 +124,14 @@ class InstaSplitRepository(
         return expenseDao.getExpenseWrapper(expenseId)
     }
 
+    suspend fun addGroup(group: Group): Int {
+        return groupDao.addGroup(group).toInt()
+    }
+
+    suspend fun getGroup(groupId: Int): Group {
+        return groupDao.getGroupById(groupId)
+    }
+
     private val groups = listOf(
         Group(groupId = 1, groupName = "Test Group 1"), Group(groupId = 2, groupName = "Test Group 2")
     )
