@@ -50,7 +50,7 @@ class RegisterViewModelTest {
         val result = registerViewModel.login()
 
         Assert.assertEquals(RegisterResult.SUCCESS, result)
-        verify { userManager.setUserId(expectedUserId) }
+        verify { userManager.currentUserId = expectedUserId }
     }
 
     @Test

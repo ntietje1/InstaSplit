@@ -44,7 +44,7 @@ class LoginViewModelTest {
         val result = viewModel.login()
 
         Assert.assertEquals(LoginResult.SUCCESS, result)
-        verify { userManager.setUserId(userId) }
+        verify { userManager.currentUserId = userId }
     }
 
     @Test
