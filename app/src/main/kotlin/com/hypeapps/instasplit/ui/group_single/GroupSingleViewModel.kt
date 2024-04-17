@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.InstaSplitRepository
+import com.hypeapps.instasplit.core.model.entity.Expense
+import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 import com.hypeapps.instasplit.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,26 +22,41 @@ class GroupSingleViewModel(
     private val _state = MutableStateFlow(GroupSingleState())
     val state: StateFlow<GroupSingleState> = _state.asStateFlow()
 
-    private fun updateState(groupWrapper: GroupWrapper) {
-        val expenseBalances = groupWrapper.expenses.associateWith { expense ->
-            println("MAPPING EXPENSE: : $expense")
-            repository.getExpenseWrapper(expense.expenseId!!).value?.getBalance(userManager.getUserId()) ?: 0.0
+    fun getBalance(expenseWrapper: ExpenseWrapper): Double {
+        val user = userManager.getUserId()
+        return expenseWrapper.getBalance(user)
+    }
+
+    private fun updateExpenseWrappers(expenses: List<Expense>) {
+        expenses.forEach { expense ->
+            repository.getExpenseWrapper(expense.expenseId!!)
+                .observeForever { expenseWrapper ->
+                    val currentWrappers = _state.value.expenseWrappers.toMutableList()
+                    val existingWrapperIndex = currentWrappers.indexOfFirst { it.expense.expenseId == expense.expenseId }
+                    if (existingWrapperIndex != -1) {
+                        currentWrappers[existingWrapperIndex] = expenseWrapper
+                    } else {
+                        currentWrappers.add(expenseWrapper)
+                    }
+                    _state.value = _state.value.copy(expenseWrappers = currentWrappers)
+                }
         }
-        _state.value = GroupSingleState(groupWrapper, expenseBalances)
+    }
+
+    private fun updateGroupWrapper(groupWrapper: GroupWrapper) {
+        _state.value = GroupSingleState(groupWrapper)
     }
 
     fun updateGroupId(groupId: Int) {
+        println("updateGroupId($groupId)")
         viewModelScope.launch {
             repository.getGroupWrapper(groupId).observeForever { groupWrapper ->
-                updateState(groupWrapper)
+                println("updateGroupId($groupId) -> groupWrapper: $groupWrapper")
+                updateGroupWrapper(groupWrapper)
+                updateExpenseWrappers(groupWrapper.expenses)
             }
         }
     }
-
-//    suspend fun expenseToBalance(expense: Expense): Double {
-//        val expenseWrapper = repository.getExpenseWrapper(expense.expenseId!!)
-//        return expenseWrapper.getBalance(userManager.getUserId())
-//    }
 
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
