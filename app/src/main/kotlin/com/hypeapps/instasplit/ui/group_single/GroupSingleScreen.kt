@@ -1,6 +1,7 @@
 package com.hypeapps.instasplit.ui.group_single
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,16 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.Expense
-import com.hypeapps.instasplit.core.model.entity.Group
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupSingleScreen(
-    viewModel: GroupSingleViewModel = viewModel(factory = GroupSingleViewModel.Factory),
-    groupId: Int,
-    onAddExpense: (Group) -> Unit,
-    onEditGroup: () -> Unit
+    viewModel: GroupSingleViewModel = viewModel(factory = GroupSingleViewModel.Factory), groupId: Int, onAddExpense: (Expense) -> Unit, onEditGroup: () -> Unit
 ) {
     val groupSingleState: GroupSingleState by viewModel.state.collectAsState()
 
@@ -56,66 +53,66 @@ fun GroupSingleScreen(
         viewModel.updateGroupId(groupId)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Group, contentDescription = null,
-                            modifier = Modifier.padding(top = 24.dp).size(48.dp)
-                            , tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                        Spacer(Modifier.width(8.dp))
-                        Text("Group Info", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.padding(start = 10.dp).padding(top = 24.dp) )
-                        Spacer(Modifier.weight(1f))
-                        IconButton(
-                            onClick = {onEditGroup()},
-                            modifier = Modifier.padding(20.dp).padding(top = 20.dp).size(48.dp) // // right + top padding for the action icon
-
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Edit,
-                                contentDescription = "Edit Group",
-                                // Increase the icon size here if needed
-                                modifier = Modifier.size(36.dp),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                icon = {
-                    Icon(
-                        Icons.Filled.AccountBalanceWallet,
-                        contentDescription = null,
-                        Modifier.size(36.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                },
-                text = {
-                    Text(
-                        "ADD EXPENSE",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
-                    )
-                },
-                onClick = { onAddExpense(groupSingleState.groupWrapper.group) },
-                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 4.dp  // Adjust the shadow elevation here
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.Group, contentDescription = null, modifier = Modifier
+                        .padding(top = 24.dp)
+                        .size(48.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "Group Info",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .padding(top = 24.dp)
+                )
+                Spacer(Modifier.weight(1f))
+                IconButton(
+                    onClick = { onEditGroup() }, modifier = Modifier
+                        .padding(20.dp)
+                        .padding(top = 20.dp)
+                        .size(48.dp) // // right + top padding for the action icon
+
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit, contentDescription = "Edit Group",
+                        // Increase the icon size here if needed
+                        modifier = Modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+        })
+    }, floatingActionButton = {
+        ExtendedFloatingActionButton(icon = {
+            Icon(
+                Icons.Filled.AccountBalanceWallet, contentDescription = null, Modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary
             )
-        },
-        floatingActionButtonPosition = FabPosition.Center
+        }, text = {
+            Text(
+                "ADD EXPENSE", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
+            )
+        }, onClick = { onAddExpense(Expense(groupId = groupSingleState.group.groupId!!)) }, containerColor = MaterialTheme.colorScheme.onPrimaryContainer, elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 4.dp  // Adjust the shadow elevation here
+        )
+        )
+    }, floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).padding(top = 32.dp)) {// Increase this value to move everything down
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(top = 32.dp)
+        ) {// Increase this value to move everything down
             GroupInfoCard(groupSingleState.groupWrapper)
             ExpensesHeader()
-            ExpensesList(groupSingleState.expenses)
+            ExpensesList(groupSingleState.expenses) {
+                println("Expense clicked: $it")
+                onAddExpense(it)
+            }
         }
     }
 }
@@ -127,10 +124,14 @@ fun GroupInfoCard(groupWrapper: GroupWrapper) {
             .padding(horizontal = 20.dp, vertical = 8.dp)
             .fillMaxWidth(),
 
-    shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(20.dp),
     ) {
-        Row(Modifier.fillMaxWidth()
-            .background(MaterialTheme.colorScheme.onPrimaryContainer).padding(10.dp), verticalAlignment = Alignment.Top) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.onPrimaryContainer)
+                .padding(10.dp), verticalAlignment = Alignment.Top
+        ) {
             Box(
                 modifier = Modifier
                     .size(90.dp)
@@ -141,8 +142,9 @@ fun GroupInfoCard(groupWrapper: GroupWrapper) {
             }
             Spacer(Modifier.width(16.dp))
             Column {
-                Text(groupWrapper.group.groupName, style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                Text(
+                    groupWrapper.group.groupName, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
+                )
                 Text("${groupWrapper.users.size} members", color = MaterialTheme.colorScheme.onPrimary)
                 Text("Total expense: ${groupWrapper.expenses.sumOf { it.totalAmount }}", color = MaterialTheme.colorScheme.onPrimary)
             }
@@ -152,39 +154,46 @@ fun GroupInfoCard(groupWrapper: GroupWrapper) {
 
 @Composable
 fun ExpensesHeader() {
-    Row(Modifier.padding(horizontal = 20.dp, vertical = 8.dp).padding(top = 18.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Default.Receipt, contentDescription = "Expenses", Modifier.size(36.dp)
-        , tint = MaterialTheme.colorScheme.onPrimaryContainer)
+    Row(
+        Modifier
+            .padding(horizontal = 20.dp, vertical = 8.dp)
+            .padding(top = 18.dp), verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            Icons.Default.Receipt, contentDescription = "Expenses", Modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
+        )
         Spacer(Modifier.width(8.dp))
-        Text("Expenses", fontWeight = FontWeight.Medium,
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer)
+        Text(
+            "Expenses", fontWeight = FontWeight.Medium, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
     }
 }
 
 @Composable
-fun ExpensesList(expenses: List<Expense>) {
+fun ExpensesList(
+    expenses: List<Expense>, onExpenseClicked: (Expense) -> Unit
+) {
     Column {
         expenses.forEach { expense ->
-            ExpenseItem(expense = expense)
+            ExpenseItem(modifier = Modifier.clickable {
+                onExpenseClicked(expense)
+            }, expense = expense)
         }
     }
 }
 
 @Composable
-fun ExpenseItem(expense: Expense) {
+fun ExpenseItem(modifier: Modifier = Modifier, expense: Expense) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp)
+            .fillMaxWidth(), shape = RoundedCornerShape(20.dp)
     ) {
         Row(
             Modifier
                 .background(MaterialTheme.colorScheme.primary)
                 .padding(10.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
@@ -197,10 +206,12 @@ fun ExpenseItem(expense: Expense) {
             }
             Spacer(Modifier.width(16.dp))
             Column {
-                Text(expense.description, fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary)
-                Text("Total: ${expense.totalAmount}",
-                    color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(
+                    expense.description, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
+                )
+                Text(
+                    "Total: ${expense.totalAmount}", color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             }
         }
     }
