@@ -20,7 +20,7 @@ class GroupSingleViewModel(
     private val _state = MutableStateFlow(GroupSingleState())
     val state: StateFlow<GroupSingleState> = _state.asStateFlow()
 
-    private fun updateState(groupWrapper: GroupWrapper) {
+    fun updateState(groupWrapper: GroupWrapper) {
         val expenseBalances = groupWrapper.expenses.associateWith { expense ->
             println("MAPPING EXPENSE: : $expense")
             repository.getExpenseWrapper(expense.expenseId!!).value?.getBalance(userManager.getUserId()) ?: 0.0

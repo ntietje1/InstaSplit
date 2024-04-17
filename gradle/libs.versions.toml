@@ -24,8 +24,8 @@ ksp = "1.9.23-1.0.19"
 glide = "4.16.0"
 truth = "1.1.3"
 turbine = "0.7.0"
-
-
+robolectric = "4.12"
+coreTesting = "2.2.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -65,7 +65,8 @@ glide-core = { module = "com.github.bumptech.glide:glide", version.ref = "glide"
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+coreTesting = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 
 
 [plugins]
