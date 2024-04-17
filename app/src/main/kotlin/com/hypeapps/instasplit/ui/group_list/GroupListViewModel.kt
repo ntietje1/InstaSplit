@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.hypeapps.instasplit.application.App
-import com.hypeapps.instasplit.core.db.InstaSplitRepository
+import com.hypeapps.instasplit.core.InstaSplitRepository
 import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 import com.hypeapps.instasplit.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +22,8 @@ class GroupListViewModel(
 
     init {
         viewModelScope.launch {
-            val userWithGroupsAndExpenses = repository.getUserWrapper(userId = userManager.getUserId())
-            updateState(userWithGroupsAndExpenses)
+            val userWrapper = repository.getUserWrapper(userId = userManager.getUserId())
+            updateState(userWrapper)
         }
     }
 

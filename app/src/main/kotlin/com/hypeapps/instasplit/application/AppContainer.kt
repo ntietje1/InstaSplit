@@ -3,8 +3,8 @@ package com.hypeapps.instasplit.application
 import android.app.Activity
 import android.content.Context
 import androidx.room.Room
+import com.hypeapps.instasplit.core.InstaSplitRepository
 import com.hypeapps.instasplit.core.db.InstaSplitDatabase
-import com.hypeapps.instasplit.core.db.InstaSplitRepository
 import com.hypeapps.instasplit.core.network.RetrofitInstance
 import com.hypeapps.instasplit.core.utils.OrientationManager
 import com.hypeapps.instasplit.core.utils.UserManager

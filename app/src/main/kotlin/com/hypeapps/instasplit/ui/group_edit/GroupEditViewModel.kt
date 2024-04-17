@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.hypeapps.instasplit.application.App
-import com.hypeapps.instasplit.core.db.InstaSplitRepository
+import com.hypeapps.instasplit.core.InstaSplitRepository
 import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,9 +41,8 @@ class GroupEditViewModel(private val repository: InstaSplitRepository) : ViewMod
 
     fun updateGroupId(groupId: Int) {
         viewModelScope.launch {
-            println("Updating group ID: $groupId")
-            val groupWithUsersAndExpenses = repository.getGroupWrapper(groupId)
-            updateGroupWrapper(groupWithUsersAndExpenses)
+            val groupWrapper = repository.getGroupWrapper(groupId)
+            updateGroupWrapper(groupWrapper)
         }
     }
 

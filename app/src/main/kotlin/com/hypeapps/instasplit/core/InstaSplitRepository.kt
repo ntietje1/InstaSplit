@@ -1,10 +1,12 @@
-package com.hypeapps.instasplit.core.db
+package com.hypeapps.instasplit.core
 
+import com.hypeapps.instasplit.core.db.InstaSplitDatabase
 import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.Group
 import com.hypeapps.instasplit.core.model.entity.GroupMember
 import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.model.entity.UserExpense
+import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 import com.hypeapps.instasplit.core.model.entity.bridge.UserWrapper
 import com.hypeapps.instasplit.core.network.InstaSplitApi
@@ -102,6 +104,24 @@ class InstaSplitRepository(
 
     suspend fun addUserToGroup(userId: Int, groupId: Int) {
         groupMemberDao.insert(GroupMember(groupId = groupId, userId = userId, isAdmin = false))
+    }
+
+    suspend fun addOrUpdateExpense(expense: Expense): Int {
+        val expenseId = if (expense.expenseId != null) {
+            expenseDao.updateExpense(expense)
+            expense.expenseId
+        } else {
+            expenseDao.addExpense(expense).toInt()
+        }
+        return expenseId
+    }
+
+    suspend fun deleteExpense(expenseId: Int) {
+        expenseDao.deleteExpenseById(expenseId)
+    }
+
+    suspend fun getExpenseWrapper(expenseId: Int): ExpenseWrapper {
+        return expenseDao.getExpenseWrapper(expenseId)
     }
 
     private val groups = listOf(

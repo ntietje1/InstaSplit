@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.hypeapps.instasplit.application.App
-import com.hypeapps.instasplit.core.db.InstaSplitRepository
+import com.hypeapps.instasplit.core.InstaSplitRepository
 import com.hypeapps.instasplit.core.utils.LoginRequest
 import com.hypeapps.instasplit.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
