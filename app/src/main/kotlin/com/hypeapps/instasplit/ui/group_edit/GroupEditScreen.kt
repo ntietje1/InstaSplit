@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Email
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.User
+import com.hypeapps.instasplit.core.utils.formatMoney
 import com.hypeapps.instasplit.ui.common.InputField
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,15 +78,25 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEdi
                         .size(48.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(Modifier.width(8.dp))
-                Text(
-                    "Edit ${groupEditState.group?.groupName}",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                        .padding(top = 24.dp)
+                BasicTextField(
+                    value = groupEditState.groupNameField,
+                    onValueChange = viewModel::updateGroupNameField,
+                    textStyle = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(start = 10.dp).padding(top = 24.dp)
                 )
+//                Text(
+//                    "Edit ${groupEditState.group.groupName}",
+//                    style = MaterialTheme.typography.headlineLarge,
+//                    fontWeight = FontWeight.ExtraBold,
+//                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+//                    modifier = Modifier
+//                        .padding(start = 10.dp)
+//                        .padding(top = 24.dp)
+//                )
                 Spacer(Modifier.weight(1f))
             }
         })
@@ -116,8 +128,8 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEdi
                         MemberItem(
                             user,
                             "You",
-                            "You are owed $",
-                            "You owe total $",
+                            "You are owed ",
+                            "You owe total ",
                             viewModel::removeMember,
                             viewModel::getBalanceBetweenUsers
                         )
@@ -129,8 +141,8 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEdi
                     MemberItem(
                         user,
                         null,
-                        "You owe $",
-                        "Owes you $",
+                        "You owe ",
+                        "Owes you ",
                         viewModel::removeMember,
                         viewModel::getBalanceBetweenUsers
                     )
@@ -139,7 +151,7 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEdi
                     Spacer(modifier = Modifier.height(20.dp))
                     AddNewMemberSection(
                         modifier = Modifier.weight(1.0f),
-                        emailState = groupEditState.email,
+                        emailState = groupEditState.emailField,
                         onEmailChanged = viewModel::updateEmailField,
                         onAddMemberByEmail = viewModel::addMemberByEmail,
                         validateEmail = viewModel::validateEmailField
@@ -219,14 +231,18 @@ fun MemberItem(
                     Spacer(modifier = Modifier.height(10.dp))
                     val balance = member.userId?.let { getBalanceToCurrentUser(it) } ?: 0.0
                     if (balance > 0) {
-                        val formattedBalance = String.format("%.2f", balance)
+                        val formattedBalance = balance.formatMoney()
                         Text(
                             text = positiveBalanceString + formattedBalance, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary
                         )
-                    } else {
-                        val formattedBalance = String.format("%.2f", -balance)
+                    } else if (balance < 0){
+                        val formattedBalance =  (-balance).formatMoney()
                         Text(
                             text = negativeBalanceString + formattedBalance, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(
+                            text = "Settled up!", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }

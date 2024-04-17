@@ -49,6 +49,7 @@ fun InputField(
     placeholder: String = "Placeholder",
     imageVector: ImageVector = Icons.Default.QuestionMark,
     secure: Boolean = false,
+    disabled: Boolean = false,
     readOnly: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text // Include this parameter to specify keyboard type
 ) {
@@ -57,7 +58,7 @@ fun InputField(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Surface(
-        color = MaterialTheme.colorScheme.onPrimary,
+        color = if (!disabled) MaterialTheme.colorScheme.onPrimary else Color.LightGray,
         shape = MaterialTheme.shapes.small,
         shadowElevation = 4.dp,
         modifier = modifier

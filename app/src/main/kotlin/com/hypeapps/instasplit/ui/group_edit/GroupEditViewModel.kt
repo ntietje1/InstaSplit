@@ -25,6 +25,12 @@ class GroupEditViewModel(
     val userId: Int
         get() = userManager.getUserId()
 
+    fun updateGroupNameField(groupName: TextFieldValue) {
+        updateGroupWrapper(_state.value.groupWrapper.copy(group = _state.value.groupWrapper.group.copy(groupName = groupName.text)))
+        _state.value = _state.value.copy(groupNameField = groupName)
+
+    }
+
     fun getBalanceBetweenUsers(otherUser: Int): Double {
         val currentUser = userManager.getUserId()
         return state.value.expenseWrappers.sumOf {
@@ -34,6 +40,7 @@ class GroupEditViewModel(
 
     private fun updateGroupWrapper(groupWrapper: GroupWrapper) {
         _state.value = GroupEditState(groupWrapper)
+        _state.value = _state.value.copy(groupNameField = TextFieldValue(groupWrapper.group.groupName))
     }
 
     private fun updateExpenseWrappers(expenses: List<Expense>) {
@@ -53,11 +60,11 @@ class GroupEditViewModel(
     }
 
     fun validateEmailField(): Boolean {
-        return _state.value.email.text.isNotEmpty()
+        return _state.value.emailField.text.isNotEmpty()
     }
 
     fun updateEmailField(email: TextFieldValue) {
-        _state.value = _state.value.copy(email = email)
+        _state.value = _state.value.copy(emailField = email)
     }
 
     private fun addChange(change: suspend () -> Unit) {
@@ -67,6 +74,7 @@ class GroupEditViewModel(
     suspend fun applyChanges() {
         _state.value.changesMade.forEach { it() }
         _state.value = _state.value.copy(changesMade = emptyList())
+        repository.editGroup(_state.value.group)
     }
 
     fun updateGroupId(groupId: Int) {
