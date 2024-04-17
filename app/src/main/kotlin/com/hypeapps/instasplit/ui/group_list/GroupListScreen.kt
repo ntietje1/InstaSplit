@@ -4,7 +4,6 @@ import android.widget.ImageView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,92 +35,78 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.hypeapps.instasplit.R
 import com.hypeapps.instasplit.core.model.entity.Group
-
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupListScreen(
-    onGroupClick: (Group) -> Unit,
-    onAddExpense: () -> Unit,
-    viewModel: GroupListViewModel = viewModel(factory = GroupListViewModel.Factory)
+    onGroupClick: (Group) -> Unit, onAddExpense: () -> Unit, onAddGroup: (Group) -> Unit, viewModel: GroupListViewModel = viewModel(factory = GroupListViewModel.Factory)
 ) { //TODO: Add Navigation bar for the app later
     val groupListState: GroupListState by viewModel.state.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Your Groups",
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        modifier = Modifier.padding(start = 20.dp).padding(top = 24.dp) // left + top padding for the title
-                    )
-                },
-                actions = {
-                    IconButton(
-                        onClick = {/* TODO: Handle add group */ },
-                        // Customize the size of the IconButton here
-                        modifier = Modifier.padding(20.dp).padding(top = 24.dp).size(48.dp) // // right + top padding for the action icon
-
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.AddCircle,
-                            contentDescription = "Add Group",
-                            // Increase the icon size here if needed
-                            modifier = Modifier.size(48.dp),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+    Scaffold(topBar = {
+        TopAppBar(title = {
+            Text(
+                "Your Groups",
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.ExtraBold,
+                modifier = Modifier
+                    .padding(start = 20.dp)
+                    .padding(top = 24.dp)
+            )
+        }, actions = {
+            IconButton(
+                onClick = {
+                    viewModel.viewModelScope.launch {
+                        onAddGroup(viewModel.addGroup())
                     }
-                }
-            )
-        },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                icon = {
-                    Icon(
-                        Icons.Filled.AccountBalanceWallet,
-                        contentDescription = null,
-                        Modifier.size(36.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                },
-                text = {
-                    Text(
-                        "ADD EXPENSE",
-                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp),
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                },
-                onClick = onAddExpense,
-                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                // Apply elevation to create the shadow
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 4.dp  // You can adjust this value to increase or decrease the shadow
+                }, modifier = Modifier
+                    .padding(20.dp)
+                    .padding(top = 24.dp)
+                    .size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.AddCircle, contentDescription = "Add Group",
+                    modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
+            }
+        })
+    }, floatingActionButton = {
+        ExtendedFloatingActionButton(icon = {
+            Icon(
+                Icons.Filled.AccountBalanceWallet, contentDescription = null, Modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary
             )
-        },
-        floatingActionButtonPosition = FabPosition.Center,  // Position the FAB to the center
+        }, text = {
+            Text(
+                "ADD EXPENSE", style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp), color = MaterialTheme.colorScheme.onPrimary
+            )
+        }, onClick = onAddExpense, containerColor = MaterialTheme.colorScheme.onPrimaryContainer, elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 4.dp
+        )
+        )
+    }, floatingActionButtonPosition = FabPosition.Center,
 
         content = { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding).padding(top = 16.dp) ) {
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(top = 16.dp)
+            ) {
                 groupListState.groups.forEach { group ->
                     GroupCard(group = group, onClick = { onGroupClick(group) })
                 }
             }
-        }
-    )
+        })
 }
 
 @Composable
@@ -137,65 +122,33 @@ fun GroupCard(group: Group, onClick: () -> Unit) {
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.primary)
                 .padding(16.dp)
-                .fillMaxSize(),
-            verticalAlignment = Alignment.Top
+                .fillMaxSize(), verticalAlignment = Alignment.Top
         ) {
-            // Use AndroidView to integrate Glide
-            AndroidView(
-                factory = { context ->
-                    ImageView(context).apply {
-                        scaleType = ImageView.ScaleType.CENTER_CROP
-                        adjustViewBounds = true                    }
-                },
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(RoundedCornerShape(12.dp)), // Apply clipping for rounded corners
+            AndroidView(factory = { context ->
+                ImageView(context).apply {
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    adjustViewBounds = true
+                }
+            }, modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(12.dp)), // Apply clipping for rounded corners
                 update = { imageView ->
-                    Glide.with(imageView.context)
-                        .load("https://thumb.ac-illust.com/23/23ae0414df316a166952315cbf00cdd9_t.jpeg")
-                        .override(240, 240) // Resize
+                    Glide.with(imageView.context).load("https://thumb.ac-illust.com/23/23ae0414df316a166952315cbf00cdd9_t.jpeg").override(240, 240) // Resize
                         .placeholder(R.drawable.loading)  // Display a loading image while the image loads
                         .into(imageView)
-                }
-            )
+                })
 
             Spacer(modifier = Modifier.width(16.dp))
 
             Column(
-                verticalArrangement = Arrangement.Top,
-                modifier = Modifier.fillMaxHeight()
+                verticalArrangement = Arrangement.Top, modifier = Modifier.fillMaxHeight()
             ) {
-                Text(text = group.groupName, style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
+                Text(
+                    text = group.groupName, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
+                )
                 Text(text = group.groupId.toString(), color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
         }
     }
 }
 
-
-// TODO: Replace with our actual data model (+ logic to generate status)
-// package com.hypeapps.instasplit.core.model.entity.Group
-
-//private data class Group(val name: String, val status: String)
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewGroupListScreen() {
-//    val exampleViewModel = GroupListViewModel().apply {
-//        updateGroups(
-//            listOf(
-//                Group(name = "Apartment", status = "you owe $120.00"),
-//                Group(name = "Co-op Group", status = "no expenses"),
-//                Group(name = "Friends", status = "you are owed $200.00")
-//            )
-//        )
-//    }
-//    MaterialTheme {
-//        GroupListScreen(
-//            viewModel = exampleViewModel,
-//            onGroupClick = {},
-//            onAddExpense = {}
-//        )
-//    }
-//}

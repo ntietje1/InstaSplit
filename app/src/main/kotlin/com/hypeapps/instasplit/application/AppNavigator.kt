@@ -34,12 +34,16 @@ fun AppNavigator() {
             RegisterScreen(onRegister = { navController.navigate(Screen.GroupList.route) }, goToLogin = { navController.navigate(Screen.LoginExisting.route) })
         }
         composable(Screen.GroupList.route) {
-            GroupListScreen(onGroupClick = { group ->
+            GroupListScreen(
+                onGroupClick = { group ->
                 navController.navigate("${Screen.GroupSingle.route}/${group.groupId}")
             }, onAddExpense = {
                 val args = ExpenseEditArgs()
                 navController.navigate("${Screen.ExpenseEdit.route}/${Gson().toJson(args)}")
-            })
+            }, onAddGroup = { group ->
+                    navController.navigate("${Screen.GroupEdit.route}/${group.groupId}")
+            }
+            )
         }
         composable(
             route = Screen.GroupSingle.route + "/{groupId}", arguments = listOf(navArgument("groupId") { type = NavType.StringType })
