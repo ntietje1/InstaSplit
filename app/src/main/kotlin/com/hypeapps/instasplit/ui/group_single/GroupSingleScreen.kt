@@ -110,7 +110,6 @@ fun GroupSingleScreen(
             GroupInfoCard(groupSingleState.groupWrapper)
             ExpensesHeader()
             ExpensesList(groupSingleState.expenses) {
-                println("Expense clicked: $it")
                 onAddExpense(it)
             }
         }
