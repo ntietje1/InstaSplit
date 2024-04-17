@@ -45,8 +45,14 @@ fun AppNavigator() {
             route = Screen.GroupSingle.route + "/{groupId}", arguments = listOf(navArgument("groupId") { type = NavType.StringType })
         ) { backStackEntry ->
             val groupId = backStackEntry.arguments?.getString("groupId")?.toIntOrNull() ?: 0
-            GroupSingleScreen(groupId = groupId, onAddExpense = { group ->
-                val args = ExpenseEditArgs(initialGroupId = group.groupId.toString(), groupLocked = true)
+            GroupSingleScreen(groupId = groupId, onAddExpense = { expense ->
+                val args = ExpenseEditArgs(
+                    expenseId = expense.expenseId,
+                    initialDesc = expense.description,
+                    initialAmount = expense.totalAmount.toString(),
+                    initialGroupId = expense.groupId,
+                    groupLocked = true
+                )
                 navController.navigate("${Screen.ExpenseEdit.route}/${Gson().toJson(args)}")
             }, onEditGroup = { navController.navigate("${Screen.GroupEdit.route}/$groupId") })
         }
@@ -63,7 +69,7 @@ fun AppNavigator() {
         ) { backStackEntry ->
             val argsJson = backStackEntry.arguments?.getString("args") ?: ""
             val args = Gson().fromJson(argsJson, ExpenseEditArgs::class.java)
-            ExpenseEditScreen(initialGroupId = args.initialGroupId, initialAmount = args.initialAmount, groupLocked = args.groupLocked, onDone = { navController.popBackStack() }, onScanReceipt = {
+            ExpenseEditScreen(expenseId = args.expenseId, initialGroupId = args.initialGroupId, initialDesc = args.initialDesc, initialAmount = args.initialAmount, groupLocked = args.groupLocked, onDone = { navController.popBackStack() }, onScanReceipt = {
                 navController.navigate("${Screen.Camera.route}/${Gson().toJson(args)}")
             })
         }
@@ -84,5 +90,5 @@ fun AppNavigator() {
 }
 
 private data class ExpenseEditArgs(
-    val initialGroupId: String? = null, val initialDesc: String? = null, val initialAmount: String? = null, val groupLocked: Boolean = false
+    val expenseId: Int? = null, val initialGroupId: Int? = null, val initialDesc: String? = null, val initialAmount: String? = null, val groupLocked: Boolean = false
 )
