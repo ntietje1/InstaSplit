@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hypeapps.instasplit.core.model.entity.Expense
+import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +78,9 @@ fun GroupSingleScreen(
                 )
                 Spacer(Modifier.weight(1f))
                 IconButton(
-                    onClick = { onEditGroup() }, modifier = Modifier
+                    onClick = {
+                        onEditGroup()
+                    }, modifier = Modifier
                         .padding(20.dp)
                         .padding(top = 20.dp)
                         .size(48.dp) // // right + top padding for the action icon
@@ -94,17 +97,20 @@ fun GroupSingleScreen(
             Icon(
                 Icons.Filled.AccountBalanceWallet, contentDescription = null, Modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary
             )
-        },
-            text = {
-                Text(
-                    "ADD EXPENSE", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
-                )
-            },
-            onClick = { onAddExpense(Expense(groupId = groupSingleState.group.groupId!!)) },
-            containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = 4.dp  // Adjust the shadow elevation here
+        }, text = {
+            Text(
+                "ADD EXPENSE", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp)
             )
+        }, onClick = {
+            if (groupSingleState.group.groupId != null) {
+                println("Group ID is not null: ${groupSingleState.group.groupId}")
+                onAddExpense(Expense(groupId = groupSingleState.group.groupId!!))
+            } else {
+                println("Group ID is null")
+            }
+        }, containerColor = MaterialTheme.colorScheme.onPrimaryContainer, elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = 4.dp  // Adjust the shadow elevation here
+        )
         )
     }, floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
@@ -112,12 +118,10 @@ fun GroupSingleScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(top = 32.dp)
-        ) {// Increase this value to move everything down
-            GroupInfoCard(groupSingleState.groupWrapper, groupSingleState.totalExpenseBalance)
+        ) {
+            GroupInfoCard(groupSingleState.groupWrapper, groupSingleState.expenseWrappers.sumOf { viewModel.getBalance(it) })
             ExpensesHeader()
-            ExpensesList(
-                groupSingleState.expenses,  { onAddExpense(it) }, groupSingleState.expenseBalances
-                )
+            ExpensesList(groupSingleState.expenseWrappers, onAddExpense, viewModel::getBalance)
         }
     }
 }
@@ -178,15 +182,19 @@ fun ExpensesHeader() {
 
 @Composable
 fun ExpensesList(
-    expenses: List<Expense>, onExpenseClicked: (Expense) -> Unit, expenseBalances: Map<Expense, Double>
+    expensesWrappers: List<ExpenseWrapper>, onExpenseClicked: (Expense) -> Unit, getBalanceWithUserId: (ExpenseWrapper) -> Double
 ) {
     LazyColumn {
-        items(expenses) { expense ->
-            expenseBalances[expense]?.let { balance ->
-                ExpenseItem(
-                    modifier = Modifier.clickable { onExpenseClicked(expense) }, description = expense.description, date = expense.formattedDate, balance = balance, totalAmount = expense.totalAmount
-                )
-            }
+        items(expensesWrappers) { expenseWrapper ->
+            val balance = getBalanceWithUserId(expenseWrapper)
+            ExpenseItem(
+                modifier = Modifier.clickable { onExpenseClicked(expenseWrapper.expense) },
+                description = expenseWrapper.expense.description,
+                date = expenseWrapper.expense.formattedDate,
+                balance = balance,
+                totalAmount = expenseWrapper.expense.totalAmount
+            )
+
         }
         item {
             Spacer(modifier = Modifier.height(80.dp))
