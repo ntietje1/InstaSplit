@@ -3,6 +3,7 @@ package com.hypeapps.instasplit.core.model.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import java.time.LocalDate
 
 @Entity(
     primaryKeys = ["userId", "expenseId"],
@@ -24,6 +25,6 @@ import androidx.room.ForeignKey
 data class UserExpense(
     @ColumnInfo val userId: Int,
     @ColumnInfo val expenseId: Int,
-    @ColumnInfo val date: Long = 0L,
-    @ColumnInfo val amount: Double = 0.00
+    @ColumnInfo val date: Long = LocalDate.now().toEpochDay(),
+    @ColumnInfo val balance: Double = 0.00, // how much is owed to/by the user
 )
