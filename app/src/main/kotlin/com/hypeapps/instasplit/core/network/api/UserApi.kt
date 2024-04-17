@@ -29,9 +29,9 @@ interface UserApi {
     @GET("user/{userId}/info")
     suspend fun getUserWrapper(@Path("userId") userId: Int): UserWrapper
 
-    @POST("user/login")
+    @POST("api/users/login")
     suspend fun loginUser(@Body loginRequest: LoginRequest): Response<User>
 
-    @PUT("user/register")
+    @POST("api/users/register")
     suspend fun registerUser(@Body registerRequest: RegisterRequest): Response<User>
 }

@@ -1,5 +1,6 @@
 package com.hypeapps.instasplit.core
 
+import android.util.Log
 import com.hypeapps.instasplit.core.db.InstaSplitDatabase
 import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.Group
@@ -57,8 +58,9 @@ class InstaSplitRepository(
 
     suspend fun login(loginRequest: LoginRequest): Result<User> {
         return try {
-//            val response = api.loginUser(loginRequest)
-            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
+            val response = api.loginUser(loginRequest)
+
+//            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
@@ -71,8 +73,8 @@ class InstaSplitRepository(
 
     suspend fun register(registerRequest: RegisterRequest): Result<User> {
         return try {
-//            val response = api.registerUser(registerRequest)
-            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
+            val response = api.registerUser(registerRequest)
+//            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
