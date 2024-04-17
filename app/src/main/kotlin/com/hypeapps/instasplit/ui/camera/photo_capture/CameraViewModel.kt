@@ -47,17 +47,21 @@ class CameraViewModel(
 
     private fun extractText(bitmap: Bitmap)  {
         viewModelScope.launch(Dispatchers.IO) {
-            updateIsProcessing(true)
-            textExtractor.extractText(bitmap).apply {
-                addOnCompleteListener {
-                    updateIsProcessing(false)
+            try {
+                updateIsProcessing(true)
+                textExtractor.extractText(bitmap).apply {
+                    addOnCompleteListener {
+                        updateIsProcessing(false)
+                    }
+                    addOnSuccessListener { text ->
+                        val nameAndPrice = textElementParser.getTotal(text)
+                        updateExtractedElements(nameAndPrice)
+                        nameAndPrice?.second?.boundingBox?.let { bitmap.drawBox(it) }
+                        nameAndPrice?.first?.boundingBox?.let { bitmap.drawBox(it) }
+                    }
                 }
-                addOnSuccessListener { text ->
-                    val nameAndPrice = textElementParser.getTotal(text)
-                    updateExtractedElements(nameAndPrice)
-                    nameAndPrice?.second?.boundingBox?.let { bitmap.drawBox(it) }
-                    nameAndPrice?.first?.boundingBox?.let { bitmap.drawBox(it) }
-                }
+            } catch (e: Exception) {
+                updateIsProcessing(false)
             }
         }
     }
