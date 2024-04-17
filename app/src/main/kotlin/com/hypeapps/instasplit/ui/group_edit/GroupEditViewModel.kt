@@ -7,19 +7,49 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.hypeapps.instasplit.application.App
 import com.hypeapps.instasplit.core.InstaSplitRepository
+import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
+import com.hypeapps.instasplit.core.utils.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class GroupEditViewModel(private val repository: InstaSplitRepository) : ViewModel() {
+class GroupEditViewModel(
+    private val repository: InstaSplitRepository,
+    private val userManager: UserManager
+) : ViewModel() {
     private val _state = MutableStateFlow(GroupEditState())
     val state: StateFlow<GroupEditState> = _state.asStateFlow()
+    val userId: Int
+        get() = userManager.getUserId()
+
+    fun getBalanceBetweenUsers(otherUser: Int): Double {
+        val currentUser = userManager.getUserId()
+        return state.value.expenseWrappers.sumOf {
+            it.getBalanceToUser(currentUser, otherUser)
+        }
+    }
 
     private fun updateGroupWrapper(groupWrapper: GroupWrapper) {
         _state.value = GroupEditState(groupWrapper)
+    }
+
+    private fun updateExpenseWrappers(expenses: List<Expense>) {
+        expenses.forEach { expense ->
+            repository.getExpenseWrapper(expense.expenseId!!)
+                .observeForever { expenseWrapper ->
+                    val currentWrappers = _state.value.expenseWrappers.toMutableList()
+                    val existingWrapperIndex = currentWrappers.indexOfFirst { it.expense.expenseId == expense.expenseId }
+                    if (existingWrapperIndex != -1) {
+                        currentWrappers[existingWrapperIndex] = expenseWrapper
+                    } else {
+                        currentWrappers.add(expenseWrapper)
+                    }
+                    _state.value = _state.value.copy(expenseWrappers = currentWrappers)
+                }
+        }
     }
 
     fun validateEmailField(): Boolean {
@@ -40,9 +70,12 @@ class GroupEditViewModel(private val repository: InstaSplitRepository) : ViewMod
     }
 
     fun updateGroupId(groupId: Int) {
+        println("updateGroupId($groupId)")
         viewModelScope.launch {
             repository.getGroupWrapper(groupId).observeForever { groupWrapper ->
+                println("updateGroupId($groupId) -> groupWrapper: $groupWrapper")
                 updateGroupWrapper(groupWrapper)
+                updateExpenseWrappers(groupWrapper.expenses)
             }
         }
     }
@@ -76,6 +109,7 @@ class GroupEditViewModel(private val repository: InstaSplitRepository) : ViewMod
                 val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as App
                 return GroupEditViewModel(
                     app.appContainer.repository,
+                    app.appContainer.userManager
                 ) as T
             }
         }

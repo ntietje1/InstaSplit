@@ -49,7 +49,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,23 +57,6 @@ import com.hypeapps.instasplit.ui.common.InputField
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-//// Mock data class for a group member
-//data class GroupMember(
-//    val name: String,
-//    val email: String,
-//    val status: String, // Indicates whether the member owes money or is owed money
-//    val balance: String // The amount of money owed or due
-//)
-//
-//// use this mock data class to create instances of GroupMember for previews or tests:
-//val mockMembers = listOf(
-//    GroupMember("John Doe", "john.doe@example.com", "owes", "$200.00"),
-//    GroupMember("Bob Smith", "bob.smith@example.com", "gets back", "$200.00"),
-//    // Add more mock members as needed
-//)
-
-// ViewModel to handle the state of the group edit screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,8 +111,29 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEdi
             Spacer(modifier = Modifier.height(10.dp))
             MemberHeader(groupEditState.users.size)
             LazyColumn(Modifier.fillMaxSize()) {
-                items(groupEditState.users) { user ->
-                    MemberItem(user, viewModel::removeMember)
+                item {
+                    groupEditState.users.find { it.userId == viewModel.userId }?.let { user ->
+                        MemberItem(
+                            user,
+                            "You",
+                            "You are owed $",
+                            "You owe total $",
+                            viewModel::removeMember,
+                            viewModel::getBalanceBetweenUsers
+                        )
+                    }
+                }
+                items(groupEditState.users.filter {
+                    it.userId != viewModel.userId
+                }) { user ->
+                    MemberItem(
+                        user,
+                        null,
+                        "You owe $",
+                        "Owes you $",
+                        viewModel::removeMember,
+                        viewModel::getBalanceBetweenUsers
+                    )
                 }
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
@@ -161,7 +164,14 @@ fun MemberHeader(memberCount: Int) {
 
 // Composable for each member item in the list
 @Composable
-fun MemberItem(member: User, onRemoveMember: (User) -> Unit) {
+fun MemberItem(
+    member: User,
+    nameOverride: String?,
+    negativeBalanceString: String,
+    positiveBalanceString: String,
+    onRemoveMember: (User) -> Unit,
+    getBalanceToCurrentUser: (Int) -> Double
+) {
     Row(
         verticalAlignment = Alignment.Top, modifier = Modifier
             .fillMaxWidth()
@@ -180,35 +190,47 @@ fun MemberItem(member: User, onRemoveMember: (User) -> Unit) {
             ),
             elevation = CardDefaults.elevatedCardElevation()
         ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().weight(0.5f).padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f)
+                    .padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(60.dp) // Size of the icon/image placeholder
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color.LightGray) // Placeholder color
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(60.dp) // Size of the icon/image placeholder
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(Color.LightGray) // Placeholder color
-                    ) {
-                        // Placeholder for the expense type icon/image
-                        // Replace with actual Image composable when ready
-                    }
-                    Column(
-                        modifier = Modifier.padding(start = 10.dp), horizontalAlignment = Alignment.End
-                    ) {
+                    // Placeholder for the expense type icon/image
+                    // Replace with actual Image composable when ready
+                }
+                Column(
+                    modifier = Modifier.padding(start = 10.dp), horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = nameOverride ?: member.userName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Text(
+                        text = member.email, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    val balance = member.userId?.let { getBalanceToCurrentUser(it) } ?: 0.0
+                    if (balance > 0) {
+                        val formattedBalance = String.format("%.2f", balance)
                         Text(
-                            text = member.userName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary
+                            text = positiveBalanceString + formattedBalance, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary
                         )
+                    } else {
+                        val formattedBalance = String.format("%.2f", -balance)
                         Text(
-                            text = member.email, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text( //TODO implement this
-                            text = "Owes you $100.00", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary
+                            text = negativeBalanceString + formattedBalance, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
+            }
         }
         IconButton(onClick = { onRemoveMember(member) }) {
             Icon(
@@ -256,7 +278,7 @@ fun AddNewMemberSection(
                     disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
-                elevation =  ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp),
+                elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp),
                 onClick = {
                     if (validateEmail()) {
                         onAddMemberByEmail(emailState.text)
@@ -276,26 +298,26 @@ fun AddNewMemberSection(
         }
     }
 }
-
-@Preview
-@Composable
-fun PreviewGroupMemberItem() {
-    MemberItem(User(userName = "very long testing name", email = "someone@gmail.com", phoneNumber = "12894612945", password = "12398567189367"), onRemoveMember = {})
-}
-
-@Preview
-@Composable
-fun PreviewGroupMemberItem2() {
-    MemberItem(User(userName = "name", email = "email", phoneNumber = "1234567890", password = "password"), onRemoveMember = {})
-}
-
-@Preview
-@Composable
-fun PreviewAddNewMemberSection() {
-    MaterialTheme {
-        AddNewMemberSection(emailState = TextFieldValue(""), onEmailChanged = {}, onAddMemberByEmail = {}, validateEmail = { true })
-    }
-}
+//
+//@Preview
+//@Composable
+//fun PreviewGroupMemberItem() {
+//    MemberItem(User(userName = "very long testing name", email = "someone@gmail.com", phoneNumber = "12894612945", password = "12398567189367"), onRemoveMember = {})
+//}
+//
+//@Preview
+//@Composable
+//fun PreviewGroupMemberItem2() {
+//    MemberItem(User(userName = "name", email = "email", phoneNumber = "1234567890", password = "password"), onRemoveMember = {})
+//}
+//
+//@Preview
+//@Composable
+//fun PreviewAddNewMemberSection() {
+//    MaterialTheme {
+//        AddNewMemberSection(emailState = TextFieldValue(""), onEmailChanged = {}, onAddMemberByEmail = {}, validateEmail = { true })
+//    }
+//}
 
 
 //// Preview for GroupEditScreen

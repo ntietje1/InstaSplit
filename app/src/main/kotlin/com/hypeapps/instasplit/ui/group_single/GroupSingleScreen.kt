@@ -119,7 +119,9 @@ fun GroupSingleScreen(
                 .padding(innerPadding)
                 .padding(top = 32.dp)
         ) {
-            GroupInfoCard(groupSingleState.groupWrapper, groupSingleState.expenseWrappers.sumOf { viewModel.getBalance(it) })
+            GroupInfoCard(
+                modifier = Modifier.clickable { onEditGroup() },
+                groupSingleState.groupWrapper, groupSingleState.expenseWrappers.sumOf { viewModel.getBalance(it) })
             ExpensesHeader()
             ExpensesList(groupSingleState.expenseWrappers, onAddExpense, viewModel::getBalance)
         }
@@ -127,9 +129,9 @@ fun GroupSingleScreen(
 }
 
 @Composable
-fun GroupInfoCard(groupWrapper: GroupWrapper, totalBalance: Double) {
+fun GroupInfoCard(modifier: Modifier = Modifier, groupWrapper: GroupWrapper, totalBalance: Double) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
             .fillMaxWidth(),
 
