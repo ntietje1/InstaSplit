@@ -14,7 +14,7 @@ interface UserExpenseApi {
 
 
     @POST("api/user_expenses")
-    suspend fun addUserExpenses(): UserExpense
+    suspend fun addUserExpenses(@Body userExpense: UserExpense): UserExpense
 
 
 
