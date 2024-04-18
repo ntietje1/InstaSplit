@@ -27,6 +27,21 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.Assert.*
 
+/*
+NOTE:
+testOptions {
+    unitTests {
+        includeAndroidResources = true
+    }
+}
+
+after I removed then added these lines again into the gradle file. The
+RobolectricTestRunner
+and
+InstantTaskExecutorRule()
+
+are then available again * no more error.
+ */
 
 fun createUserWrapper(): UserWrapper {
     val user = User(userId = 1, userName = "John Doe", email = "john.doe@example.com", phoneNumber = "123456789", password = "password123")
