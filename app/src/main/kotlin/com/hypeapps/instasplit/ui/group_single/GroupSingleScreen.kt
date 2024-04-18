@@ -142,7 +142,7 @@ fun GroupInfoCard(modifier: Modifier = Modifier, groupWrapper: GroupWrapper, tot
             Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.onPrimaryContainer)
-                .padding(10.dp), verticalAlignment = Alignment.Top
+                .padding(10.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
