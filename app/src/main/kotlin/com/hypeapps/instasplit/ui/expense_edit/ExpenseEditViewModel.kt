@@ -83,7 +83,7 @@ class ExpenseEditViewModel(
         }
     }
 
-    fun updateExpense(expense: ExpenseWrapper) {
+    private fun updateExpense(expense: ExpenseWrapper) {
         _state.value = _state.value.copy(expenseWrapper = expense)
     }
 
