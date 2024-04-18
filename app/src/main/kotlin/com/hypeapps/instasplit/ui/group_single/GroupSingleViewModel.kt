@@ -22,6 +22,13 @@ class GroupSingleViewModel(
     private val _state = MutableStateFlow(GroupSingleState())
     val state: StateFlow<GroupSingleState> = _state.asStateFlow()
 
+    suspend fun getMemberImage(): String {
+        return repository.fetchMemberImage().url
+    }
+
+    suspend fun getExpenseImage(): String {
+        return repository.fetchExpenseImage().url
+    }
     fun getBalance(expenseWrapper: ExpenseWrapper): Double {
         val user = userManager.currentUserId
         return expenseWrapper.getBalance(user)

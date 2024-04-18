@@ -1,6 +1,5 @@
 package com.hypeapps.instasplit.core
 
-import android.util.Log
 import com.hypeapps.instasplit.core.db.InstaSplitDatabase
 import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.Group
@@ -9,6 +8,7 @@ import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.model.entity.UserExpense
 import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
 import com.hypeapps.instasplit.core.network.InstaSplitApi
+import com.hypeapps.instasplit.core.network.api.ImageResponse
 import com.hypeapps.instasplit.core.utils.LoginRequest
 import com.hypeapps.instasplit.core.utils.RegisterRequest
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Response
 
 @OptIn(DelicateCoroutinesApi::class)
 class InstaSplitRepository(
@@ -163,6 +162,18 @@ class InstaSplitRepository(
 
     suspend fun getGroup(groupId: Int): Group {
         return groupDao.getGroupById(groupId)
+    }
+
+    suspend fun fetchGroupImage() : ImageResponse {
+        return api.getRandomGroupImage()
+    }
+
+    suspend fun fetchMemberImage() : ImageResponse {
+        return api.getRandomMemberImage()
+    }
+
+    suspend fun fetchExpenseImage(): ImageResponse {
+        return api.getRandomExpenseImage()
     }
 
 

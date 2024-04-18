@@ -28,6 +28,10 @@ class GroupListViewModel(
         setUserToCurrentUser()
     }
 
+    suspend fun getImage(): String {
+        return repository.fetchGroupImage().url
+    }
+
     fun getGroupStatus(groupWrapper: GroupWrapper): String {
         val totalExpense = groupWrapper.expenses.sumOf { it.totalAmount }
         return "Total Expenses: ${totalExpense.formatMoney()}"
