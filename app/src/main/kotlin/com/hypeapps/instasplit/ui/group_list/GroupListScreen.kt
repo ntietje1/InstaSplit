@@ -33,8 +33,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -100,17 +104,24 @@ fun GroupListScreen(
     }, floatingActionButtonPosition = FabPosition.Center,
 
         content = { innerPadding ->
+
             LazyColumn(
                 modifier = Modifier
                     .padding(innerPadding)
                     .padding(top = 16.dp)
             ) {
                 items(groupListState.groupWrappers) { groupWrapper ->
+                    var imageUrl: String? by remember { mutableStateOf(null) }
+
+                    LaunchedEffect(Unit) {
+                       imageUrl =  viewModel.getImage()
+                    }
                     GroupCard(
                         group = groupWrapper.group,
                         groupStatus = viewModel.getGroupStatus(groupWrapper),
                         memberCount = groupWrapper.users.size,
-                        onClick = { onGroupClick(groupWrapper.group) }
+                        onClick = { onGroupClick(groupWrapper.group) },
+                        imgUrl = imageUrl
                     )
                 }
                 item {
@@ -121,7 +132,7 @@ fun GroupListScreen(
 }
 
 @Composable
-fun GroupCard(group: Group, groupStatus: String, memberCount: Int, onClick: () -> Unit) {
+fun GroupCard(group: Group, groupStatus: String, memberCount: Int, imgUrl: String?, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(horizontal = 20.dp, vertical = 15.dp)
@@ -148,7 +159,7 @@ fun GroupCard(group: Group, groupStatus: String, memberCount: Int, onClick: () -
             )
             { imageView ->
                 Glide.with(imageView.context)
-                    .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1jVxHEjBZkIfrz6bYmOy1cE-pbs6Hpdb324HOb2Ntlg&s") //Default image
+                    .load(imgUrl) //Default image
                     .override(240, 240) // Resize
                     .placeholder(R.drawable.loading)  // Display a loading image while the image loads
                     .into(imageView)

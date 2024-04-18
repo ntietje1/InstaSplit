@@ -1,5 +1,6 @@
 package com.hypeapps.instasplit.ui.group_single
 
+import android.widget.ImageView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +46,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bumptech.glide.Glide
+import com.hypeapps.instasplit.R
 import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
 import com.hypeapps.instasplit.core.model.entity.bridge.GroupWrapper
@@ -115,6 +122,11 @@ fun GroupSingleScreen(
         )
     }, floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
+        var imageUrl: String? by remember { mutableStateOf(null) }
+
+        LaunchedEffect(Unit) {
+            imageUrl =  viewModel.getMemberImage()
+        }
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -122,15 +134,17 @@ fun GroupSingleScreen(
         ) {
             GroupInfoCard(
                 modifier = Modifier.clickable { onEditGroup() },
-                groupSingleState.groupWrapper, groupSingleState.expenseWrappers.sumOf { viewModel.getBalance(it) })
+                groupSingleState.groupWrapper,
+                imgUrl = imageUrl,
+                groupSingleState.expenseWrappers.sumOf { viewModel.getBalance(it)})
             ExpensesHeader()
-            ExpensesList(groupSingleState.expenseWrappers, onAddExpense, viewModel::getBalance)
+            ExpensesList(groupSingleState.expenseWrappers, onAddExpense, viewModel::getBalance, viewModel::getExpenseImage)
         }
     }
 }
 
 @Composable
-fun GroupInfoCard(modifier: Modifier = Modifier, groupWrapper: GroupWrapper, totalBalance: Double) {
+fun GroupInfoCard(modifier: Modifier = Modifier, groupWrapper: GroupWrapper, imgUrl: String?, totalBalance: Double) {
     Card(
         modifier = modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
@@ -150,7 +164,24 @@ fun GroupInfoCard(modifier: Modifier = Modifier, groupWrapper: GroupWrapper, tot
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.LightGray) // Placeholder for group image
             ) {
-                // TODO: Load actual image here
+                AndroidView(factory = { context ->
+                    ImageView(context).apply {
+                        scaleType = ImageView.ScaleType.CENTER_CROP
+                        adjustViewBounds = true
+                        setBackgroundColor(android.graphics.Color.WHITE)
+
+                    }
+                }, modifier = Modifier
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                )
+                { imageView ->
+                    Glide.with(imageView.context)
+                        .load(imgUrl) //Default image
+                        .override(240, 240) // Resize
+                        .placeholder(R.drawable.loading)  // Display a loading image while the image loads
+                        .into(imageView)
+                }
             }
             Spacer(Modifier.width(16.dp))
             Column {
@@ -186,16 +217,22 @@ fun ExpensesHeader() {
 @Composable
 fun ExpensesList(
     expensesWrappers: List<ExpenseWrapper>, onExpenseClicked: (Expense) -> Unit, getBalanceWithUserId: (ExpenseWrapper) -> Double
-) {
+, getImageExpense: suspend() -> String) {
     LazyColumn {
         items(expensesWrappers) { expenseWrapper ->
+            var imageUrl: String? by remember { mutableStateOf(null) }
+
+            LaunchedEffect(Unit) {
+                imageUrl =  getImageExpense()
+            }
             val balance = getBalanceWithUserId(expenseWrapper)
             ExpenseItem(
                 modifier = Modifier.clickable { onExpenseClicked(expenseWrapper.expense) },
                 description = expenseWrapper.expense.description,
                 date = expenseWrapper.expense.formattedDate,
                 balance = balance,
-                totalAmount = expenseWrapper.expense.totalAmount
+                totalAmount = expenseWrapper.expense.totalAmount,
+                imgUrl = imageUrl
             )
 
         }
@@ -206,7 +243,7 @@ fun ExpensesList(
 }
 
 @Composable
-fun ExpenseItem(modifier: Modifier = Modifier, description: String, date: String, balance: Double, totalAmount: Double) {
+fun ExpenseItem(modifier: Modifier = Modifier, description: String, date: String, balance: Double, totalAmount: Double, imgUrl: String?) {
     Card(
         modifier = modifier
             .padding(horizontal = 20.dp, vertical = 8.dp)
@@ -224,8 +261,24 @@ fun ExpenseItem(modifier: Modifier = Modifier, description: String, date: String
                     .clip(RoundedCornerShape(20.dp))
                     .background(Color.LightGray) // Placeholder color
             ) {
-                // Placeholder for the expense type icon/image
-                // Replace with actual Image composable when ready
+                AndroidView(factory = { context ->
+                    ImageView(context).apply {
+                        scaleType = ImageView.ScaleType.CENTER_CROP
+                        adjustViewBounds = true
+                        setBackgroundColor(android.graphics.Color.WHITE)
+
+                    }
+                }, modifier = Modifier
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                )
+                { imageView ->
+                    Glide.with(imageView.context)
+                        .load(imgUrl) //Default image
+                        .override(240, 240) // Resize
+                        .placeholder(R.drawable.loading)  // Display a loading image while the image loads
+                        .into(imageView)
+                }
             }
             Spacer(Modifier.width(16.dp))
             Column {
