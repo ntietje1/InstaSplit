@@ -108,14 +108,17 @@ class InstaSplitRepository(
 
     suspend fun addUserToGroup(userId: Int, groupId: Int) {
         val member = GroupMember(groupId = groupId, userId = userId, isAdmin = false)
-        api.addGroupMembers(member)
+        api.addGroupMembers(groupId,member)
         groupMemberDao.insert(member)
     }
 
     suspend fun editGroup(group: Group) {
-        group.groupId?.let { api.updateGroupName(it, group.groupName) }
-        groupDao.updateGroup(group)
+        val updatedGroup = group.groupId?.let { api.updateGroupName(it, group) }
+        if (updatedGroup != null) {
+            groupDao.updateGroup(updatedGroup)
+        }
     }
+
 
 //    suspend fun getBalanceInGroup(userId: Int, groupId: Int): Double {
 //        return groupDao.getBalanceInGroup(userId, groupId)
