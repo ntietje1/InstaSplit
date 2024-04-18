@@ -244,11 +244,11 @@ private fun GroupDropdownField(
             fieldValue = TextFieldValue(selectedGroupName),
             onTextChanged = {},
             readOnly = true,
-            disabled = locked,
+            disabled = locked || userWrapper.groups.isEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { if (!locked) expanded = true },
-            placeholder = "Select Group",
+            placeholder = if (userWrapper.groups.isNotEmpty()) "Select Group" else "You aren't in any groups!",
             imageVector = Icons.Default.Group,
         )
         DropdownMenu(
