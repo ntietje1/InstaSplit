@@ -17,7 +17,11 @@ interface GroupApi {
 
     // add group
     @POST("api/groups")
-    suspend fun addGroups(): Group
+    suspend fun addGroups(@Body group: Group): Group
 
-
+    @PUT("api/groups/{group_id}")
+    suspend fun updateGroupName(
+        @Path("group_id") groupId: Int,
+        @Body newName: String
+    ): Group
 }

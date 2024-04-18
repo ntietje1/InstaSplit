@@ -14,11 +14,11 @@ interface GroupMemberApi {
     suspend fun getGroupMembers(): List<GroupMember>
 
     @POST("api/group_members")
-    suspend fun addGroupMembers(): GroupMember
+    suspend fun addGroupMembers(@Body groupMember: GroupMember): GroupMember
     @DELETE("api/groups/{group_id}/members/{user_id}")
     suspend fun deleteGroupMember(
         @Path("group_id") groupId: Int,
         @Path("user_id") userId: Int
-    ): Unit // Unit indicates no data is expected in the response body
+    ): Unit
 
 }
