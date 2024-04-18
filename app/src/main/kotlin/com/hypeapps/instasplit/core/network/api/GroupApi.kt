@@ -14,7 +14,6 @@ interface GroupApi {
     @GET("api/groups")
     suspend fun getGroups(): List<Group>
 
-
     // add group
     @POST("api/groups")
     suspend fun addGroups(@Body group: Group): Group
@@ -22,6 +21,6 @@ interface GroupApi {
     @PUT("api/groups/{group_id}")
     suspend fun updateGroupName(
         @Path("group_id") groupId: Int,
-        @Body newName: String
+        @Body group: Group
     ): Group
 }

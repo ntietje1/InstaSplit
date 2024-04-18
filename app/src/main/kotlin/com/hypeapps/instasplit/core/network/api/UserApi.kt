@@ -17,7 +17,6 @@ interface UserApi {
     @GET("api/users")
     suspend fun getUsers(): List<User>
 
-
     @POST("api/users/login")
     suspend fun loginUser(@Body loginRequest: LoginRequest): Response<User>
 

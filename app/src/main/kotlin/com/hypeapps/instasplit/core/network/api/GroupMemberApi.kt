@@ -13,8 +13,8 @@ interface GroupMemberApi {
     @GET("api/group_members")
     suspend fun getGroupMembers(): List<GroupMember>
 
-    @POST("api/group_members")
-    suspend fun addGroupMembers(@Body groupMember: GroupMember): GroupMember
+    @POST("api/groups/{group_id}/members")
+    suspend fun addGroupMembers(@Path("group_id") groupId: Int, @Body groupMember: GroupMember): GroupMember
     @DELETE("api/groups/{group_id}/members/{user_id}")
     suspend fun deleteGroupMember(
         @Path("group_id") groupId: Int,
