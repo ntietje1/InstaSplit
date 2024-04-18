@@ -249,7 +249,7 @@ private fun GroupDropdownField(
             disabled = locked || userWrapper.groups.isEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { if (!locked) expanded = true },
+                .clickable { if (!locked || userWrapper.groups.isEmpty()) expanded = true },
             placeholder = if (userWrapper.groups.isNotEmpty()) "Select Group" else "You aren't in any groups!",
             imageVector = Icons.Default.Group,
         )
