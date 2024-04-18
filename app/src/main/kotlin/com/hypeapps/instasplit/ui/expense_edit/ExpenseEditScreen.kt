@@ -139,22 +139,24 @@ fun ExpenseEditScreen(
                 onTextChanged = { newValue -> viewModel.updateAmountField(newValue) },
                 placeholder = "0.00",
                 imageVector = Icons.Default.AttachMoney,
-                keyboardType = KeyboardType.Number  // This will now properly show the numeric keypad
+                keyboardType = KeyboardType.Number
             )
             Spacer(modifier = Modifier.height(24.dp))
             Surface(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .fillMaxWidth() // Ensure the Surface fills the width of its container
-                    .padding(horizontal = 80.dp), // Adjust horizontal padding
-                shape = RoundedCornerShape(20.dp), // Match the button's shape
-                color = Color.Transparent, // Use a transparent color for the Surface
-                shadowElevation = 4.dp // Set the shadow elevation
+                    .fillMaxWidth()
+                    .padding(horizontal = 80.dp),
+                shape = RoundedCornerShape(20.dp),
+                color = Color.Transparent,
+                shadowElevation = 4.dp
             ) {
                 Button(
                     onClick = {
-                        viewModel.addExpense()
-                        onDone()
+                        if (viewModel.validateExpense()) {
+                            viewModel.addExpense()
+                            onDone()
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -167,7 +169,7 @@ fun ExpenseEditScreen(
                     )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
-                        "ADD EXPENSE", style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp), color = MaterialTheme.colorScheme.onPrimary // Ensure text color is onPrimary for contrast
+                        "ADD EXPENSE", style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp), color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
