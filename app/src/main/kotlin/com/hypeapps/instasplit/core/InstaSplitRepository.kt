@@ -90,8 +90,14 @@ class InstaSplitRepository(
     }
 
     suspend fun removeUserFromGroup(userId: Int, groupId: Int) {
-        api.deleteGroupMember(userId, groupId)
-        groupMemberDao.delete(GroupMember(groupId = groupId, userId = userId))
+       try {
+           val response = api.deleteGroupMember(groupId, userId)
+           if (response.isSuccessful) {
+               groupMemberDao.delete(GroupMember(groupId = groupId, userId = userId))
+           }
+       }  catch (_: Exception) {
+
+       }
     }
 
     suspend fun addUserByEmail(email: String): User {
