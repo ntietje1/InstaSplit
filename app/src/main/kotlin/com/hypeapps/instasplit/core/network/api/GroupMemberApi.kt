@@ -1,18 +1,24 @@
 package com.hypeapps.instasplit.core.network.api
 
+import com.hypeapps.instasplit.core.model.entity.Group
 import com.hypeapps.instasplit.core.model.entity.GroupMember
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface GroupMemberApi {
 
-    // Add a new member to a specific group
-    @POST("api/groups/{groupName}/members")
-    suspend fun insertMember(@Path("groupName") groupName: String, @Body groupMember: GroupMember)
+    @GET("api/group_members")
+    suspend fun getGroupMembers(): List<GroupMember>
 
-    // Delete a member from a specific group by email (assuming email is used as a unique identifier)
-    @DELETE("api/groups/{groupName}/members/{memberEmail}")
-    suspend fun deleteMember(@Path("groupName") groupName: String, @Path("memberEmail") memberEmail: String)
+    @POST("api/groups/{group_id}/members")
+    suspend fun addGroupMembers(@Path("group_id") groupId: Int, @Body groupMember: GroupMember): GroupMember
+    @DELETE("api/groups/{group_id}/members/{user_id}")
+    suspend fun deleteGroupMember(
+        @Path("group_id") groupId: Int,
+        @Path("user_id") userId: Int
+    ): Unit
+
 }

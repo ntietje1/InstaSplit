@@ -1,5 +1,6 @@
 package com.hypeapps.instasplit.core
 
+import android.util.Log
 import com.hypeapps.instasplit.core.db.InstaSplitDatabase
 import com.hypeapps.instasplit.core.model.entity.Expense
 import com.hypeapps.instasplit.core.model.entity.Group
@@ -41,6 +42,11 @@ class InstaSplitRepository(
     private suspend fun populateDb() {
         withContext(Dispatchers.IO) {
             database.clearAllTables()
+            val groups = api.getGroups()
+            val users = api.getUsers()
+            val expenses = api.getExpenses()
+            val userExpenses = api.getUserExpenses()
+            val groupMembers = api.getGroupMembers()
             groups.forEach { groupDao.addGroup(it) }
             users.forEach { userDao.addUser(it) }
             expenses.forEach { expenseDao.addExpense(it) }
@@ -57,8 +63,8 @@ class InstaSplitRepository(
 
     suspend fun login(loginRequest: LoginRequest): Result<User> {
         return try {
-//            val response = api.loginUser(loginRequest)
-            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
+            val response = api.loginUser(loginRequest)
+//            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {
@@ -71,9 +77,10 @@ class InstaSplitRepository(
 
     suspend fun register(registerRequest: RegisterRequest): Result<User> {
         return try {
-//            val response = api.registerUser(registerRequest)
-            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
+            val response = api.registerUser(registerRequest)
+//            val response = Response.success(User(1, "user1", "test@email", "", "password")) //TODO remove this line
             if (response.isSuccessful && response.body() != null) {
+                userDao.addUser(response.body()!!)
                 Result.success(response.body()!!)
             } else {
                 Result.failure(Exception("Failed to register user"))
@@ -84,6 +91,7 @@ class InstaSplitRepository(
     }
 
     suspend fun removeUserFromGroup(userId: Int, groupId: Int) {
+        api.deleteGroupMember(userId, groupId)
         groupMemberDao.delete(GroupMember(groupId = groupId, userId = userId))
     }
 
@@ -99,12 +107,18 @@ class InstaSplitRepository(
     }
 
     suspend fun addUserToGroup(userId: Int, groupId: Int) {
-        groupMemberDao.insert(GroupMember(groupId = groupId, userId = userId, isAdmin = false))
+        val member = GroupMember(groupId = groupId, userId = userId, isAdmin = false)
+        api.addGroupMembers(groupId,member)
+        groupMemberDao.insert(member)
     }
 
     suspend fun editGroup(group: Group) {
-        groupDao.updateGroup(group)
+        val updatedGroup = group.groupId?.let { api.updateGroupName(it, group) }
+        if (updatedGroup != null) {
+            groupDao.updateGroup(updatedGroup)
+        }
     }
+
 
 //    suspend fun getBalanceInGroup(userId: Int, groupId: Int): Double {
 //        return groupDao.getBalanceInGroup(userId, groupId)
@@ -112,24 +126,29 @@ class InstaSplitRepository(
 
     suspend fun addOrUpdateExpense(currentUserId: Int, expense: Expense): ExpenseWrapper {
         val expenseId = if (expense.expenseId != null) {
+            api.updateExpense(expense.expenseId, expense)
             expenseDao.updateExpense(expense)
             expense.expenseId
         } else {
-            expenseDao.addExpense(expense).toInt()
+            val response = api.addExpenses(expense)
+            expenseDao.addExpense(response).toInt()
         }
         // get all other users in the group from groupId in expensse
         val otherUserIds = groupMemberDao.getGroupMembers(expense.groupId).map { it.userId }.filter { it != currentUserId }
         val amountOwedPerUser = expense.totalAmount / (otherUserIds.size + 1)
         for (otherUserId in otherUserIds) {
             val userExpense = UserExpense(userId = otherUserId, expenseId = expenseId, balance = 0.00 - amountOwedPerUser)
+            api.addUserExpenses(userExpense)
             userExpenseDao.insert(userExpense)
         }
         val userExpense = UserExpense(userId = currentUserId, expenseId = expenseId, balance = expense.totalAmount - amountOwedPerUser)
+        api.addUserExpenses(userExpense)
         userExpenseDao.insert(userExpense)
         return expenseDao.getExpenseWrapper(expenseId)
     }
 
     suspend fun deleteExpense(expenseId: Int) {
+        api.deleteExpense(expenseId)
         expenseDao.deleteExpenseById(expenseId)
     }
 
@@ -138,44 +157,13 @@ class InstaSplitRepository(
     }
 
     suspend fun addGroup(group: Group): Int {
-        return groupDao.addGroup(group).toInt()
+        val response = api.addGroups(group)
+        return groupDao.addGroup(response).toInt()
     }
 
     suspend fun getGroup(groupId: Int): Group {
         return groupDao.getGroupById(groupId)
     }
-
-    private val groups = listOf(
-        Group(groupId = 1, groupName = "Test Group 1"), Group(groupId = 2, groupName = "Test Group 2")
-    )
-    private val users = listOf(
-        User(userId = 1, userName = "User 1", email = "", password = "", phoneNumber = ""),
-        User(userId = 2, userName = "User 2", email = "", password = "", phoneNumber = ""),
-        User(userId = 3, userName = "User 3", email = "", password = "", phoneNumber = "")
-    )
-    private val expenses = listOf(
-        Expense(expenseId = 1, groupId = 1, totalAmount = 90.00, description = "Test Expense 1", date = 1000L),
-        Expense(expenseId = 2, groupId = 2, totalAmount = 100.00, description = "Test Expense 2", date = 2000L),
-        Expense(expenseId = 3, groupId = 2, totalAmount = 20.00, description = "Test Expense 3", date = 3000L)
-    )
-
-    private val userExpenses = listOf(
-        UserExpense(userId = 1, expenseId = 1, balance = 60.0),
-        UserExpense(userId = 2, expenseId = 1, balance = -30.0),
-        UserExpense(userId = 3, expenseId = 1, balance = -30.0),
-        UserExpense(userId = 1, expenseId = 2, balance = 50.0),
-        UserExpense(userId = 2, expenseId = 2, balance = -50.0),
-        UserExpense(userId = 1, expenseId = 3, balance = 10.0),
-        UserExpense(userId = 2, expenseId = 3, balance = -10.0),
-    )
-
-    private val groupMembers = listOf(
-        GroupMember(groupId = 1, userId = 1, isAdmin = true),
-        GroupMember(groupId = 1, userId = 2, isAdmin = false),
-        GroupMember(groupId = 1, userId = 3, isAdmin = false),
-        GroupMember(groupId = 2, userId = 1, isAdmin = true),
-        GroupMember(groupId = 2, userId = 2, isAdmin = false),
-    )
 
 
 }

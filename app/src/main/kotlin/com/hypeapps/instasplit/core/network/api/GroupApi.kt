@@ -14,19 +14,13 @@ interface GroupApi {
     @GET("api/groups")
     suspend fun getGroups(): List<Group>
 
-    // Fetch a specific group by name (not by ID, as our Flask uses group names as keys)
-    @GET("api/groups/{groupName}")
-    suspend fun getGroupByName(@Path("groupName") groupName: String): Group
-
-    // Add a new group
+    // add group
     @POST("api/groups")
-    suspend fun addGroup(@Body group: Group)
+    suspend fun addGroups(@Body group: Group): Group
 
-    // Update an existing group by name
-    @PUT("api/groups/{groupName}")
-    suspend fun updateGroup(@Path("groupName") groupName: String, @Body group: Group)
-
-    // Delete a group by name
-    @DELETE("api/groups/{groupName}")
-    suspend fun deleteGroupByName(@Path("groupName") groupName: String)
+    @PUT("api/groups/{group_id}")
+    suspend fun updateGroupName(
+        @Path("group_id") groupId: Int,
+        @Body group: Group
+    ): Group
 }
