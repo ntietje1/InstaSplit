@@ -1,5 +1,6 @@
 package com.hypeapps.instasplit.core.network.api
 
+import com.hypeapps.instasplit.core.network.ImageResponse
 import retrofit2.http.GET
 
 
@@ -15,4 +16,3 @@ interface ImageApi {
     suspend fun getRandomExpenseImage(): ImageResponse
 }
 
-data class ImageResponse(val url: String)

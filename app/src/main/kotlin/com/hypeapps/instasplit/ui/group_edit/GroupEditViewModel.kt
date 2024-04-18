@@ -25,6 +25,10 @@ class GroupEditViewModel(
     val userId: Int
         get() = userManager.currentUserId
 
+
+    suspend fun getMemberImages(): String {
+      return repository.fetchMemberImage().url
+    }
     fun updateGroupNameField(groupName: TextFieldValue) {
         updateGroupWrapper(_state.value.groupWrapper.copy(group = _state.value.groupWrapper.group.copy(groupName = groupName.text)))
         _state.value = _state.value.copy(groupNameField = groupName)

@@ -1,5 +1,6 @@
 package com.hypeapps.instasplit.ui.group_edit
 
+import android.widget.ImageView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +44,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +56,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bumptech.glide.Glide
+import com.hypeapps.instasplit.R
 import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.utils.formatMoney
 import com.hypeapps.instasplit.ui.common.InputField
@@ -125,26 +132,38 @@ fun GroupEditScreen(viewModel: GroupEditViewModel = viewModel(factory = GroupEdi
             LazyColumn(Modifier.fillMaxSize()) {
                 item {
                     groupEditState.users.find { it.userId == viewModel.userId }?.let { user ->
+                        var imageUrl: String? by remember { mutableStateOf(null) }
+
+                        LaunchedEffect(Unit) {
+                            imageUrl =  viewModel.getMemberImages()
+                        }
                         MemberItem(
                             user,
                             "You",
                             "You are owed ",
                             "You owe total ",
                             viewModel::removeMember,
-                            viewModel::getBalanceBetweenUsers
+                            viewModel::getBalanceBetweenUsers,
+                            imgUrl = imageUrl
                         )
                     }
                 }
                 items(groupEditState.users.filter {
                     it.userId != viewModel.userId
                 }) { user ->
+                    var imageUrl: String? by remember { mutableStateOf(null) }
+
+                    LaunchedEffect(Unit) {
+                        imageUrl =  viewModel.getMemberImages()
+                    }
                     MemberItem(
                         user,
                         null,
                         "You owe ",
                         "Owes you ",
                         viewModel::removeMember,
-                        viewModel::getBalanceBetweenUsers
+                        viewModel::getBalanceBetweenUsers,
+                        imgUrl = imageUrl
                     )
                 }
                 item {
@@ -182,7 +201,8 @@ fun MemberItem(
     negativeBalanceString: String,
     positiveBalanceString: String,
     onRemoveMember: (User) -> Unit,
-    getBalanceToCurrentUser: (Int) -> Double
+    getBalanceToCurrentUser: (Int) -> Double,
+    imgUrl: String?
 ) {
     Row(
         verticalAlignment = Alignment.Top, modifier = Modifier
@@ -216,8 +236,24 @@ fun MemberItem(
                         .clip(RoundedCornerShape(20.dp))
                         .background(Color.LightGray) // Placeholder color
                 ) {
-                    // Placeholder for the expense type icon/image
-                    // Replace with actual Image composable when ready
+                    AndroidView(factory = { context ->
+                        ImageView(context).apply {
+                            scaleType = ImageView.ScaleType.CENTER_CROP
+                            adjustViewBounds = true
+                            setBackgroundColor(android.graphics.Color.WHITE)
+
+                        }
+                    }, modifier = Modifier
+                        .size(120.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                    )
+                    { imageView ->
+                        Glide.with(imageView.context)
+                            .load(imgUrl) //Default image
+                            .override(240, 240) // Resize
+                            .placeholder(R.drawable.loading)  // Display a loading image while the image loads
+                            .into(imageView)
+                    }
                 }
                 Column(
                     modifier = Modifier.padding(start = 10.dp), horizontalAlignment = Alignment.End
