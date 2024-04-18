@@ -30,6 +30,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TestActivity"
+            android:exported="false"> <!-- No need to export this activity as it is only for testing purposes -->
+        </activity>
     </application>
 
 </manifest>
