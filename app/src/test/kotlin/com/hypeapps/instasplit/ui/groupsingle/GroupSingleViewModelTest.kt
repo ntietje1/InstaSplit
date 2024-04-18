@@ -24,23 +24,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-
-/*
-NOTE:
-testOptions {
-    unitTests {
-        includeAndroidResources = true
-    }
-}
-
-after I removed then added these lines again into the gradle file. The
-RobolectricTestRunner
-and
-InstantTaskExecutorRule()
-
-are then available again * no more error.
- */
-
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
 class GroupSingleViewModelTest {
