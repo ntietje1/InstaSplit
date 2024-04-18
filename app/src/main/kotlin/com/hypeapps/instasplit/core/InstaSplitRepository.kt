@@ -7,8 +7,8 @@ import com.hypeapps.instasplit.core.model.entity.GroupMember
 import com.hypeapps.instasplit.core.model.entity.User
 import com.hypeapps.instasplit.core.model.entity.UserExpense
 import com.hypeapps.instasplit.core.model.entity.bridge.ExpenseWrapper
+import com.hypeapps.instasplit.core.network.ImageResponse
 import com.hypeapps.instasplit.core.network.InstaSplitApi
-import com.hypeapps.instasplit.core.network.api.ImageResponse
 import com.hypeapps.instasplit.core.utils.LoginRequest
 import com.hypeapps.instasplit.core.utils.RegisterRequest
 import kotlinx.coroutines.DelicateCoroutinesApi
